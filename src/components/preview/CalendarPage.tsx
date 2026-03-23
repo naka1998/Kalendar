@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import type {
+  CalendarStyle,
   ColorTheme,
   DayCell,
   FontWeight,
@@ -22,6 +23,7 @@ export interface CalendarPageProps {
   orientation: Orientation;
   imageBase64: string | null;
   imageRatio: ImageRatio;
+  calendarStyle: CalendarStyle;
   onImageUpload?: (file: File) => void;
   onImageRemove?: () => void;
 }
@@ -37,6 +39,7 @@ export function CalendarPage({
   orientation,
   imageBase64,
   imageRatio,
+  calendarStyle,
   onImageUpload,
   onImageRemove,
 }: CalendarPageProps) {
@@ -164,6 +167,7 @@ export function CalendarPage({
             holidayMarkStyle={holidayMarkStyle}
             fontFamily={fontFamily}
             fontWeight={fontWeight}
+            calendarStyle={calendarStyle}
           />
         </div>
       </div>

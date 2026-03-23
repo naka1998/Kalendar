@@ -9,6 +9,15 @@ export type PageLayout = "1-month" | "2-month";
 export type DownloadMode = "pdf" | "single-html" | "zip";
 export type FontWeight = 300 | 400 | 600;
 
+// === Calendar Style ===
+export interface CalendarStyle {
+  monthFontSize: number;
+  dayFontSize: number;
+  weekdayFontSize: number;
+  cellPadding: number;
+  headerGap: number;
+}
+
 // === Color Theme ===
 export interface ColorTheme {
   id: string;
@@ -106,6 +115,7 @@ export interface CalendarState {
   imageRatio: ImageRatio;
 
   monthThemeOverrides: Record<string, string>;
+  calendarStyle: CalendarStyle;
 
   // Actions (sync only)
   setStartMonth: (month: string) => void;
@@ -121,6 +131,7 @@ export interface CalendarState {
   setFontWeight: (w: FontWeight) => void;
   setImageRatio: (ratio: ImageRatio) => void;
   setUseImages: (use: boolean) => void;
+  setCalendarStyle: (style: Partial<CalendarStyle>) => void;
 
   setApiHolidays: (holidays: Record<string, string>) => void;
   setHolidaysFetched: (fetched: boolean) => void;

@@ -20,6 +20,14 @@ export const DEFAULTS = {
   PAGE_LAYOUT: "1-month" as const,
 } as const;
 
+export const DEFAULT_CALENDAR_STYLE = {
+  monthFontSize: 48,
+  dayFontSize: 14,
+  weekdayFontSize: 12,
+  cellPadding: 8,
+  headerGap: 8,
+} as const;
+
 export const IMAGE = {
   MAX_FILE_SIZE: 10 * 1024 * 1024,
   MAX_DIMENSION: 2400,

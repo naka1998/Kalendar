@@ -58,6 +58,8 @@ export function DesignSection() {
   const setUseImages = useCalendarStore((s) => s.setUseImages);
   const imageRatio = useCalendarStore((s) => s.imageRatio);
   const setImageRatio = useCalendarStore((s) => s.setImageRatio);
+  const calendarStyle = useCalendarStore((s) => s.calendarStyle);
+  const setCalendarStyle = useCalendarStore((s) => s.setCalendarStyle);
 
   return (
     <div className="space-y-4">
@@ -154,6 +156,78 @@ export function DesignSection() {
           </div>
         </div>
       )}
+
+      {/* Calendar text size & spacing */}
+      <div className="space-y-3">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+          文字サイズ・余白
+        </Label>
+
+        <SliderField
+          label="月タイトル"
+          value={calendarStyle.monthFontSize}
+          min={24}
+          max={72}
+          onChange={(v) => setCalendarStyle({ monthFontSize: v })}
+        />
+        <SliderField
+          label="日付"
+          value={calendarStyle.dayFontSize}
+          min={10}
+          max={24}
+          onChange={(v) => setCalendarStyle({ dayFontSize: v })}
+        />
+        <SliderField
+          label="曜日"
+          value={calendarStyle.weekdayFontSize}
+          min={10}
+          max={20}
+          onChange={(v) => setCalendarStyle({ weekdayFontSize: v })}
+        />
+        <SliderField
+          label="セル余白"
+          value={calendarStyle.cellPadding}
+          min={2}
+          max={16}
+          onChange={(v) => setCalendarStyle({ cellPadding: v })}
+        />
+        <SliderField
+          label="ヘッダー間隔"
+          value={calendarStyle.headerGap}
+          min={2}
+          max={20}
+          onChange={(v) => setCalendarStyle({ headerGap: v })}
+        />
+      </div>
+    </div>
+  );
+}
+
+function SliderField({
+  label,
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="w-20 shrink-0 text-xs text-on-surface-variant">{label}</span>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-surface-container-high accent-[#005bc4]"
+      />
+      <span className="w-8 text-right text-xs tabular-nums text-on-surface">{value}</span>
     </div>
   );
 }

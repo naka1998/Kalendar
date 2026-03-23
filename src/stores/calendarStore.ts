@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { DEFAULTS } from "@/lib/constants";
+import { DEFAULT_CALENDAR_STYLE, DEFAULTS } from "@/lib/constants";
 import type { CalendarState } from "./types";
 
 export const useCalendarStore = create<CalendarState>((set) => ({
@@ -32,6 +32,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
 
   // Month theme overrides
   monthThemeOverrides: {},
+  calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
 
   // Basic setting actions
   setStartMonth: (month) => set({ startMonth: month }),
@@ -47,6 +48,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   setFontWeight: (w) => set({ fontWeight: w }),
   setImageRatio: (ratio) => set({ imageRatio: ratio }),
   setUseImages: (use) => set({ useImages: use }),
+  setCalendarStyle: (style) => set((s) => ({ calendarStyle: { ...s.calendarStyle, ...style } })),
 
   // Holiday actions
   setApiHolidays: (holidays) =>

@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { CalendarGrid } from "./CalendarGrid";
 import { getMonthGrid, getWeekdayHeaders, enrichDayCells } from "@/lib/dateUtils";
 import { THEMES } from "@/lib/themes";
+import { DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
 
 const theme = THEMES[0]; // Classic
 
@@ -16,6 +17,7 @@ function renderGrid(overrides?: Partial<Parameters<typeof CalendarGrid>[0]>) {
     holidayMarkStyle: "dot" as const,
     fontFamily: "Montserrat",
     fontWeight: 400 as const,
+    calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
   };
   return render(<CalendarGrid {...defaults} {...overrides} />);
 }

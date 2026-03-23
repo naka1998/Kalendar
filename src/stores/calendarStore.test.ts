@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useCalendarStore } from "./calendarStore";
-import { DEFAULTS } from "@/lib/constants";
+import { DEFAULT_CALENDAR_STYLE, DEFAULTS } from "@/lib/constants";
 
 describe("calendarStore", () => {
   beforeEach(() => {
@@ -26,6 +26,7 @@ describe("calendarStore", () => {
       images: {},
       imageRatio: DEFAULTS.IMAGE_RATIO,
       monthThemeOverrides: {},
+      calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
     });
   });
 

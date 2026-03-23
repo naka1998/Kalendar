@@ -20,6 +20,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const fontWeight = useCalendarStore((s) => s.fontWeight);
   const useImages = useCalendarStore((s) => s.useImages);
   const imageRatio = useCalendarStore((s) => s.imageRatio);
+  const calendarStyle = useCalendarStore((s) => s.calendarStyle);
   const apiHolidays = useCalendarStore((s) => s.apiHolidays);
   const manualHolidays = useCalendarStore((s) => s.manualHolidays);
   const removedHolidays = useCalendarStore((s) => s.removedHolidays);
@@ -80,6 +81,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       orientation={orientation}
       imageBase64={imageBase64}
       imageRatio={imageRatio}
+      calendarStyle={calendarStyle}
       onImageUpload={useImages ? handleImageUpload : undefined}
       onImageRemove={useImages ? handleImageRemove : undefined}
     />

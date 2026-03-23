@@ -1,4 +1,10 @@
-import type { ColorTheme, DayCell, FontWeight, HolidayMarkStyle } from "@/stores/types";
+import type {
+  CalendarStyle,
+  ColorTheme,
+  DayCell,
+  FontWeight,
+  HolidayMarkStyle,
+} from "@/stores/types";
 
 export interface CalendarGridProps {
   grid: DayCell[][];
@@ -8,6 +14,7 @@ export interface CalendarGridProps {
   holidayMarkStyle: HolidayMarkStyle;
   fontFamily: string;
   fontWeight: FontWeight;
+  calendarStyle: CalendarStyle;
 }
 
 function HolidayMark({ style, color }: { style: HolidayMarkStyle; color: string }) {
@@ -19,9 +26,9 @@ function HolidayMark({ style, color }: { style: HolidayMarkStyle; color: string 
         </span>
       );
     case "circle":
-      return null; // Handled by cell border-radius
+      return null;
     case "underline":
-      return null; // Handled by cell border-bottom
+      return null;
     case "color-only":
       return null;
   }
@@ -35,29 +42,41 @@ export function CalendarGrid({
   holidayMarkStyle,
   fontFamily,
   fontWeight,
+  calendarStyle,
 }: CalendarGridProps) {
   const { colors } = theme;
+  const { monthFontSize, dayFontSize, weekdayFontSize, cellPadding, headerGap } = calendarStyle;
 
   return (
     <div style={{ fontFamily, fontWeight }}>
       {/* Month label */}
       <div
-        className="mb-3 font-heading text-3xl font-extrabold tracking-tighter md:text-5xl"
-        style={{ color: colors.monthLabel }}
+        className="font-heading font-extrabold tracking-tighter"
+        style={{
+          color: colors.monthLabel,
+          fontSize: `${monthFontSize}px`,
+          marginBottom: `${headerGap}px`,
+        }}
       >
         {monthLabel}
       </div>
 
       {/* Header rule */}
-      <div className="mb-2" style={{ borderBottom: `1px solid ${colors.headerRule}` }} />
+      <div
+        style={{ borderBottom: `1px solid ${colors.headerRule}`, marginBottom: `${headerGap}px` }}
+      />
 
       {/* Weekday headers */}
-      <div className="mb-1 grid grid-cols-7">
+      <div className="grid grid-cols-7" style={{ marginBottom: `${Math.round(headerGap / 2)}px` }}>
         {weekdayHeaders.map((header, i) => (
           <div
             key={i}
-            className="py-1 text-center text-xs font-bold uppercase tracking-[0.2em]"
-            style={{ color: colors.weekdayHeader }}
+            className="text-center font-bold uppercase tracking-[0.2em]"
+            style={{
+              color: colors.weekdayHeader,
+              fontSize: `${weekdayFontSize}px`,
+              padding: `${Math.round(cellPadding / 2)}px 0`,
+            }}
           >
             {header}
           </div>
@@ -69,7 +88,7 @@ export function CalendarGrid({
         {grid.map((row, ri) =>
           row.map((cell, ci) => {
             if (!cell.date || !cell.isCurrentMonth) {
-              return <div key={`${ri}-${ci}`} className="py-2" />;
+              return <div key={`${ri}-${ci}`} style={{ padding: `${cellPadding}px 0` }} />;
             }
 
             let textColor = colors.text;
@@ -78,19 +97,24 @@ export function CalendarGrid({
 
             const isCircle = cell.isHoliday && holidayMarkStyle === "circle";
             const isUnderline = cell.isHoliday && holidayMarkStyle === "underline";
+            const cellSize = Math.max(dayFontSize + 12, 28);
 
             return (
               <div
                 key={`${ri}-${ci}`}
-                className="flex flex-col items-center py-2"
+                className="flex flex-col items-center"
                 style={{
+                  padding: `${cellPadding}px 0`,
                   borderBottom: ri < grid.length - 1 ? `1px solid ${colors.gridRule}` : undefined,
                 }}
               >
                 <span
-                  className="flex h-7 w-7 items-center justify-center text-sm"
+                  className="flex items-center justify-center"
                   style={{
                     color: textColor,
+                    fontSize: `${dayFontSize}px`,
+                    width: `${cellSize}px`,
+                    height: `${cellSize}px`,
                     borderRadius: isCircle ? "50%" : undefined,
                     border: isCircle ? `1.5px solid ${colors.holidayMark}` : undefined,
                     borderBottom: isUnderline ? `2px solid ${colors.holidayMark}` : undefined,

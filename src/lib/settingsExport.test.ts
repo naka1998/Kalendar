@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { exportSettings, importSettings } from "./settingsExport";
-import { DEFAULTS } from "./constants";
+import { DEFAULT_CALENDAR_STYLE, DEFAULTS } from "./constants";
 import type { CalendarState } from "@/stores/types";
 
 function createMockState(): CalendarState {
@@ -33,6 +33,7 @@ function createMockState(): CalendarState {
     },
     imageRatio: DEFAULTS.IMAGE_RATIO,
     monthThemeOverrides: { "2026-04": "dark" },
+    calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
     // Actions (not used in export)
     setStartMonth: () => {},
     setEndMonth: () => {},
@@ -47,6 +48,7 @@ function createMockState(): CalendarState {
     setFontWeight: () => {},
     setImageRatio: () => {},
     setUseImages: () => {},
+    setCalendarStyle: () => {},
     setApiHolidays: () => {},
     setHolidaysFetched: () => {},
     setHolidayFetchError: () => {},
