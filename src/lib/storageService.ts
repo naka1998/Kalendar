@@ -1,0 +1,115 @@
+import { STORAGE_KEYS } from "./constants";
+import type {
+  CalendarState,
+  CalendarStyle,
+  FontWeight,
+  HolidayMarkStyle,
+  ImagePosition,
+  MonthImage,
+  MonthLabelFormat,
+  Orientation,
+  PageLayout,
+  WeekStart,
+  WeekdayFormat,
+  ManualHoliday,
+} from "@/stores/types";
+
+interface SavedState {
+  startMonth: string;
+  endMonth: string;
+  orientation: Orientation;
+  weekStart: WeekStart;
+  weekdayFormat: WeekdayFormat;
+  monthLabelFormat: MonthLabelFormat;
+  pageLayout: PageLayout;
+  manualHolidays: ManualHoliday[];
+  removedHolidays: string[];
+  holidayMarkStyle: HolidayMarkStyle;
+  themeId: string;
+  fontId: string;
+  fontWeight: FontWeight;
+  useImages: boolean;
+  images: Record<string, MonthImage>;
+  imagePercent: number;
+  imagePosition: ImagePosition;
+  monthThemeOverrides: Record<string, string>;
+  calendarStyle: CalendarStyle;
+}
+
+interface SavedData {
+  version: 1;
+  savedAt: string;
+  state: SavedState;
+}
+
+export function saveToStorage(state: CalendarState): { success: boolean; error?: string } {
+  const data: SavedData = {
+    version: 1,
+    savedAt: new Date().toISOString(),
+    state: {
+      startMonth: state.startMonth,
+      endMonth: state.endMonth,
+      orientation: state.orientation,
+      weekStart: state.weekStart,
+      weekdayFormat: state.weekdayFormat,
+      monthLabelFormat: state.monthLabelFormat,
+      pageLayout: state.pageLayout,
+      manualHolidays: state.manualHolidays,
+      removedHolidays: state.removedHolidays,
+      holidayMarkStyle: state.holidayMarkStyle,
+      themeId: state.themeId,
+      fontId: state.fontId,
+      fontWeight: state.fontWeight,
+      useImages: state.useImages,
+      images: state.images,
+      imagePercent: state.imagePercent,
+      imagePosition: state.imagePosition,
+      monthThemeOverrides: state.monthThemeOverrides,
+      calendarStyle: state.calendarStyle,
+    },
+  };
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(data));
+    return { success: true };
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "QuotaExceededError") {
+      return { success: false, error: "保存容量を超えました。画像を減らしてお試しください。" };
+    }
+    return { success: false, error: "保存に失敗しました。" };
+  }
+}
+
+export function loadFromStorage(): SavedState | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
+    if (!raw) return null;
+
+    const data = JSON.parse(raw) as SavedData;
+    if (data.version !== 1) return null;
+
+    return data.state;
+  } catch {
+    return null;
+  }
+}
+
+export function clearStorage(): void {
+  localStorage.removeItem(STORAGE_KEYS.USER_SETTINGS);
+}
+
+export function hasSavedData(): boolean {
+  return localStorage.getItem(STORAGE_KEYS.USER_SETTINGS) !== null;
+}
+
+export function getSavedTimestamp(): string | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
+    if (!raw) return null;
+
+    const data = JSON.parse(raw) as SavedData;
+    return data.savedAt ?? null;
+  } catch {
+    return null;
+  }
+}

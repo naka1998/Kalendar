@@ -1,4 +1,5 @@
 import { DownloadButton } from "@/components/download/DownloadButton";
+import { TempSaveButton } from "./TempSaveButton";
 import { HelpModal } from "./HelpModal";
 
 export function Header() {
@@ -13,6 +14,7 @@ export function Header() {
 
       <div className="flex items-center gap-2 md:gap-3">
         <HelpModal />
+        <TempSaveButton />
         <DownloadButton />
       </div>
     </header>
