@@ -13,13 +13,13 @@
   --color-surface: #ffffff;
   --color-surface-container-lowest: #ffffff;
   --color-surface-container-low: #f0f4f7;
-  --color-surface-container: #eaeff2;
+  --color-surface-container: #f7f9fb;
   --color-surface-container-high: #e1e6ea;
   --color-surface-container-highest: #d6dce0;
 
   /* --- On-Surface Text --- */
   --color-on-surface: #2c3437;
-  --color-on-surface-variant: #6b7680;
+  --color-on-surface-variant: #596064;
 
   /* --- Outline --- */
   --color-outline: #c5cdd3;

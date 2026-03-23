@@ -31,7 +31,7 @@ export default function App() {
       {/* Mobile FAB — settings button */}
       <button
         onClick={() => setSettingsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-2xl bg-gradient-to-br from-primary to-primary-container px-5 py-3 text-sm font-semibold text-on-primary shadow-lg transition-transform hover:scale-105 active:scale-95 md:hidden"
+        className="fixed bottom-8 right-8 z-40 flex items-center gap-2 rounded-xl border border-[#dce4e8] bg-white px-5 py-3 text-sm font-semibold text-[#005bc4] shadow-[0_4px_12px_rgba(0,91,196,0.08)] transition-colors hover:bg-[#f8fafc] md:hidden"
       >
         <svg
           className="h-4 w-4"

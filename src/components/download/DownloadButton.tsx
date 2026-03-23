@@ -121,7 +121,7 @@ export function DownloadButton() {
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         disabled={downloading}
-        className="rounded-xl bg-gradient-to-br from-primary to-primary-container px-4 py-2 text-sm font-semibold text-on-primary transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="rounded-lg bg-[#005bc4] px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#004ba3] disabled:opacity-50"
       >
         {downloading ? "出力中..." : "出力"}
       </button>
