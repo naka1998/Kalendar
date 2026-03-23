@@ -42,7 +42,7 @@ export function CalendarGrid({
     <div style={{ fontFamily, fontWeight }}>
       {/* Month label */}
       <div
-        className="mb-3 font-heading text-5xl font-extrabold tracking-tighter"
+        className="mb-3 font-heading text-3xl font-extrabold tracking-tighter md:text-5xl"
         style={{ color: colors.monthLabel }}
       >
         {monthLabel}

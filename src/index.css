@@ -137,6 +137,39 @@
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
+/* Glassmorphism fallback */
+@supports not (backdrop-filter: blur(12px)) {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: none;
+  }
+}
+
+/* --- Focus States (Accessibility) --- */
+*:focus-visible {
+  outline: 2px solid #005bc4;
+  outline-offset: 2px;
+}
+
+input:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(0, 91, 196, 0.1);
+}
+
+/* --- Touch Target (min 44px) --- */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+}
+
 /* --- Bottom Sheet Animation --- */
 @keyframes slide-up {
   from {
