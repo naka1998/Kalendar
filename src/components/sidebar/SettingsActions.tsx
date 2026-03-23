@@ -1,12 +1,19 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { exportSettings, importSettings } from "@/lib/settingsExport";
 import { importFromHtmlFile } from "@/lib/htmlImporter";
+import { saveToStorage, loadFromStorage, hasSavedData } from "@/lib/storageService";
 import { Button } from "@/components/ui/button";
 
 export function SettingsActions() {
   const jsonInputRef = useRef<HTMLInputElement>(null);
   const htmlInputRef = useRef<HTMLInputElement>(null);
+  const [hasSaved, setHasSaved] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setHasSaved(hasSavedData());
+  }, []);
 
   const handleExport = useCallback(() => {
     const state = useCalendarStore.getState();
@@ -53,6 +60,27 @@ export function SettingsActions() {
     if (htmlInputRef.current) htmlInputRef.current.value = "";
   }, []);
 
+  const handleTempSave = useCallback(() => {
+    const state = useCalendarStore.getState();
+    const result = saveToStorage(state);
+    if (result.success) {
+      setHasSaved(true);
+      setSaveMessage("保存しました");
+    } else {
+      setSaveMessage(result.error ?? "保存に失敗しました");
+    }
+    setTimeout(() => setSaveMessage(null), 3000);
+  }, []);
+
+  const handleTempLoad = useCallback(() => {
+    if (!window.confirm("保存済みデータで現在の設定を上書きしますか？")) return;
+
+    const loaded = loadFromStorage();
+    if (loaded) {
+      useCalendarStore.setState(loaded);
+    }
+  }, []);
+
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
@@ -76,6 +104,17 @@ export function SettingsActions() {
       >
         HTMLから読込
       </Button>
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={handleTempSave}>
+          一時保存
+        </Button>
+        {hasSaved && (
+          <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={handleTempLoad}>
+            復元
+          </Button>
+        )}
+      </div>
+      {saveMessage && <p className="text-xs text-on-surface-variant text-center">{saveMessage}</p>}
       <input
         ref={jsonInputRef}
         type="file"
