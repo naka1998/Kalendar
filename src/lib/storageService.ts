@@ -2,37 +2,13 @@ import { STORAGE_KEYS } from "./constants";
 import type {
   CalendarState,
   CalendarStyle,
-  FontWeight,
-  HolidayMarkStyle,
-  ImagePosition,
   MonthImage,
-  MonthLabelFormat,
-  Orientation,
-  PageLayout,
-  WeekStart,
-  WeekdayFormat,
-  ManualHoliday,
+  PersistedCalendarSettings,
 } from "@/stores/types";
 
-interface SavedState {
-  startMonth: string;
-  endMonth: string;
-  orientation: Orientation;
-  weekStart: WeekStart;
-  weekdayFormat: WeekdayFormat;
-  monthLabelFormat: MonthLabelFormat;
-  pageLayout: PageLayout;
-  manualHolidays: ManualHoliday[];
-  removedHolidays: string[];
-  holidayMarkStyle: HolidayMarkStyle;
-  themeId: string;
-  fontId: string;
-  fontWeight: FontWeight;
+interface SavedState extends PersistedCalendarSettings {
   useImages: boolean;
   images: Record<string, MonthImage>;
-  imagePercent: number;
-  imagePosition: ImagePosition;
-  monthThemeOverrides: Record<string, string>;
   calendarStyle: CalendarStyle;
 }
 

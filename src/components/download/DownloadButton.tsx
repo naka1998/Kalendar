@@ -3,40 +3,15 @@ import { useCalendarStore } from "@/stores/calendarStore";
 import { generateSingleHtml } from "@/lib/htmlGenerator";
 import { generateZip } from "@/lib/zipGenerator";
 import { exportSettings } from "@/lib/settingsExport";
-import {
-  generateMonthRange,
-  getMonthGrid,
-  getWeekdayHeaders,
-  formatMonthLabel,
-  enrichDayCells,
-} from "@/lib/dateUtils";
-import { mergeHolidays } from "@/lib/holidayUtils";
-import { resolveTheme } from "@/lib/themeUtils";
-import { THEMES } from "@/lib/themes";
+import { generateMonthRange } from "@/lib/dateUtils";
+import { buildPageData } from "@/lib/buildPageData";
 import { FONT_PRESETS } from "@/lib/fonts";
-import type { HtmlGeneratorInput, PageData, DownloadMode } from "@/stores/types";
+import type { HtmlGeneratorInput, DownloadMode } from "@/stores/types";
 
 function buildInput(store: ReturnType<typeof useCalendarStore.getState>): HtmlGeneratorInput {
   const months = generateMonthRange(store.startMonth, store.endMonth);
-  const holidays = mergeHolidays(store.apiHolidays, store.manualHolidays, store.removedHolidays);
   const font = FONT_PRESETS.find((f) => f.id === store.fontId) ?? FONT_PRESETS[0];
-
-  const pages: PageData[] = months.map((monthKey) => {
-    const rawGrid = getMonthGrid(monthKey, store.weekStart);
-    const grid = enrichDayCells(rawGrid, holidays);
-    const theme = resolveTheme(store.themeId, monthKey, store.monthThemeOverrides, THEMES);
-
-    return {
-      monthLabel: formatMonthLabel(monthKey, store.monthLabelFormat),
-      grid,
-      weekdayHeaders: getWeekdayHeaders(store.weekdayFormat, store.weekStart),
-      theme,
-      holidayMarkStyle: store.holidayMarkStyle,
-      imageBase64: store.useImages ? (store.images[monthKey]?.base64 ?? null) : null,
-      imagePercent: store.imagePercent,
-      imagePosition: store.imagePosition,
-    };
-  });
+  const pages = months.map((monthKey) => buildPageData(monthKey, store));
 
   return {
     pages,
