@@ -23,9 +23,10 @@ type WeekStart = "sunday" | "monday";
 type WeekdayFormat = "ja" | "en-short" | "en-full";
 type MonthLabelFormat = "yyyy.mm" | "month-yyyy" | "ja";
 type HolidayMarkStyle = "dot" | "circle" | "underline" | "color-only";
-type ImageRatio = "60:40" | "50:50" | "70:30";
+type ImagePosition = "top" | "bottom" | "left" | "right";
 type PageLayout = "1-month" | "2-month";
 type FontWeight = 300 | 400 | 600;
+type ContentAlign = "start" | "center" | "end";
 ```
 
 ### 2.2 カラーテーマ
@@ -71,10 +72,37 @@ interface CalendarStyle {
   weekdayFontSize: number; // px (default: 12)
   cellPadding: number; // px (default: 8)
   headerGap: number; // px (default: 8)
+  contentAlign: ContentAlign; // カレンダーの縦方向配置 (default: "center")
+  pageMarginTop: number; // px (default: 0)
 }
 ```
 
-### 2.5 HTML生成入力型
+### 2.5 永続化設定型（エクスポート/ストレージ共通基底）
+
+```typescript
+interface PersistedCalendarSettings {
+  startMonth: string;
+  endMonth: string;
+  orientation: Orientation;
+  weekStart: WeekStart;
+  weekdayFormat: WeekdayFormat;
+  monthLabelFormat: MonthLabelFormat;
+  pageLayout: PageLayout;
+  holidayMarkStyle: HolidayMarkStyle;
+  themeId: string;
+  fontId: string;
+  fontWeight: FontWeight;
+  imagePercent: number;
+  imagePosition: ImagePosition;
+  manualHolidays: ManualHoliday[];
+  removedHolidays: string[];
+  monthThemeOverrides: Record<string, string>;
+}
+```
+
+`ExportedSettings`（JSONエクスポート用）と`SavedState`（localStorage用）はこの型をextendsし、それぞれ固有のフィールドのみ追加する。
+
+### 2.6 HTML生成入力型
 
 ```typescript
 interface HtmlGeneratorInput {
@@ -83,6 +111,7 @@ interface HtmlGeneratorInput {
   fontFamily: string;
   fontWeight: FontWeight;
   googleFontsUrl: string;
+  calendarStyle?: Partial<Pick<CalendarStyle, "contentAlign" | "pageMarginTop">>;
 }
 
 interface PageData {
@@ -92,7 +121,8 @@ interface PageData {
   theme: ColorTheme;
   holidayMarkStyle: HolidayMarkStyle;
   imageBase64: string | null;
-  imageRatio: ImageRatio;
+  imagePercent: number;
+  imagePosition: ImagePosition;
 }
 ```
 
@@ -117,7 +147,9 @@ interface PageData {
 ├─────────────────────────────────────────────┤
 │  ロジックレイヤー（lib/ - 純粋関数）            │
 │  ├── dateUtils, holidayUtils, themeUtils     │
-│  ├── layoutUtils, htmlGenerator              │
+│  ├── layoutUtils, htmlUtils, buildPageData   │
+│  ├── html/ (cellRenderer, gridRenderer,      │
+│  │         pageRenderer, htmlTemplate)       │
 │  └── 副作用なし、ブラウザAPIなし               │
 ├─────────────────────────────────────────────┤
 │  サービスレイヤー（lib/ - 依存注入）            │
@@ -144,13 +176,15 @@ interface PageData {
 
 ```
 App.tsx
-├── Header.tsx (レイアウト: タイトル + ヘルプ + 出力ボタン)
+├── Header.tsx (レイアウト: タイトル + 一時保存 + ヘルプ + 出力ボタン)
+│   ├── TempSaveButton.tsx (一時保存/復元)
 │   ├── HelpModal.tsx (印刷手順ガイド)
 │   └── DownloadButton.tsx (PDF/HTML/ZIP ドロップダウン)
 ├── Sidebar.tsx (コンテナ: アコーディオン、複数同時展開可)
 │   ├── BasicSection.tsx (期間, 向き, 曜日, 表記)
 │   ├── HolidaySection.tsx (取得状態, マーク, 手動追加/削除)
-│   ├── DesignSection.tsx (テーマ, フォント, 文字サイズ, 画像設定)
+│   ├── DesignSection.tsx (テーマ, フォント, 文字サイズ, スタイル設定)
+│   ├── ImageSection.tsx (画像一覧, D&D並べ替え)
 │   └── SettingsActions.tsx (設定保存/読込/HTMLから読込)
 ├── PreviewArea.tsx (コンテナ: 連続スクロール + 月ジャンプ)
 │   └── CalendarPageContainer.tsx (コンテナ: ストア → props + 画像操作)
@@ -170,7 +204,7 @@ App.tsx
 **コンテナコンポーネント**（`CalendarPageContainer`）:
 
 - Zustandストアから読み取り
-- `lib/` の純粋関数で派生データを計算
+- `buildPageData()` で月ごとのPageDataを組み立て（DownloadButtonと共通利用）
 - 計算結果をプレゼンテーショナルコンポーネントに渡す
 
 ---
@@ -190,10 +224,10 @@ App.tsx
           → 失敗: 期限切れキャッシュ or フォールバック
     → store.setApiHolidays(data)
 
-描画時 (CalendarGridContainer)
-  → mergeHolidays(apiHolidays, manualHolidays, removedHolidays)  // 純粋関数
-  → enrichDayCells(grid, mergedHolidays)  // 純粋関数
-  → 結果をCalendarGrid（プレゼンテーショナル）に渡す
+描画時 (CalendarPageContainer)
+  → buildPageData(monthKey, state)  // 純粋関数
+    → mergeHolidays, getMonthGrid, enrichDayCells, resolveTheme を内部で呼び出し
+  → 結果をCalendarPage（プレゼンテーショナル）に渡す
 ```
 
 ### 4.2 画像処理フロー
@@ -235,13 +269,30 @@ ZIP:
 ```
 「HTMLから読込」ボタンクリック
   → ファイル選択 (.html)
-  → FileReader.readAsText()
-  → parseSettingsFromHtml(html)
-    → <meta name="kalendar-settings"> のcontent属性を抽出
-    → HTMLエンティティをデコード
-    → importSettings(json) で設定オブジェクトに変換
-  → useCalendarStore.setState(settings)
-  → プレビューが設定に基づいて更新
+  → importFromHtmlFile(file)
+    → FileReader.readAsText()
+    → extractSettingsJson(html)  // メタタグ抽出 + unescapeHtml
+      → importSettings(json) で設定オブジェクトに変換
+    → parseRawSettingsJson(html) → imageFileNames を取得
+    → parseImagesFromHtml(html) → base64画像を各月に復元
+  → useCalendarStore.setState(settings + images)
+  → プレビューが設定・画像に基づいて更新
+```
+
+### 4.5 一時保存/復元フロー
+
+```
+一時保存ボタンクリック
+  → saveToStorage(store.getState())
+    → SavedState（PersistedCalendarSettings + useImages, images, calendarStyle）をJSON化
+    → localStorage.setItem("kalendar-user-settings", json)
+    → QuotaExceededError時はエラーメッセージ表示
+
+復元ボタンクリック
+  → 確認ダイアログ
+  → loadFromStorage()
+    → localStorage.getItem → JSON.parse → version検証
+  → useCalendarStore.setState(loaded)
 ```
 
 ---
@@ -387,7 +438,8 @@ const DEFAULTS = {
   THEME_ID: "classic",
   FONT_ID: "montserrat",
   FONT_WEIGHT: 400,
-  IMAGE_RATIO: "50:50",
+  IMAGE_PERCENT: 50,
+  IMAGE_POSITION: "top",
   PAGE_LAYOUT: "1-month",
 };
 
