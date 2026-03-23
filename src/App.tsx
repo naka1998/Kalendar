@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen flex-col">
-      <Header onSettingsToggle={() => setSettingsOpen(true)} />
+      <Header />
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop sidebar */}
         <div className="hidden md:block">
@@ -27,6 +27,27 @@ export default function App() {
 
         <PreviewArea />
       </div>
+
+      {/* Mobile FAB — settings button */}
+      <button
+        onClick={() => setSettingsOpen(true)}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-2xl bg-gradient-to-br from-primary to-primary-container px-5 py-3 text-sm font-semibold text-on-primary shadow-lg transition-transform hover:scale-105 active:scale-95 md:hidden"
+      >
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+          />
+        </svg>
+        設定
+      </button>
 
       {/* Mobile bottom sheet */}
       <BottomSheet open={settingsOpen} onClose={() => setSettingsOpen(false)}>

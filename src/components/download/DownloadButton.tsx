@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { generateSingleHtml } from "@/lib/htmlGenerator";
 import { generateZip } from "@/lib/zipGenerator";
@@ -70,11 +70,31 @@ function openPrintWindow(html: string) {
   };
 }
 
-export function DownloadButton() {
-  const [mode, setMode] = useState<DownloadMode>("pdf");
-  const [downloading, setDownloading] = useState(false);
+const MODES: { value: DownloadMode; label: string; description: string }[] = [
+  { value: "pdf", label: "PDF", description: "印刷ダイアログからPDF保存" },
+  { value: "single-html", label: "HTML", description: "単一HTMLファイル（画像埋め込み）" },
+  { value: "zip", label: "ZIP", description: "HTML + 画像ファイル" },
+];
 
-  const handleDownload = useCallback(async () => {
+export function DownloadButton() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [menuOpen]);
+
+  const handleExport = useCallback(async (mode: DownloadMode) => {
+    setMenuOpen(false);
     setDownloading(true);
     try {
       const store = useCalendarStore.getState();
@@ -94,36 +114,33 @@ export function DownloadButton() {
     } finally {
       setDownloading(false);
     }
-  }, [mode]);
-
-  const modes: { value: DownloadMode; label: string }[] = [
-    { value: "pdf", label: "PDF" },
-    { value: "single-html", label: "HTML" },
-    { value: "zip", label: "ZIP" },
-  ];
+  }, []);
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex rounded-lg bg-surface-container-high p-0.5">
-        {modes.map((m) => (
-          <button
-            key={m.value}
-            onClick={() => setMode(m.value)}
-            className={`rounded-md px-2 py-1 text-[10px] font-medium transition-all ${
-              mode === m.value ? "bg-surface text-on-surface shadow-sm" : "text-on-surface-variant"
-            }`}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
+    <div ref={menuRef} className="relative">
       <button
-        onClick={() => void handleDownload()}
+        onClick={() => setMenuOpen(!menuOpen)}
         disabled={downloading}
         className="rounded-xl bg-gradient-to-br from-primary to-primary-container px-4 py-2 text-sm font-semibold text-on-primary transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {downloading ? "エクスポート中..." : "エクスポート"}
       </button>
+
+      {/* Dropdown menu */}
+      {menuOpen && (
+        <div className="glass-panel absolute right-0 top-full z-50 mt-2 w-64 rounded-xl p-1 shadow-lg">
+          {MODES.map((m) => (
+            <button
+              key={m.value}
+              onClick={() => void handleExport(m.value)}
+              className="flex w-full flex-col items-start rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-surface-container-high"
+            >
+              <span className="text-sm font-medium text-on-surface">{m.label}</span>
+              <span className="text-[11px] text-on-surface-variant">{m.description}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
