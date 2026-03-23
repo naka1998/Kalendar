@@ -37,9 +37,9 @@ export const THEMES: ColorTheme[] = [
     colors: {
       background: "#1F2937",
       text: "#F9FAFB",
-      sunday: "#FCA5A5",
-      saturday: "#93C5FD",
-      holidayMark: "#FCA5A5",
+      sunday: "#F87171",
+      saturday: "#60A5FA",
+      holidayMark: "#F87171",
       headerRule: "#4B5563",
       gridRule: "#374151",
       weekdayHeader: "#9CA3AF",
