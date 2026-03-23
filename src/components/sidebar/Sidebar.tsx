@@ -22,7 +22,7 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
         </p>
       )}
 
-      <Accordion defaultValue={["basic"]} className="space-y-2">
+      <Accordion multiple defaultValue={["basic"]} className="space-y-2">
         <AccordionItem value="basic" className="border-none">
           <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
             基本設定
