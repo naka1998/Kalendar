@@ -16,8 +16,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    "baseUrl": ".",
+    "noUncheckedSideEffectImports": false,
+    "types": ["vitest/globals"],
     "paths": {
       "@/*": ["./src/*"]
     }

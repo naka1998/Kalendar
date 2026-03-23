@@ -1,0 +1,131 @@
+import type { HtmlGeneratorInput, PageData, HolidayMarkStyle } from "@/stores/types";
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function renderHolidayMark(style: HolidayMarkStyle, color: string): string {
+  switch (style) {
+    case "dot":
+      return `<span style="display:block;text-align:center;font-size:6px;line-height:1;color:${color}">·</span>`;
+    case "circle":
+    case "underline":
+    case "color-only":
+      return "";
+  }
+}
+
+function renderDayCell(page: PageData, ri: number, ci: number, totalRows: number): string {
+  const cell = page.grid[ri][ci];
+  if (!cell.date || !cell.isCurrentMonth) {
+    return `<div style="padding:8px 0"></div>`;
+  }
+
+  let textColor = page.theme.colors.text;
+  if (cell.isHoliday || cell.isSunday) textColor = page.theme.colors.sunday;
+  else if (cell.isSaturday) textColor = page.theme.colors.saturday;
+
+  const isCircle = cell.isHoliday && page.holidayMarkStyle === "circle";
+  const isUnderline = cell.isHoliday && page.holidayMarkStyle === "underline";
+
+  const borderBottom =
+    ri < totalRows - 1 ? `border-bottom:1px solid ${page.theme.colors.gridRule};` : "";
+
+  let spanStyle = `color:${textColor};display:flex;align-items:center;justify-content:center;width:24px;height:24px;font-size:12px;`;
+  if (isCircle)
+    spanStyle += `border-radius:50%;border:1.5px solid ${page.theme.colors.holidayMark};`;
+  if (isUnderline) spanStyle += `border-bottom:2px solid ${page.theme.colors.holidayMark};`;
+
+  const mark = cell.isHoliday
+    ? renderHolidayMark(page.holidayMarkStyle, page.theme.colors.holidayMark)
+    : "";
+
+  return `<div style="display:flex;flex-direction:column;align-items:center;padding:8px 0;${borderBottom}"><span style="${spanStyle}">${cell.dayOfMonth}</span>${mark}</div>`;
+}
+
+function renderPage(
+  page: PageData,
+  orientation: string,
+  fontFamily: string,
+  fontWeight: number,
+): string {
+  const { colors } = page.theme;
+  const width = orientation === "portrait" ? "210mm" : "297mm";
+  const height = orientation === "portrait" ? "297mm" : "210mm";
+
+  let imageHtml = "";
+  if (page.imageBase64) {
+    const [imgStr, gridStr] = page.imageRatio.split(":");
+    const imgPct = Number(imgStr);
+    const gridPct = Number(gridStr);
+    imageHtml = `<div style="height:${imgPct}%;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64)}" style="width:100%;height:100%;object-fit:contain" /></div><div style="height:${gridPct}%;padding:16px 24px;overflow:hidden">`;
+  } else {
+    imageHtml = `<div style="height:100%;padding:24px;">`;
+  }
+
+  let gridHtml = "";
+  // Month label
+  gridHtml += `<div style="color:${colors.monthLabel};font-size:24px;font-weight:800;letter-spacing:-0.05em;margin-bottom:8px">${escapeHtml(page.monthLabel)}</div>`;
+  // Header rule
+  gridHtml += `<div style="border-bottom:1px solid ${colors.headerRule};margin-bottom:8px"></div>`;
+  // Weekday headers
+  gridHtml += `<div style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px">`;
+  for (const header of page.weekdayHeaders) {
+    gridHtml += `<div style="text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:${colors.weekdayHeader};padding:4px 0">${escapeHtml(header)}</div>`;
+  }
+  gridHtml += `</div>`;
+  // Day grid
+  gridHtml += `<div style="display:grid;grid-template-columns:repeat(7,1fr)">`;
+  for (let ri = 0; ri < page.grid.length; ri++) {
+    for (let ci = 0; ci < page.grid[ri].length; ci++) {
+      gridHtml += renderDayCell(page, ri, ci, page.grid.length);
+    }
+  }
+  gridHtml += `</div>`;
+
+  return `<div class="page" style="width:${width};height:${height};background:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${imageHtml}${gridHtml}</div></div>`;
+}
+
+export function generateSingleHtml(input: HtmlGeneratorInput): string {
+  const { pages, orientation, fontFamily, fontWeight, googleFontsUrl } = input;
+  const size = orientation === "portrait" ? "A4 portrait" : "A4 landscape";
+
+  let pagesHtml = "";
+  for (const page of pages) {
+    pagesHtml += renderPage(page, orientation, fontFamily, fontWeight);
+  }
+
+  return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Calendar</title>
+<link href="${escapeHtml(googleFontsUrl)}" rel="stylesheet">
+<style>
+@page { size: ${size}; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.page:last-child { page-break-after: auto; }
+</style>
+</head>
+<body>
+${pagesHtml}
+</body>
+</html>`;
+}
+
+export function generateExternalHtml(input: HtmlGeneratorInput, imageFolder: string): string {
+  const modifiedPages = input.pages.map((page, i) => {
+    if (!page.imageBase64) return page;
+    const ext = page.imageBase64.startsWith("data:image/png") ? "png" : "jpg";
+    return {
+      ...page,
+      imageBase64: `${imageFolder}/${String(i).padStart(2, "0")}.${ext}`,
+    };
+  });
+  return generateSingleHtml({ ...input, pages: modifiedPages });
+}

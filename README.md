@@ -19,17 +19,17 @@
 
 ## 技術スタック
 
-| カテゴリ | 技術 |
-|---------|------|
-| フレームワーク | React 19 + TypeScript |
-| ビルドツール | [Vite+](https://viteplus.dev/) (Vite 8 + Rolldown) |
-| スタイリング | Tailwind CSS v4 |
-| UIコンポーネント | shadcn/ui |
-| 状態管理 | Zustand |
-| Lint / Format | Oxlint + Oxfmt (Vite+内蔵) |
-| 型チェック | tsgo (Vite+内蔵) |
-| テスト | Vitest + @testing-library/react + Playwright |
-| ZIP生成 | JSZip |
+| カテゴリ         | 技術                                               |
+| ---------------- | -------------------------------------------------- |
+| フレームワーク   | React 19 + TypeScript                              |
+| ビルドツール     | [Vite+](https://viteplus.dev/) (Vite 8 + Rolldown) |
+| スタイリング     | Tailwind CSS v4                                    |
+| UIコンポーネント | shadcn/ui                                          |
+| 状態管理         | Zustand                                            |
+| Lint / Format    | Oxlint + Oxfmt (Vite+内蔵)                         |
+| 型チェック       | tsgo (Vite+内蔵)                                   |
+| テスト           | Vitest + @testing-library/react + Playwright       |
+| ZIP生成          | JSZip                                              |
 
 ## 前提条件
 
@@ -117,6 +117,7 @@ npx playwright test
 ```
 
 カバレッジ目標:
+
 - `lib/`（ユーティリティ）: 90%以上
 - `stores/`: 85%以上
 - `hooks/`: 80%以上
@@ -125,6 +126,7 @@ npx playwright test
 ## デプロイ
 
 静的ホスティングのみで運用可能。`dist/` フォルダを以下のいずれかにデプロイ:
+
 - GitHub Pages
 - Cloudflare Pages
 - Vercel

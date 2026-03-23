@@ -10,4 +10,10 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: [],
+    exclude: ["tests/e2e/**", "node_modules/**"],
+  },
 });

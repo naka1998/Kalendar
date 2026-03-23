@@ -1,0 +1,36 @@
+export const A4 = {
+  WIDTH_MM: 210,
+  HEIGHT_MM: 297,
+  PORTRAIT_RATIO: 210 / 297,
+  LANDSCAPE_RATIO: 297 / 210,
+} as const;
+
+export const DEFAULTS = {
+  START_MONTH: "2026-04",
+  END_MONTH: "2027-03",
+  ORIENTATION: "portrait" as const,
+  WEEK_START: "sunday" as const,
+  WEEKDAY_FORMAT: "en-short" as const,
+  MONTH_LABEL_FORMAT: "yyyy.mm" as const,
+  HOLIDAY_MARK_STYLE: "dot" as const,
+  THEME_ID: "classic",
+  FONT_ID: "montserrat",
+  FONT_WEIGHT: 400 as const,
+  IMAGE_RATIO: "50:50" as const,
+  PAGE_LAYOUT: "1-month" as const,
+} as const;
+
+export const IMAGE = {
+  MAX_FILE_SIZE: 10 * 1024 * 1024,
+  MAX_DIMENSION: 2400,
+  JPEG_QUALITY: 0.85,
+  ACCEPTED_TYPES: ["image/jpeg", "image/png"],
+} as const;
+
+export const STORAGE_KEYS = {
+  HOLIDAYS_DATA: "kalendar-holidays-data",
+  HOLIDAYS_FETCHED_AT: "kalendar-holidays-fetched-at",
+  USER_SETTINGS: "kalendar-user-settings",
+} as const;
+
+export const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;

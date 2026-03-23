@@ -5,6 +5,7 @@
 Kalendar は完全クライアントサイドのSPAで、印刷用の壁掛けカレンダーHTMLを生成する。ユーザーがレイアウト、画像、祝日、カラーテーマを設定し、単一HTMLファイル（またはZIP）としてダウンロードしてブラウザ印刷する。
 
 **設計原則**:
+
 - ビジネスロジックは全て純粋関数で実装（DOMやモック不要でテスト可能）
 - 外部API（fetch, localStorage, Canvas）は依存注入で抽象化
 - Container/Presentational コンポーネント分離
@@ -17,13 +18,13 @@ Kalendar は完全クライアントサイドのSPAで、印刷用の壁掛け�
 ### 2.1 設定型
 
 ```typescript
-type Orientation = 'portrait' | 'landscape';
-type WeekStart = 'sunday' | 'monday';
-type WeekdayFormat = 'ja' | 'en-short' | 'en-full';
-type MonthLabelFormat = 'yyyy.mm' | 'month-yyyy' | 'ja';
-type HolidayMarkStyle = 'dot' | 'circle' | 'underline' | 'color-only';
-type ImageRatio = '60:40' | '50:50' | '70:30';
-type PageLayout = '1-month' | '2-month';
+type Orientation = "portrait" | "landscape";
+type WeekStart = "sunday" | "monday";
+type WeekdayFormat = "ja" | "en-short" | "en-full";
+type MonthLabelFormat = "yyyy.mm" | "month-yyyy" | "ja";
+type HolidayMarkStyle = "dot" | "circle" | "underline" | "color-only";
+type ImageRatio = "60:40" | "50:50" | "70:30";
+type PageLayout = "1-month" | "2-month";
 type FontWeight = 300 | 400 | 600;
 ```
 
@@ -34,15 +35,15 @@ interface ColorTheme {
   id: string;
   name: string;
   colors: {
-    background: string;      // ページ背景色
-    text: string;            // 平日文字色
-    sunday: string;          // 日曜・祝日文字色
-    saturday: string;        // 土曜文字色
-    holidayMark: string;     // 祝日記号色
-    headerRule: string;      // 月ヘッダー罫線色
-    gridRule: string;        // 行区切り罫線色
-    weekdayHeader: string;   // 曜日ヘッダー文字色
-    monthLabel: string;      // 月表記文字色
+    background: string; // ページ背景色
+    text: string; // 平日文字色
+    sunday: string; // 日曜・祝日文字色
+    saturday: string; // 土曜文字色
+    holidayMark: string; // 祝日記号色
+    headerRule: string; // 月ヘッダー罫線色
+    gridRule: string; // 行区切り罫線色
+    weekdayHeader: string; // 曜日ヘッダー文字色
+    monthLabel: string; // 月表記文字色
   };
 }
 ```
@@ -51,7 +52,7 @@ interface ColorTheme {
 
 ```typescript
 interface DayCell {
-  date: string | null;       // "YYYY-MM-DD" または null（空セル）
+  date: string | null; // "YYYY-MM-DD" または null（空セル）
   dayOfMonth: number | null;
   isCurrentMonth: boolean;
   isHoliday: boolean;
@@ -65,7 +66,7 @@ interface DayCell {
 
 ```typescript
 interface HtmlGeneratorInput {
-  pages: PageData[];           // 月ごとのページデータ
+  pages: PageData[]; // 月ごとのページデータ
   orientation: Orientation;
   fontFamily: string;
   fontWeight: FontWeight;
@@ -117,15 +118,15 @@ interface PageData {
 
 ### 3.2 レイヤー別テスト容易性
 
-| レイヤー | テスト手法 | 必要なモック |
-|---------|-----------|-------------|
-| ロジック（lib/ 純粋関数） | 入力→出力のアサーション | なし |
-| サービス（lib/ DI） | モックfetcher/cache/resizer注入 | インターフェースモックのみ |
-| ストア | setter呼び出し → 状態検証 | なし |
-| フック | モックサービスをパラメータ注入 | サービスモック |
-| Presentational | propsで描画 → DOM検証 | なし |
-| Container | ストアとの統合テスト | 最小限 |
-| E2E | Playwrightブラウザテスト | なし（実アプリ） |
+| レイヤー                  | テスト手法                      | 必要なモック               |
+| ------------------------- | ------------------------------- | -------------------------- |
+| ロジック（lib/ 純粋関数） | 入力→出力のアサーション         | なし                       |
+| サービス（lib/ DI）       | モックfetcher/cache/resizer注入 | インターフェースモックのみ |
+| ストア                    | setter呼び出し → 状態検証       | なし                       |
+| フック                    | モックサービスをパラメータ注入  | サービスモック             |
+| Presentational            | propsで描画 → DOM検証           | なし                       |
+| Container                 | ストアとの統合テスト            | 最小限                     |
+| E2E                       | Playwrightブラウザテスト        | なし（実アプリ）           |
 
 ### 3.3 コンポーネントアーキテクチャ
 
@@ -146,11 +147,13 @@ App.tsx
 ```
 
 **プレゼンテーショナルコンポーネント**（`CalendarPage`, `CalendarGrid`）:
+
 - 全データをpropsで受け取る
 - テーマカラーにはインラインスタイルを使用（Tailwindではない）
 - ストアへの依存ゼロ — propsだけでテスト可能
 
 **コンテナコンポーネント**（`CalendarPageContainer`, `CalendarGridContainer`）:
+
 - Zustandストアから読み取り
 - `lib/` の純粋関数で派生データを計算
 - 計算結果をプレゼンテーショナルコンポーネントに渡す
@@ -209,26 +212,26 @@ App.tsx
 
 ## 5. テーマ定義
 
-| テーマ | 背景 | 文字 | 日曜 | 土曜 |
-|-------|------|------|------|------|
-| Classic | #FFFFFF | #1A1A1A | #DC2626 | #2563EB |
+| テーマ     | 背景    | 文字    | 日曜    | 土曜    |
+| ---------- | ------- | ------- | ------- | ------- |
+| Classic    | #FFFFFF | #1A1A1A | #DC2626 | #2563EB |
 | Monochrome | #FFFFFF | #1A1A1A | #4B5563 | #6B7280 |
-| Dark | #1F2937 | #F9FAFB | #FCA5A5 | #93C5FD |
-| Cream | #FFFBEB | #78350F | #DC2626 | #1D4ED8 |
-| Forest | #1A2E1A | #D1FAE5 | #FCA5A5 | #93C5FD |
-| Minimal | #FFFFFF | #9CA3AF | #6B7280 | #9CA3AF |
+| Dark       | #1F2937 | #F9FAFB | #FCA5A5 | #93C5FD |
+| Cream      | #FFFBEB | #78350F | #DC2626 | #1D4ED8 |
+| Forest     | #1A2E1A | #D1FAE5 | #FCA5A5 | #93C5FD |
+| Minimal    | #FFFFFF | #9CA3AF | #6B7280 | #9CA3AF |
 
 ---
 
 ## 6. フォントプリセット
 
-| フォント | ウェイト | Google Fonts URL |
-|---------|---------|-----------------|
-| Montserrat | 300, 400, 600 | `Montserrat:wght@300;400;600` |
-| Inter | 300, 400, 600 | `Inter:wght@300;400;600` |
-| Noto Sans JP | 300, 400, 600 | `Noto+Sans+JP:wght@300;400;600` |
+| フォント      | ウェイト      | Google Fonts URL                 |
+| ------------- | ------------- | -------------------------------- |
+| Montserrat    | 300, 400, 600 | `Montserrat:wght@300;400;600`    |
+| Inter         | 300, 400, 600 | `Inter:wght@300;400;600`         |
+| Noto Sans JP  | 300, 400, 600 | `Noto+Sans+JP:wght@300;400;600`  |
 | IBM Plex Sans | 300, 400, 600 | `IBM+Plex+Sans:wght@300;400;600` |
-| Lato | 300, 400, 700 | `Lato:wght@300;400;700` |
+| Lato          | 300, 400, 700 | `Lato:wght@300;400;700`          |
 
 ---
 
@@ -237,39 +240,53 @@ App.tsx
 ```html
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>Calendar 2026.04 - 2027.03</title>
-  <link href="https://fonts.googleapis.com/css2?family=..." rel="stylesheet">
-  <style>
-    @page { size: A4 portrait; margin: 0; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-    .page {
-      width: 210mm; height: 297mm;
-      page-break-after: always;
-      overflow: hidden;
-    }
-    .grid { display: grid; grid-template-columns: repeat(7, 1fr); }
-  </style>
-</head>
-<body>
-  <div class="page" style="background: #FFFFFF;">
-    <div class="image-area">
-      <img src="data:image/jpeg;base64,..." />
-    </div>
-    <div class="calendar-area">
-      <div class="month-label" style="color: #111827;">2026.04</div>
-      <div class="grid">
-        <div class="weekday-header">Sun</div>
-        <!-- ... 7ヘッダー ... -->
-        <div class="day-cell" style="color: #DC2626;">1<span>·</span></div>
-        <!-- ... 日セル ... -->
+  <head>
+    <meta charset="UTF-8" />
+    <title>Calendar 2026.04 - 2027.03</title>
+    <link href="https://fonts.googleapis.com/css2?family=..." rel="stylesheet" />
+    <style>
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .page {
+        width: 210mm;
+        height: 297mm;
+        page-break-after: always;
+        overflow: hidden;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page" style="background: #FFFFFF;">
+      <div class="image-area">
+        <img src="data:image/jpeg;base64,..." />
+      </div>
+      <div class="calendar-area">
+        <div class="month-label" style="color: #111827;">2026.04</div>
+        <div class="grid">
+          <div class="weekday-header">Sun</div>
+          <!-- ... 7ヘッダー ... -->
+          <div class="day-cell" style="color: #DC2626;">1<span>·</span></div>
+          <!-- ... 日セル ... -->
+        </div>
       </div>
     </div>
-  </div>
-  <!-- 以降のページ... -->
-</body>
+    <!-- 以降のページ... -->
+  </body>
 </html>
 ```
 
@@ -318,34 +335,34 @@ Zustandストアは同期setterのみ。非同期処理（API取得、画像リ�
 const A4 = {
   WIDTH_MM: 210,
   HEIGHT_MM: 297,
-  PORTRAIT_RATIO: 210 / 297,   // ≈ 0.707
-  LANDSCAPE_RATIO: 297 / 210,  // ≈ 1.414
+  PORTRAIT_RATIO: 210 / 297, // ≈ 0.707
+  LANDSCAPE_RATIO: 297 / 210, // ≈ 1.414
 };
 
 // デフォルト値
 const DEFAULTS = {
-  START_MONTH: '2026-04',
-  END_MONTH: '2027-03',
-  ORIENTATION: 'portrait',
-  WEEK_START: 'sunday',
-  WEEKDAY_FORMAT: 'en-short',
-  MONTH_LABEL_FORMAT: 'yyyy.mm',
-  HOLIDAY_MARK_STYLE: 'dot',
-  THEME_ID: 'classic',
-  FONT_ID: 'montserrat',
+  START_MONTH: "2026-04",
+  END_MONTH: "2027-03",
+  ORIENTATION: "portrait",
+  WEEK_START: "sunday",
+  WEEKDAY_FORMAT: "en-short",
+  MONTH_LABEL_FORMAT: "yyyy.mm",
+  HOLIDAY_MARK_STYLE: "dot",
+  THEME_ID: "classic",
+  FONT_ID: "montserrat",
   FONT_WEIGHT: 400,
-  IMAGE_RATIO: '50:50',
-  PAGE_LAYOUT: '1-month',
+  IMAGE_RATIO: "50:50",
+  PAGE_LAYOUT: "1-month",
 };
 
 // 画像制約
 const IMAGE = {
-  MAX_FILE_SIZE: 10 * 1024 * 1024,  // 10MB
-  MAX_DIMENSION: 2400,               // px
+  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  MAX_DIMENSION: 2400, // px
   JPEG_QUALITY: 0.85,
-  ACCEPTED_TYPES: ['image/jpeg', 'image/png'],
+  ACCEPTED_TYPES: ["image/jpeg", "image/png"],
 };
 
 // キャッシュTTL
-const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;  // 7日間
+const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7日間
 ```
