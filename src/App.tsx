@@ -21,7 +21,7 @@ export default function App() {
       <Header />
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop sidebar */}
-        <div className="hidden md:block">
+        <div className="hidden h-full min-h-0 md:block">
           <Sidebar />
         </div>
 

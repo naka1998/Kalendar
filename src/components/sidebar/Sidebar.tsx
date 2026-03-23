@@ -12,7 +12,7 @@ import { SettingsActions } from "./SettingsActions";
 export function Sidebar({ mobile }: { mobile?: boolean }) {
   const containerClass = mobile
     ? "flex flex-col"
-    : "flex w-80 shrink-0 flex-col overflow-y-auto bg-surface-container-low p-6";
+    : "flex h-full w-80 shrink-0 flex-col overflow-y-auto bg-surface-container-low p-6";
 
   return (
     <aside className={containerClass}>
