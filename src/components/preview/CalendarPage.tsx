@@ -10,6 +10,7 @@ import type {
 } from "@/stores/types";
 import { CalendarGrid } from "./CalendarGrid";
 import { calcImageGridRatio } from "@/lib/layoutUtils";
+import { A4 } from "@/lib/constants";
 
 export interface CalendarPageProps {
   monthKey: string;
@@ -44,7 +45,8 @@ export function CalendarPage({
   onImageRemove,
 }: CalendarPageProps) {
   const { colors } = theme;
-  const aspectRatio = orientation === "portrait" ? "210 / 297" : "297 / 210";
+  const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
+  const pageHeight = orientation === "portrait" ? A4.PORTRAIT_HEIGHT_PX : A4.LANDSCAPE_HEIGHT_PX;
   const { imagePercent, gridPercent } = calcImageGridRatio(imageRatio, !!imageBase64);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -80,14 +82,15 @@ export function CalendarPage({
   // Show image area only when images are enabled (onImageUpload provided)
   const imagesEnabled = !!onImageUpload;
   const showImageArea = imagesEnabled && (imagePercent > 0 || !imageBase64);
-  const effectiveImagePercent = imageBase64 ? imagePercent : 40;
-  const effectiveGridPercent = imageBase64 ? gridPercent : 60;
+  const effectiveImagePercent = imageBase64 ? imagePercent : 25;
+  const effectiveGridPercent = imageBase64 ? gridPercent : 75;
 
   return (
     <div
-      className="w-full overflow-hidden rounded-sm"
+      className="overflow-hidden rounded-sm"
       style={{
-        aspectRatio,
+        width: `${pageWidth}px`,
+        height: `${pageHeight}px`,
         background: colors.background,
         boxShadow: "var(--shadow-a4)",
       }}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { generateMonthRange, formatMonthLabel } from "@/lib/dateUtils";
 import { CalendarPageContainer } from "./CalendarPageContainer";
+import { ScaledPage } from "./ScaledPage";
 
 export function PreviewArea() {
   const startMonth = useCalendarStore((s) => s.startMonth);
@@ -76,7 +77,7 @@ export function PreviewArea() {
         <span className="mr-2 text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           {formatMonthLabel(activeMonth, monthLabelFormat)}
         </span>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex gap-1 overflow-x-auto scrollbar-none">
           {months.map((m) => {
             const [, mm] = m.split("-");
             return (
@@ -97,11 +98,13 @@ export function PreviewArea() {
       </div>
 
       {/* Scrollable preview */}
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-8">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 md:p-8">
         <div className="mx-auto flex max-w-2xl flex-col gap-8">
           {months.map((monthKey) => (
             <div key={monthKey} ref={setPageRef(monthKey)} data-month={monthKey}>
-              <CalendarPageContainer monthKey={monthKey} />
+              <ScaledPage>
+                <CalendarPageContainer monthKey={monthKey} />
+              </ScaledPage>
             </div>
           ))}
         </div>

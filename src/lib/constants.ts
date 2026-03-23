@@ -3,6 +3,14 @@ export const A4 = {
   HEIGHT_MM: 297,
   PORTRAIT_RATIO: 210 / 297,
   LANDSCAPE_RATIO: 297 / 210,
+  /** Fixed pixel width for A4 portrait preview (210mm at 96dpi) */
+  PORTRAIT_WIDTH_PX: 794,
+  /** Fixed pixel height for A4 portrait preview (297mm at 96dpi) */
+  PORTRAIT_HEIGHT_PX: 1123,
+  /** Fixed pixel width for A4 landscape preview (297mm at 96dpi) */
+  LANDSCAPE_WIDTH_PX: 1123,
+  /** Fixed pixel height for A4 landscape preview (210mm at 96dpi) */
+  LANDSCAPE_HEIGHT_PX: 794,
 } as const;
 
 export const DEFAULTS = {
