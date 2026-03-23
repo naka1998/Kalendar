@@ -7,6 +7,7 @@ import {
 import { BasicSection } from "./BasicSection";
 import { HolidaySection } from "./HolidaySection";
 import { DesignSection } from "./DesignSection";
+import { ImageSection } from "./ImageSection";
 import { SettingsActions } from "./SettingsActions";
 
 export function Sidebar({ mobile }: { mobile?: boolean }) {
@@ -47,6 +48,15 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
           </AccordionTrigger>
           <AccordionContent className="px-3 pt-2">
             <DesignSection />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="images" className="border-none">
+          <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
+            画像
+          </AccordionTrigger>
+          <AccordionContent className="px-3 pt-2">
+            <ImageSection />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
