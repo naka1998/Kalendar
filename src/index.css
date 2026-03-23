@@ -151,6 +151,15 @@
   }
 }
 
+/* --- Scrollbar Utility --- */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* --- Focus States (Accessibility) --- */
 *:focus-visible {
   outline: 2px solid #005bc4;
