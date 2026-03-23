@@ -125,12 +125,14 @@ export function CalendarPage({
 
   const showDivider = showImageArea && !!imageBase64 && !!dividerProps;
 
-  const alignItemsClass =
+  // Content alignment: applied inside each area as justify-content,
+  // not as align-items on the container (which would shrink children).
+  const justifyContentClass =
     calendarStyle.contentAlign === "start"
-      ? "items-start"
+      ? "justify-start"
       : calendarStyle.contentAlign === "end"
-        ? "items-end"
-        : "items-center";
+        ? "justify-end"
+        : "justify-center";
 
   const imageAreaElement = showImageArea && (
     <div
@@ -235,8 +237,9 @@ export function CalendarPage({
   const calendarAreaElement = (
     <div
       data-testid="calendar-area"
-      className="flex-1 overflow-hidden px-6 py-4"
+      className={`flex flex-col overflow-hidden px-6 py-4 ${justifyContentClass}`}
       style={{
+        flex: 1,
         [sizeProperty]: imageBase64 ? `${placeholderGridPercent}%` : undefined,
       }}
     >
@@ -265,7 +268,7 @@ export function CalendarPage({
     >
       <div
         data-testid="page-container"
-        className={`flex h-full ${isDividerDragging ? "select-none" : ""} ${alignItemsClass}`}
+        className={`flex h-full ${isDividerDragging ? "select-none" : ""}`}
         style={{
           flexDirection,
           paddingTop:

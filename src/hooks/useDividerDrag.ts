@@ -41,7 +41,7 @@ export function useDividerDrag({
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       e.preventDefault();
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      const target = e.target as HTMLElement;
 
       startRef.current = {
         x: e.clientX,
@@ -100,12 +100,15 @@ export function useDividerDrag({
         setIsDragging(false);
         setLivePercent(null);
 
-        document.removeEventListener("pointermove", handlePointerMove);
-        document.removeEventListener("pointerup", handlePointerUp);
+        target.removeEventListener("pointermove", handlePointerMove);
+        target.removeEventListener("pointerup", handlePointerUp);
+        target.removeEventListener("lostpointercapture", handlePointerUp);
       };
 
-      document.addEventListener("pointermove", handlePointerMove);
-      document.addEventListener("pointerup", handlePointerUp);
+      target.setPointerCapture(e.pointerId);
+      target.addEventListener("pointermove", handlePointerMove);
+      target.addEventListener("pointerup", handlePointerUp);
+      target.addEventListener("lostpointercapture", handlePointerUp);
     },
     [currentPercent, imagePosition, pageWidth, pageHeight, scale, onPercentCommit],
   );

@@ -159,24 +159,24 @@ describe("generateSingleHtml", () => {
     expect(gridIndex).toBeLessThan(imgIndex);
   });
 
-  it("applies align-items center for horizontal layout with center align", () => {
+  it("applies justify-content center for center align in grid container", () => {
     const input = createTestInput({
       imageBase64: "data:image/jpeg;base64,abc123",
       imagePosition: "left",
     });
     input.calendarStyle = { contentAlign: "center" };
     const html = generateSingleHtml(input);
-    expect(html).toContain("align-items:center");
+    expect(html).toContain("justify-content:center");
   });
 
-  it("applies align-items flex-start for start align", () => {
+  it("applies justify-content flex-start for start align", () => {
     const input = createTestInput({
       imageBase64: "data:image/jpeg;base64,abc123",
       imagePosition: "left",
     });
     input.calendarStyle = { contentAlign: "start" };
     const html = generateSingleHtml(input);
-    expect(html).toContain("align-items:flex-start");
+    expect(html).toContain("justify-content:flex-start");
   });
 
   it("applies page margin top", () => {
