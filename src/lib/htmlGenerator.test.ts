@@ -13,7 +13,8 @@ function createTestInput(overrides?: Partial<PageData>): HtmlGeneratorInput {
     theme: THEMES[0],
     holidayMarkStyle: "dot",
     imageBase64: null,
-    imageRatio: "50:50",
+    imagePercent: 50,
+    imagePosition: "top" as const,
     ...overrides,
   };
   return {
@@ -112,6 +113,50 @@ describe("generateSingleHtml", () => {
     );
     expect(html).toContain("border-radius:50%");
     expect(html).toContain("width:6px;height:6px");
+  });
+
+  it("renders image area with custom percent", () => {
+    const html = generateSingleHtml(
+      createTestInput({ imageBase64: "data:image/jpeg;base64,abc123", imagePercent: 65 }),
+    );
+    expect(html).toContain("height:65%");
+    expect(html).toContain("height:35%");
+  });
+
+  it("renders bottom layout with grid before image", () => {
+    const html = generateSingleHtml(
+      createTestInput({
+        imageBase64: "data:image/jpeg;base64,abc123",
+        imagePosition: "bottom",
+      }),
+    );
+    // In bottom layout, grid HTML should appear before image HTML
+    const gridIndex = html.indexOf("grid-template-columns:repeat(7");
+    const imgIndex = html.indexOf("object-fit:contain");
+    expect(gridIndex).toBeLessThan(imgIndex);
+  });
+
+  it("renders horizontal layout with flex-direction row", () => {
+    const html = generateSingleHtml(
+      createTestInput({
+        imageBase64: "data:image/jpeg;base64,abc123",
+        imagePosition: "left",
+      }),
+    );
+    expect(html).toContain("display:flex");
+    expect(html).toContain("width:50%");
+  });
+
+  it("renders right layout with grid before image", () => {
+    const html = generateSingleHtml(
+      createTestInput({
+        imageBase64: "data:image/jpeg;base64,abc123",
+        imagePosition: "right",
+      }),
+    );
+    const gridIndex = html.indexOf("grid-template-columns:repeat(7");
+    const imgIndex = html.indexOf("object-fit:contain");
+    expect(gridIndex).toBeLessThan(imgIndex);
   });
 
   it("renders circle holiday marks", () => {

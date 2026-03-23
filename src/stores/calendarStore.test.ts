@@ -24,7 +24,8 @@ describe("calendarStore", () => {
       fontWeight: DEFAULTS.FONT_WEIGHT,
       useImages: true,
       images: {},
-      imageRatio: DEFAULTS.IMAGE_RATIO,
+      imagePercent: DEFAULTS.IMAGE_PERCENT,
+      imagePosition: DEFAULTS.IMAGE_POSITION,
       monthThemeOverrides: {},
       calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
     });
@@ -43,7 +44,8 @@ describe("calendarStore", () => {
       expect(state.themeId).toBe("classic");
       expect(state.fontId).toBe("montserrat");
       expect(state.fontWeight).toBe(400);
-      expect(state.imageRatio).toBe("50:50");
+      expect(state.imagePercent).toBe(50);
+      expect(state.imagePosition).toBe("top");
       expect(state.pageLayout).toBe("1-month");
     });
   });
@@ -150,6 +152,40 @@ describe("calendarStore", () => {
       useCalendarStore.getState().setImage("2026-04", image);
       useCalendarStore.getState().removeImage("2026-04");
       expect(useCalendarStore.getState().images["2026-04"]).toBeUndefined();
+    });
+  });
+
+  describe("image layout actions", () => {
+    it("setImagePercent updates imagePercent", () => {
+      useCalendarStore.getState().setImagePercent(65);
+      expect(useCalendarStore.getState().imagePercent).toBe(65);
+    });
+
+    it("setImagePercent clamps value below minimum to 20", () => {
+      useCalendarStore.getState().setImagePercent(5);
+      expect(useCalendarStore.getState().imagePercent).toBe(20);
+    });
+
+    it("setImagePercent clamps value above maximum to 80", () => {
+      useCalendarStore.getState().setImagePercent(95);
+      expect(useCalendarStore.getState().imagePercent).toBe(80);
+    });
+
+    it("setImagePercent rounds to integer", () => {
+      useCalendarStore.getState().setImagePercent(55.7);
+      expect(useCalendarStore.getState().imagePercent).toBe(56);
+    });
+
+    it("setImagePosition updates imagePosition", () => {
+      useCalendarStore.getState().setImagePosition("bottom");
+      expect(useCalendarStore.getState().imagePosition).toBe("bottom");
+    });
+
+    it("setImagePosition supports left and right", () => {
+      useCalendarStore.getState().setImagePosition("left");
+      expect(useCalendarStore.getState().imagePosition).toBe("left");
+      useCalendarStore.getState().setImagePosition("right");
+      expect(useCalendarStore.getState().imagePosition).toBe("right");
     });
   });
 
