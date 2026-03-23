@@ -18,7 +18,7 @@ function SegmentedControl({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+      <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
         {label}
       </Label>
       <div className="flex rounded-lg bg-surface-container-high p-1">
@@ -67,7 +67,7 @@ export function HolidaySection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <span className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           取得状態
         </span>
         <span className={`text-xs font-medium ${statusColor}`}>{statusText}</span>
@@ -86,7 +86,7 @@ export function HolidaySection() {
       />
 
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           祝日を追加
         </Label>
         <div className="flex gap-2">
@@ -117,7 +117,7 @@ export function HolidaySection() {
 
       {store.manualHolidays.length > 0 && (
         <div className="space-y-1.5">
-          <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+          <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
             手動追加した祝日
           </Label>
           <div className="max-h-32 space-y-1 overflow-y-auto">
@@ -143,7 +143,7 @@ export function HolidaySection() {
 
       {store.removedHolidays.length > 0 && (
         <div className="space-y-1.5">
-          <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+          <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
             非表示の祝日
           </Label>
           <div className="max-h-32 space-y-1 overflow-y-auto">

@@ -73,7 +73,7 @@ export function PreviewArea() {
     <main className="flex flex-1 flex-col overflow-hidden bg-surface-container">
       {/* Month jump navigation */}
       <div className="flex items-center gap-2 border-b border-outline-variant/30 bg-surface-container-low px-6 py-2">
-        <span className="mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <span className="mr-2 text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           {formatMonthLabel(activeMonth, monthLabelFormat)}
         </span>
         <div className="flex flex-wrap gap-1">

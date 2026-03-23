@@ -17,7 +17,7 @@ function ThemeGrid() {
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+      <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
         テーマ
       </Label>
       <div className="grid grid-cols-3 gap-2">
@@ -41,7 +41,7 @@ function ThemeGrid() {
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.sunday }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.saturday }} />
             </div>
-            <span className="text-[10px] font-medium text-on-surface-variant">{t.name}</span>
+            <span className="text-xs font-medium text-on-surface-variant">{t.name}</span>
           </button>
         ))}
       </div>
@@ -65,7 +65,7 @@ export function DesignSection() {
 
       {/* Font family */}
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           フォント
         </Label>
         <Select
@@ -89,7 +89,7 @@ export function DesignSection() {
 
       {/* Font weight */}
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           太さ
         </Label>
         <div className="flex rounded-lg bg-surface-container-high p-1">
@@ -114,7 +114,7 @@ export function DesignSection() {
 
       {/* Image toggle */}
       <div className="flex items-center justify-between">
-        <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           画像を使用
         </Label>
         <button
@@ -134,7 +134,7 @@ export function DesignSection() {
       {/* Image ratio — only when images enabled */}
       {useImages && (
         <div className="space-y-1.5">
-          <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+          <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
             画像比率
           </Label>
           <div className="flex rounded-lg bg-surface-container-high p-1">

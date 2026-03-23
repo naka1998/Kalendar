@@ -136,10 +136,7 @@ export function CalendarPage({
                 <span className="text-2xl" style={{ color: colors.text, opacity: 0.2 }}>
                   +
                 </span>
-                <span
-                  className="text-[10px] font-medium"
-                  style={{ color: colors.text, opacity: 0.3 }}
-                >
+                <span className="text-xs font-medium" style={{ color: colors.text, opacity: 0.3 }}>
                   クリックまたはドラッグで画像を追加
                 </span>
               </button>

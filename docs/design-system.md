@@ -70,7 +70,7 @@ Ethereal Glass は、機能的なユーティリティとハイエンドな印�
 | Display Large | 3rem (48px)     | 2rem (32px)     | Extrabold       | tracking-tighter | 月タイトル                   |
 | Header        | 1.125rem (18px) | 1rem (16px)     | Bold            | —                | セクションタイトル           |
 | Body          | 0.875rem (14px) | 0.875rem (14px) | Medium          | —                | インタラクティブ要素、説明文 |
-| Label         | 10px            | 10px            | Bold, Uppercase | tracking-[0.3em] | メタデータ、サブヘッダー     |
+| Label         | 12px            | 12px            | Bold, Uppercase | tracking-[0.3em] | メタデータ、サブヘッダー     |
 
 ### 最小フォントサイズ
 

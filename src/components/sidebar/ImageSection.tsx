@@ -51,7 +51,7 @@ export function ImageSection() {
     <div className="space-y-4">
       {/* Month image assignment overview */}
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           画像の割り当て
         </Label>
         <div className="max-h-64 space-y-1 overflow-y-auto">
@@ -73,7 +73,7 @@ export function ImageSection() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[10px] text-on-surface-variant">
+                    <div className="flex h-full w-full items-center justify-center text-xs text-on-surface-variant">
                       —
                     </div>
                   )}
@@ -88,12 +88,12 @@ export function ImageSection() {
                 {img ? (
                   <button
                     onClick={() => removeImage(m)}
-                    className="text-[10px] text-on-surface-variant hover:text-sunday"
+                    className="text-xs text-on-surface-variant hover:text-sunday"
                   >
                     ×
                   </button>
                 ) : (
-                  <label className="cursor-pointer text-[10px] text-primary hover:underline">
+                  <label className="cursor-pointer text-xs text-primary hover:underline">
                     追加
                     <input
                       type="file"
@@ -115,7 +115,7 @@ export function ImageSection() {
 
       {/* Bulk upload */}
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           アップロード
         </Label>
         <div className="space-y-2">

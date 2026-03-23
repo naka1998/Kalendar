@@ -17,7 +17,7 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
   return (
     <aside className={containerClass}>
       {!mobile && (
-        <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <p className="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           設定
         </p>
       )}

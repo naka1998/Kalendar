@@ -35,7 +35,7 @@ function MonthSelect({
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+      <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
         {label}
       </Label>
       <div className="flex gap-2">
@@ -81,7 +81,7 @@ function SegmentedControl<T extends string>({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+      <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
         {label}
       </Label>
       <div className="flex rounded-lg bg-surface-container-high p-1">
@@ -133,7 +133,7 @@ export function BasicSection() {
       />
 
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           曜日表記
         </Label>
         <Select
@@ -154,7 +154,7 @@ export function BasicSection() {
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           月表記
         </Label>
         <Select

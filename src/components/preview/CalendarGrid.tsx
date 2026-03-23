@@ -14,7 +14,7 @@ function HolidayMark({ style, color }: { style: HolidayMarkStyle; color: string 
   switch (style) {
     case "dot":
       return (
-        <span className="block text-center text-[10px] leading-none" style={{ color }}>
+        <span className="block text-center text-xs leading-none" style={{ color }}>
           ·
         </span>
       );
@@ -56,7 +56,7 @@ export function CalendarGrid({
         {weekdayHeaders.map((header, i) => (
           <div
             key={i}
-            className="py-1 text-center text-[10px] font-bold uppercase tracking-[0.2em]"
+            className="py-1 text-center text-xs font-bold uppercase tracking-[0.2em]"
             style={{ color: colors.weekdayHeader }}
           >
             {header}
