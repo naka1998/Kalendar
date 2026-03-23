@@ -125,6 +125,13 @@ export function CalendarPage({
 
   const showDivider = showImageArea && !!imageBase64 && !!dividerProps;
 
+  const alignItemsClass =
+    calendarStyle.contentAlign === "start"
+      ? "items-start"
+      : calendarStyle.contentAlign === "end"
+        ? "items-end"
+        : "items-center";
+
   const imageAreaElement = showImageArea && (
     <div
       data-testid="image-area"
@@ -193,6 +200,15 @@ export function CalendarPage({
         isDragging={isDividerDragging}
         dividerProps={dividerProps}
       />
+      {/* Ratio indicator */}
+      <span
+        data-testid="ratio-indicator"
+        className={`pointer-events-none absolute z-10 rounded bg-black/50 px-1.5 py-0.5 text-[10px] tabular-nums text-white ${
+          horizontal ? "top-1 left-1/2 -translate-x-1/2" : "top-1/2 left-1 -translate-y-1/2"
+        }`}
+      >
+        {displayPercent}:{100 - displayPercent}
+      </span>
       {/* Position toggle button — shown on hover */}
       {onPositionChange && (
         <button
@@ -249,8 +265,12 @@ export function CalendarPage({
     >
       <div
         data-testid="page-container"
-        className={`flex h-full ${isDividerDragging ? "select-none" : ""}`}
-        style={{ flexDirection }}
+        className={`flex h-full ${isDividerDragging ? "select-none" : ""} ${alignItemsClass}`}
+        style={{
+          flexDirection,
+          paddingTop:
+            calendarStyle.pageMarginTop > 0 ? `${calendarStyle.pageMarginTop}px` : undefined,
+        }}
       >
         {imageAreaElement}
         {dividerElement}

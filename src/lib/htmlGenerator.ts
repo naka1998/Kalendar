@@ -79,11 +79,18 @@ function renderGridContainer(gridHtml: string, sizeProperty: string, sizeValue: 
   return `<div style="${sizeProperty}:${sizeValue};padding:16px 24px;overflow:hidden">${gridHtml}</div>`;
 }
 
+function alignItemsValue(align: string | undefined): string {
+  if (align === "start") return "flex-start";
+  if (align === "end") return "flex-end";
+  return "center";
+}
+
 function renderPage(
   page: PageData,
   orientation: string,
   fontFamily: string,
   fontWeight: number,
+  calendarStyle?: Partial<{ contentAlign: string; pageMarginTop: number }>,
 ): string {
   const { colors } = page.theme;
   const width = orientation === "portrait" ? "210mm" : "297mm";
@@ -94,6 +101,10 @@ function renderPage(
   const imgPct = page.imagePercent;
   const gridPct = 100 - imgPct;
   const sizeProperty = horizontal ? "width" : "height";
+  const alignItems = `align-items:${alignItemsValue(calendarStyle?.contentAlign)}`;
+  const marginTop = calendarStyle?.pageMarginTop
+    ? `padding-top:${calendarStyle.pageMarginTop}px;`
+    : "";
 
   let contentHtml: string;
 
@@ -104,8 +115,8 @@ function renderPage(
 
     const isReversed = position === "bottom" || position === "right";
     const containerStyle = horizontal
-      ? "display:flex;flex-direction:row;height:100%"
-      : "display:flex;flex-direction:column;height:100%";
+      ? `display:flex;flex-direction:row;${alignItems};height:100%`
+      : `display:flex;flex-direction:column;${alignItems};height:100%`;
 
     if (isReversed) {
       contentHtml = `<div style="${containerStyle}">${gridBlock}${imageBlock}</div>`;
@@ -117,7 +128,7 @@ function renderPage(
     contentHtml = `<div style="height:100%;padding:24px;">${gridHtml}</div>`;
   }
 
-  return `<div class="page" style="width:${width};height:${height};background:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${contentHtml}</div>`;
+  return `<div class="page" style="width:${width};height:${height};${marginTop}background:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${contentHtml}</div>`;
 }
 
 export function generateSingleHtml(input: HtmlGeneratorInput, settingsJson?: string): string {
@@ -126,7 +137,7 @@ export function generateSingleHtml(input: HtmlGeneratorInput, settingsJson?: str
 
   let pagesHtml = "";
   for (const page of pages) {
-    pagesHtml += renderPage(page, orientation, fontFamily, fontWeight);
+    pagesHtml += renderPage(page, orientation, fontFamily, fontWeight, input.calendarStyle);
   }
 
   const settingsMeta = settingsJson

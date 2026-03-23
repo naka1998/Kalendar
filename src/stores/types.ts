@@ -8,6 +8,7 @@ export type ImagePosition = "top" | "bottom" | "left" | "right";
 export type PageLayout = "1-month" | "2-month";
 export type DownloadMode = "pdf" | "single-html" | "zip";
 export type FontWeight = 300 | 400 | 600;
+export type ContentAlign = "start" | "center" | "end";
 
 // === Calendar Style ===
 export interface CalendarStyle {
@@ -16,6 +17,8 @@ export interface CalendarStyle {
   weekdayFontSize: number;
   cellPadding: number;
   headerGap: number;
+  contentAlign: ContentAlign;
+  pageMarginTop: number;
 }
 
 // === Color Theme ===
@@ -77,6 +80,7 @@ export interface HtmlGeneratorInput {
   fontFamily: string;
   fontWeight: FontWeight;
   googleFontsUrl: string;
+  calendarStyle?: Partial<Pick<CalendarStyle, "contentAlign" | "pageMarginTop">>;
 }
 
 export interface PageData {

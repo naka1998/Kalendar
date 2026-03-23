@@ -35,6 +35,8 @@ export const DEFAULT_CALENDAR_STYLE = {
   weekdayFontSize: 12,
   cellPadding: 8,
   headerGap: 8,
+  contentAlign: "center" as const,
+  pageMarginTop: 0,
 } as const;
 
 export const IMAGE_PERCENT_MIN = 20;

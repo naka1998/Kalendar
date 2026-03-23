@@ -159,6 +159,33 @@ describe("generateSingleHtml", () => {
     expect(gridIndex).toBeLessThan(imgIndex);
   });
 
+  it("applies align-items center for horizontal layout with center align", () => {
+    const input = createTestInput({
+      imageBase64: "data:image/jpeg;base64,abc123",
+      imagePosition: "left",
+    });
+    input.calendarStyle = { contentAlign: "center" };
+    const html = generateSingleHtml(input);
+    expect(html).toContain("align-items:center");
+  });
+
+  it("applies align-items flex-start for start align", () => {
+    const input = createTestInput({
+      imageBase64: "data:image/jpeg;base64,abc123",
+      imagePosition: "left",
+    });
+    input.calendarStyle = { contentAlign: "start" };
+    const html = generateSingleHtml(input);
+    expect(html).toContain("align-items:flex-start");
+  });
+
+  it("applies page margin top", () => {
+    const input = createTestInput();
+    input.calendarStyle = { pageMarginTop: 40 };
+    const html = generateSingleHtml(input);
+    expect(html).toContain("padding-top:40px");
+  });
+
   it("renders circle holiday marks", () => {
     const grid = enrichDayCells(getMonthGrid("2026-01", "sunday"), {
       "2026-01-01": "元日",

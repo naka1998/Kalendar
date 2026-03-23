@@ -119,6 +119,19 @@ test.describe("Layout interaction", () => {
     expect(newWidth).toBeGreaterThan(initialWidth);
   });
 
+  test("ratio indicator is visible on divider when image is present", async ({ page }) => {
+    await uploadTestImage(page);
+
+    const indicator = page.getByTestId("ratio-indicator").first();
+    await expect(indicator).toBeVisible();
+    await expect(indicator).toContainText("50");
+  });
+
+  test("top margin slider exists in design section", async ({ page }) => {
+    await page.getByText("デザイン").click();
+    await expect(page.getByText("上余白")).toBeVisible();
+  });
+
   test("image ratio preset buttons are removed from sidebar", async ({ page }) => {
     // Expand design section
     await page.getByText("デザイン").click();

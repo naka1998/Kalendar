@@ -44,6 +44,10 @@ function buildInput(store: ReturnType<typeof useCalendarStore.getState>): HtmlGe
     fontFamily: font.family,
     fontWeight: store.fontWeight,
     googleFontsUrl: font.googleFontsUrl,
+    calendarStyle: {
+      contentAlign: store.calendarStyle.contentAlign,
+      pageMarginTop: store.calendarStyle.pageMarginTop,
+    },
   };
 }
 

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { THEMES } from "@/lib/themes";
 import { FONT_PRESETS } from "@/lib/fonts";
-import type { FontWeight } from "@/stores/types";
+import type { ContentAlign, FontWeight } from "@/stores/types";
 
 function ThemeGrid() {
   const themeId = useCalendarStore((s) => s.themeId);
@@ -172,6 +172,38 @@ export function DesignSection() {
           max={20}
           onChange={(v) => setCalendarStyle({ headerGap: v })}
         />
+        <SliderField
+          label="上余白"
+          value={calendarStyle.pageMarginTop}
+          min={0}
+          max={80}
+          onChange={(v) => setCalendarStyle({ pageMarginTop: v })}
+        />
+      </div>
+
+      {/* Content alignment */}
+      <div className="space-y-1.5">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+          配置揃え
+        </Label>
+        <div className="flex rounded-lg bg-surface-container-high p-1">
+          {(["start", "center", "end"] as ContentAlign[]).map((a) => {
+            const label = a === "start" ? "上揃え" : a === "center" ? "中央" : "下揃え";
+            return (
+              <button
+                key={a}
+                onClick={() => setCalendarStyle({ contentAlign: a })}
+                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
+                  calendarStyle.contentAlign === a
+                    ? "bg-surface text-on-surface shadow-sm"
+                    : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
