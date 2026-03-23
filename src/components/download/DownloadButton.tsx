@@ -2,6 +2,7 @@ import { useCallback, useRef, useState, useEffect } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { generateSingleHtml } from "@/lib/htmlGenerator";
 import { generateZip } from "@/lib/zipGenerator";
+import { exportSettings } from "@/lib/settingsExport";
 import {
   generateMonthRange,
   getMonthGrid,
@@ -99,12 +100,13 @@ export function DownloadButton() {
     try {
       const store = useCalendarStore.getState();
       const input = buildInput(store);
+      const settingsJson = exportSettings(store);
 
       if (mode === "pdf") {
         const html = generateSingleHtml(input);
         openPrintWindow(html);
       } else if (mode === "single-html") {
-        const html = generateSingleHtml(input);
+        const html = generateSingleHtml(input, settingsJson);
         const blob = new Blob([html], { type: "text/html" });
         downloadBlob(blob, "calendar.html");
       } else {

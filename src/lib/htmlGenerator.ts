@@ -90,7 +90,7 @@ function renderPage(
   return `<div class="page" style="width:${width};height:${height};background:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${imageHtml}${gridHtml}</div></div>`;
 }
 
-export function generateSingleHtml(input: HtmlGeneratorInput): string {
+export function generateSingleHtml(input: HtmlGeneratorInput, settingsJson?: string): string {
   const { pages, orientation, fontFamily, fontWeight, googleFontsUrl } = input;
   const size = orientation === "portrait" ? "A4 portrait" : "A4 landscape";
 
@@ -99,10 +99,14 @@ export function generateSingleHtml(input: HtmlGeneratorInput): string {
     pagesHtml += renderPage(page, orientation, fontFamily, fontWeight);
   }
 
+  const settingsMeta = settingsJson
+    ? `\n<meta name="kalendar-settings" content='${escapeHtml(settingsJson)}'>`
+    : "";
+
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8">${settingsMeta}
 <title>Calendar</title>
 <link href="${escapeHtml(googleFontsUrl)}" rel="stylesheet">
 <style>
