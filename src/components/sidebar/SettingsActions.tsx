@@ -30,7 +30,7 @@ export function SettingsActions() {
     reader.onload = () => {
       try {
         const settings = importSettings(reader.result as string);
-        useCalendarStore.setState(settings);
+        useCalendarStore.setState((prev) => ({ ...prev, ...settings }));
       } catch (err) {
         console.error("Failed to import settings:", err);
       }
@@ -45,7 +45,7 @@ export function SettingsActions() {
 
     void importFromHtmlFile(file).then((settings) => {
       if (settings) {
-        useCalendarStore.setState(settings);
+        useCalendarStore.setState((prev) => ({ ...prev, ...settings }));
       } else {
         console.error("No settings found in HTML file");
       }

@@ -31,7 +31,7 @@ export function TempSaveButton() {
 
     const loaded = loadFromStorage();
     if (loaded) {
-      useCalendarStore.setState(loaded);
+      useCalendarStore.setState((prev) => ({ ...prev, ...loaded }));
     }
   }, []);
 
