@@ -1,6 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { A4 } from "@/lib/constants";
+
+const ScaleContext = createContext<number>(1);
+
+export function useScale(): number {
+  return useContext(ScaleContext);
+}
 
 export function ScaledPage({ children }: { children: React.ReactNode }) {
   const orientation = useCalendarStore((s) => s.orientation);
@@ -35,7 +41,7 @@ export function ScaledPage({ children }: { children: React.ReactNode }) {
           transformOrigin: "top left",
         }}
       >
-        {children}
+        <ScaleContext.Provider value={scale}>{children}</ScaleContext.Provider>
       </div>
     </div>
   );
