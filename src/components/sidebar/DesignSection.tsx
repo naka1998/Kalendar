@@ -56,8 +56,6 @@ export function DesignSection() {
   const setFontWeight = useCalendarStore((s) => s.setFontWeight);
   const useImages = useCalendarStore((s) => s.useImages);
   const setUseImages = useCalendarStore((s) => s.setUseImages);
-  const imageRatio = useCalendarStore((s) => s.imageRatio);
-  const setImageRatio = useCalendarStore((s) => s.setImageRatio);
   const calendarStyle = useCalendarStore((s) => s.calendarStyle);
   const setCalendarStyle = useCalendarStore((s) => s.setCalendarStyle);
 
@@ -132,30 +130,6 @@ export function DesignSection() {
           />
         </button>
       </div>
-
-      {/* Image ratio — only when images enabled */}
-      {useImages && (
-        <div className="space-y-1.5">
-          <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-            画像比率
-          </Label>
-          <div className="flex rounded-lg bg-surface-container-high p-1">
-            {(["60:40", "50:50", "70:30"] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setImageRatio(r)}
-                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
-                  imageRatio === r
-                    ? "bg-surface text-on-surface shadow-sm"
-                    : "text-on-surface-variant hover:text-on-surface"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Calendar text size & spacing */}
       <div className="space-y-3">

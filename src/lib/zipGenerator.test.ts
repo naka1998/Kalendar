@@ -14,7 +14,8 @@ function createTestInput(): HtmlGeneratorInput {
     theme: THEMES[0],
     holidayMarkStyle: "dot",
     imageBase64: null,
-    imageRatio: "50:50",
+    imagePercent: 50,
+    imagePosition: "top" as const,
   };
   return {
     pages: [page],

@@ -19,7 +19,8 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const fontId = useCalendarStore((s) => s.fontId);
   const fontWeight = useCalendarStore((s) => s.fontWeight);
   const useImages = useCalendarStore((s) => s.useImages);
-  const imageRatio = useCalendarStore((s) => s.imageRatio);
+  const imagePercent = useCalendarStore((s) => s.imagePercent);
+  const imagePosition = useCalendarStore((s) => s.imagePosition);
   const calendarStyle = useCalendarStore((s) => s.calendarStyle);
   const apiHolidays = useCalendarStore((s) => s.apiHolidays);
   const manualHolidays = useCalendarStore((s) => s.manualHolidays);
@@ -80,7 +81,8 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       fontWeight={fontWeight}
       orientation={orientation}
       imageBase64={imageBase64}
-      imageRatio={imageRatio}
+      imagePercent={imagePercent}
+      imagePosition={imagePosition}
       calendarStyle={calendarStyle}
       onImageUpload={useImages ? handleImageUpload : undefined}
       onImageRemove={useImages ? handleImageRemove : undefined}

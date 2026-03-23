@@ -24,7 +24,8 @@ export const DEFAULTS = {
   THEME_ID: "classic",
   FONT_ID: "montserrat",
   FONT_WEIGHT: 400 as const,
-  IMAGE_RATIO: "50:50" as const,
+  IMAGE_PERCENT: 50,
+  IMAGE_POSITION: "top" as const,
   PAGE_LAYOUT: "1-month" as const,
 } as const;
 
@@ -35,6 +36,9 @@ export const DEFAULT_CALENDAR_STYLE = {
   cellPadding: 8,
   headerGap: 8,
 } as const;
+
+export const IMAGE_PERCENT_MIN = 20;
+export const IMAGE_PERCENT_MAX = 80;
 
 export const IMAGE = {
   MAX_FILE_SIZE: 10 * 1024 * 1024,

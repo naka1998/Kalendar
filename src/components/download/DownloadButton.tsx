@@ -33,7 +33,8 @@ function buildInput(store: ReturnType<typeof useCalendarStore.getState>): HtmlGe
       theme,
       holidayMarkStyle: store.holidayMarkStyle,
       imageBase64: store.useImages ? (store.images[monthKey]?.base64 ?? null) : null,
-      imageRatio: store.imageRatio,
+      imagePercent: store.imagePercent,
+      imagePosition: store.imagePosition,
     };
   });
 

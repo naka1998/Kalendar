@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import path from "path";
+
+const TEST_IMAGE_PATH = "tests/e2e/fixtures/test-image.png";
 
 // Helper: upload a test image to the first month's image area
 async function uploadTestImage(page: import("@playwright/test").Page) {
-  // Create a minimal 1x1 PNG file for testing
   const fileChooserPromise = page.waitForEvent("filechooser");
 
   // Click the image placeholder area of the first calendar page
@@ -12,7 +12,7 @@ async function uploadTestImage(page: import("@playwright/test").Page) {
   await placeholder.click();
 
   const fileChooser = await fileChooserPromise;
-  await fileChooser.setFiles(path.resolve(__dirname, "fixtures/test-image.png"));
+  await fileChooser.setFiles(TEST_IMAGE_PATH);
 }
 
 test.describe("Layout interaction", () => {
@@ -44,9 +44,16 @@ test.describe("Layout interaction", () => {
     const dividerBox = await divider.boundingBox();
     if (!dividerBox) throw new Error("Divider not found");
 
-    await page.mouse.move(dividerBox.x + dividerBox.width / 2, dividerBox.y + dividerBox.height / 2);
+    await page.mouse.move(
+      dividerBox.x + dividerBox.width / 2,
+      dividerBox.y + dividerBox.height / 2,
+    );
     await page.mouse.down();
-    await page.mouse.move(dividerBox.x + dividerBox.width / 2, dividerBox.y + dividerBox.height / 2 + 50, { steps: 5 });
+    await page.mouse.move(
+      dividerBox.x + dividerBox.width / 2,
+      dividerBox.y + dividerBox.height / 2 + 50,
+      { steps: 5 },
+    );
     await page.mouse.up();
 
     const newHeight = await imageArea.evaluate((el) => el.getBoundingClientRect().height);
@@ -96,9 +103,16 @@ test.describe("Layout interaction", () => {
     const dividerBox = await divider.boundingBox();
     if (!dividerBox) throw new Error("Divider not found");
 
-    await page.mouse.move(dividerBox.x + dividerBox.width / 2, dividerBox.y + dividerBox.height / 2);
+    await page.mouse.move(
+      dividerBox.x + dividerBox.width / 2,
+      dividerBox.y + dividerBox.height / 2,
+    );
     await page.mouse.down();
-    await page.mouse.move(dividerBox.x + dividerBox.width / 2 + 50, dividerBox.y + dividerBox.height / 2, { steps: 5 });
+    await page.mouse.move(
+      dividerBox.x + dividerBox.width / 2 + 50,
+      dividerBox.y + dividerBox.height / 2,
+      { steps: 5 },
+    );
     await page.mouse.up();
 
     const newWidth = await imageArea.evaluate((el) => el.getBoundingClientRect().width);
