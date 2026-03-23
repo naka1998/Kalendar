@@ -41,7 +41,7 @@ function ThemeGrid() {
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.sunday }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.saturday }} />
             </div>
-            <span className="text-[9px] font-medium text-on-surface-variant">{t.name}</span>
+            <span className="text-[10px] font-medium text-on-surface-variant">{t.name}</span>
           </button>
         ))}
       </div>

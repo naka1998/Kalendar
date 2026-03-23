@@ -73,7 +73,7 @@ export function ImageSection() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[8px] text-on-surface-variant">
+                    <div className="flex h-full w-full items-center justify-center text-[10px] text-on-surface-variant">
                       —
                     </div>
                   )}

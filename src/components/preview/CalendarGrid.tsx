@@ -14,7 +14,7 @@ function HolidayMark({ style, color }: { style: HolidayMarkStyle; color: string 
   switch (style) {
     case "dot":
       return (
-        <span className="block text-center text-[6px] leading-none" style={{ color }}>
+        <span className="block text-center text-[10px] leading-none" style={{ color }}>
           ·
         </span>
       );
@@ -42,7 +42,7 @@ export function CalendarGrid({
     <div style={{ fontFamily, fontWeight }}>
       {/* Month label */}
       <div
-        className="mb-2 font-heading text-2xl font-extrabold tracking-tighter"
+        className="mb-3 font-heading text-5xl font-extrabold tracking-tighter"
         style={{ color: colors.monthLabel }}
       >
         {monthLabel}
@@ -88,7 +88,7 @@ export function CalendarGrid({
                 }}
               >
                 <span
-                  className="flex h-6 w-6 items-center justify-center text-xs"
+                  className="flex h-7 w-7 items-center justify-center text-sm"
                   style={{
                     color: textColor,
                     borderRadius: isCircle ? "50%" : undefined,

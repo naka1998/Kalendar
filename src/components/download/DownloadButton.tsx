@@ -136,7 +136,7 @@ export function DownloadButton() {
               className="flex w-full flex-col items-start rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-surface-container-high"
             >
               <span className="text-sm font-medium text-on-surface">{m.label}</span>
-              <span className="text-[11px] text-on-surface-variant">{m.description}</span>
+              <span className="text-xs text-on-surface-variant">{m.description}</span>
             </button>
           ))}
         </div>
