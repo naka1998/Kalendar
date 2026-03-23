@@ -4,10 +4,11 @@ export type WeekStart = "sunday" | "monday";
 export type WeekdayFormat = "ja" | "en-short" | "en-full";
 export type MonthLabelFormat = "yyyy.mm" | "month-yyyy" | "ja";
 export type HolidayMarkStyle = "dot" | "circle" | "underline" | "color-only";
-export type ImageRatio = "60:40" | "50:50" | "70:30";
+export type ImagePosition = "top" | "bottom" | "left" | "right";
 export type PageLayout = "1-month" | "2-month";
 export type DownloadMode = "pdf" | "single-html" | "zip";
 export type FontWeight = 300 | 400 | 600;
+export type ContentAlign = "start" | "center" | "end";
 
 // === Calendar Style ===
 export interface CalendarStyle {
@@ -16,6 +17,8 @@ export interface CalendarStyle {
   weekdayFontSize: number;
   cellPadding: number;
   headerGap: number;
+  contentAlign: ContentAlign;
+  pageMarginTop: number;
 }
 
 // === Color Theme ===
@@ -77,6 +80,7 @@ export interface HtmlGeneratorInput {
   fontFamily: string;
   fontWeight: FontWeight;
   googleFontsUrl: string;
+  calendarStyle?: Partial<Pick<CalendarStyle, "contentAlign" | "pageMarginTop">>;
 }
 
 export interface PageData {
@@ -86,7 +90,8 @@ export interface PageData {
   theme: ColorTheme;
   holidayMarkStyle: HolidayMarkStyle;
   imageBase64: string | null;
-  imageRatio: ImageRatio;
+  imagePercent: number;
+  imagePosition: ImagePosition;
 }
 
 // === Zustand Store ===
@@ -112,7 +117,8 @@ export interface CalendarState {
 
   useImages: boolean;
   images: Record<string, MonthImage>;
-  imageRatio: ImageRatio;
+  imagePercent: number;
+  imagePosition: ImagePosition;
 
   monthThemeOverrides: Record<string, string>;
   calendarStyle: CalendarStyle;
@@ -129,7 +135,8 @@ export interface CalendarState {
   setThemeId: (id: string) => void;
   setFontId: (id: string) => void;
   setFontWeight: (w: FontWeight) => void;
-  setImageRatio: (ratio: ImageRatio) => void;
+  setImagePercent: (percent: number) => void;
+  setImagePosition: (pos: ImagePosition) => void;
   setUseImages: (use: boolean) => void;
   setCalendarStyle: (style: Partial<CalendarStyle>) => void;
 
@@ -143,6 +150,7 @@ export interface CalendarState {
 
   setImage: (monthKey: string, image: MonthImage) => void;
   removeImage: (monthKey: string) => void;
+  swapImages: (fromMonth: string, toMonth: string) => void;
 
   setMonthTheme: (monthKey: string, themeId: string) => void;
   clearMonthTheme: (monthKey: string) => void;

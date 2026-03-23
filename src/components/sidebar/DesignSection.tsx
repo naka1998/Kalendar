@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { THEMES } from "@/lib/themes";
 import { FONT_PRESETS } from "@/lib/fonts";
-import type { FontWeight } from "@/stores/types";
+import type { ContentAlign, FontWeight } from "@/stores/types";
 
 function ThemeGrid() {
   const themeId = useCalendarStore((s) => s.themeId);
@@ -56,8 +56,6 @@ export function DesignSection() {
   const setFontWeight = useCalendarStore((s) => s.setFontWeight);
   const useImages = useCalendarStore((s) => s.useImages);
   const setUseImages = useCalendarStore((s) => s.setUseImages);
-  const imageRatio = useCalendarStore((s) => s.imageRatio);
-  const setImageRatio = useCalendarStore((s) => s.setImageRatio);
   const calendarStyle = useCalendarStore((s) => s.calendarStyle);
   const setCalendarStyle = useCalendarStore((s) => s.setCalendarStyle);
 
@@ -133,30 +131,6 @@ export function DesignSection() {
         </button>
       </div>
 
-      {/* Image ratio — only when images enabled */}
-      {useImages && (
-        <div className="space-y-1.5">
-          <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-            画像比率
-          </Label>
-          <div className="flex rounded-lg bg-surface-container-high p-1">
-            {(["60:40", "50:50", "70:30"] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setImageRatio(r)}
-                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
-                  imageRatio === r
-                    ? "bg-surface text-on-surface shadow-sm"
-                    : "text-on-surface-variant hover:text-on-surface"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Calendar text size & spacing */}
       <div className="space-y-3">
         <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
@@ -198,6 +172,38 @@ export function DesignSection() {
           max={20}
           onChange={(v) => setCalendarStyle({ headerGap: v })}
         />
+        <SliderField
+          label="上余白"
+          value={calendarStyle.pageMarginTop}
+          min={0}
+          max={80}
+          onChange={(v) => setCalendarStyle({ pageMarginTop: v })}
+        />
+      </div>
+
+      {/* Content alignment */}
+      <div className="space-y-1.5">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+          配置揃え
+        </Label>
+        <div className="flex rounded-lg bg-surface-container-high p-1">
+          {(["start", "center", "end"] as ContentAlign[]).map((a) => {
+            const label = a === "start" ? "上揃え" : a === "center" ? "中央" : "下揃え";
+            return (
+              <button
+                key={a}
+                onClick={() => setCalendarStyle({ contentAlign: a })}
+                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
+                  calendarStyle.contentAlign === a
+                    ? "bg-surface text-on-surface shadow-sm"
+                    : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -217,17 +223,17 @@ function SliderField({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-20 shrink-0 text-xs text-on-surface-variant">{label}</span>
+    <div className="flex items-center gap-2">
+      <span className="w-16 shrink-0 text-xs text-on-surface-variant">{label}</span>
       <input
         type="range"
         min={min}
         max={max}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-surface-container-high accent-[#005bc4]"
+        className="h-1 min-w-0 flex-1 cursor-pointer appearance-none rounded-full bg-surface-container-high accent-[#005bc4]"
       />
-      <span className="w-8 text-right text-xs tabular-nums text-on-surface">{value}</span>
+      <span className="w-6 shrink-0 text-right text-xs tabular-nums text-on-surface">{value}</span>
     </div>
   );
 }

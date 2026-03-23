@@ -1,4 +1,5 @@
-import type { HtmlGeneratorInput, PageData, HolidayMarkStyle } from "@/stores/types";
+import type { HtmlGeneratorInput, PageData, HolidayMarkStyle, ImagePosition } from "@/stores/types";
+import { isHorizontalLayout } from "./layoutUtils";
 
 function escapeHtml(str: string): string {
   return str
@@ -47,35 +48,16 @@ function renderDayCell(page: PageData, ri: number, ci: number, totalRows: number
   return `<div style="display:flex;flex-direction:column;align-items:center;padding:8px 0;${borderBottom}"><span style="${spanStyle}">${cell.dayOfMonth}</span>${mark}</div>`;
 }
 
-function renderPage(
-  page: PageData,
-  orientation: string,
-  fontFamily: string,
-  fontWeight: number,
-): string {
-  const { colors } = page.theme;
-  const width = orientation === "portrait" ? "210mm" : "297mm";
-  const height = orientation === "portrait" ? "297mm" : "210mm";
-
-  let imageHtml = "";
-  if (page.imageBase64) {
-    const [imgStr, gridStr] = page.imageRatio.split(":");
-    const imgPct = Number(imgStr);
-    const gridPct = Number(gridStr);
-    imageHtml = `<div style="height:${imgPct}%;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64)}" style="width:100%;height:100%;object-fit:contain" /></div><div style="height:${gridPct}%;padding:16px 24px;overflow:hidden">`;
-  } else {
-    imageHtml = `<div style="height:100%;padding:24px;">`;
-  }
-
+function renderGridHtml(page: PageData): string {
   let gridHtml = "";
   // Month label
-  gridHtml += `<div style="color:${colors.monthLabel};font-size:24px;font-weight:800;letter-spacing:-0.05em;margin-bottom:8px">${escapeHtml(page.monthLabel)}</div>`;
+  gridHtml += `<div style="color:${page.theme.colors.monthLabel};font-size:24px;font-weight:800;letter-spacing:-0.05em;margin-bottom:8px">${escapeHtml(page.monthLabel)}</div>`;
   // Header rule
-  gridHtml += `<div style="border-bottom:1px solid ${colors.headerRule};margin-bottom:8px"></div>`;
+  gridHtml += `<div style="border-bottom:1px solid ${page.theme.colors.headerRule};margin-bottom:8px"></div>`;
   // Weekday headers
   gridHtml += `<div style="display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px">`;
   for (const header of page.weekdayHeaders) {
-    gridHtml += `<div style="text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:${colors.weekdayHeader};padding:4px 0">${escapeHtml(header)}</div>`;
+    gridHtml += `<div style="text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:${page.theme.colors.weekdayHeader};padding:4px 0">${escapeHtml(header)}</div>`;
   }
   gridHtml += `</div>`;
   // Day grid
@@ -86,8 +68,77 @@ function renderPage(
     }
   }
   gridHtml += `</div>`;
+  return gridHtml;
+}
 
-  return `<div class="page" style="width:${width};height:${height};background:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${imageHtml}${gridHtml}</div></div>`;
+function renderImageHtml(page: PageData, sizeProperty: string, sizeValue: string): string {
+  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:contain" /></div>`;
+}
+
+function justifyContentValue(align: string | undefined): string {
+  if (align === "start") return "flex-start";
+  if (align === "end") return "flex-end";
+  return "center";
+}
+
+function renderGridContainer(
+  gridHtml: string,
+  sizeProperty: string,
+  sizeValue: string,
+  contentAlign?: string,
+): string {
+  const justify = `justify-content:${justifyContentValue(contentAlign)}`;
+  return `<div style="${sizeProperty}:${sizeValue};display:flex;flex-direction:column;${justify};padding:16px 24px;overflow:hidden">${gridHtml}</div>`;
+}
+
+function renderPage(
+  page: PageData,
+  orientation: string,
+  fontFamily: string,
+  fontWeight: number,
+  calendarStyle?: Partial<{ contentAlign: string; pageMarginTop: number }>,
+): string {
+  const { colors } = page.theme;
+  const width = orientation === "portrait" ? "210mm" : "297mm";
+  const height = orientation === "portrait" ? "297mm" : "210mm";
+
+  const position: ImagePosition = page.imagePosition;
+  const horizontal = isHorizontalLayout(position);
+  const imgPct = page.imagePercent;
+  const gridPct = 100 - imgPct;
+  const sizeProperty = horizontal ? "width" : "height";
+  const marginTop = calendarStyle?.pageMarginTop
+    ? `padding-top:${calendarStyle.pageMarginTop}px;`
+    : "";
+
+  let contentHtml: string;
+
+  if (page.imageBase64) {
+    const gridHtml = renderGridHtml(page);
+    const imageBlock = renderImageHtml(page, sizeProperty, `${imgPct}%`);
+    const gridBlock = renderGridContainer(
+      gridHtml,
+      sizeProperty,
+      `${gridPct}%`,
+      calendarStyle?.contentAlign,
+    );
+
+    const isReversed = position === "bottom" || position === "right";
+    const containerStyle = horizontal
+      ? "display:flex;flex-direction:row;height:100%"
+      : "display:flex;flex-direction:column;height:100%";
+
+    if (isReversed) {
+      contentHtml = `<div style="${containerStyle}">${gridBlock}${imageBlock}</div>`;
+    } else {
+      contentHtml = `<div style="${containerStyle}">${imageBlock}${gridBlock}</div>`;
+    }
+  } else {
+    const gridHtml = renderGridHtml(page);
+    contentHtml = `<div style="height:100%;padding:24px;">${gridHtml}</div>`;
+  }
+
+  return `<div class="page" style="width:${width};height:${height};${marginTop}background:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${contentHtml}</div>`;
 }
 
 export function generateSingleHtml(input: HtmlGeneratorInput, settingsJson?: string): string {
@@ -96,7 +147,7 @@ export function generateSingleHtml(input: HtmlGeneratorInput, settingsJson?: str
 
   let pagesHtml = "";
   for (const page of pages) {
-    pagesHtml += renderPage(page, orientation, fontFamily, fontWeight);
+    pagesHtml += renderPage(page, orientation, fontFamily, fontWeight, input.calendarStyle);
   }
 
   const settingsMeta = settingsJson

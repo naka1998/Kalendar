@@ -13,7 +13,8 @@ interface ExportedSettings {
   themeId: string;
   fontId: string;
   fontWeight: number;
-  imageRatio: string;
+  imagePercent: number;
+  imagePosition: string;
   manualHolidays: { date: string; name: string }[];
   removedHolidays: string[];
   monthThemeOverrides: Record<string, string>;
@@ -34,7 +35,8 @@ export function exportSettings(state: CalendarState): string {
     themeId: state.themeId,
     fontId: state.fontId,
     fontWeight: state.fontWeight,
-    imageRatio: state.imageRatio,
+    imagePercent: state.imagePercent,
+    imagePosition: state.imagePosition,
     manualHolidays: state.manualHolidays,
     removedHolidays: state.removedHolidays,
     monthThemeOverrides: state.monthThemeOverrides,
@@ -61,7 +63,8 @@ export function importSettings(
     | "themeId"
     | "fontId"
     | "fontWeight"
-    | "imageRatio"
+    | "imagePercent"
+    | "imagePosition"
     | "manualHolidays"
     | "removedHolidays"
     | "monthThemeOverrides"
@@ -82,7 +85,8 @@ export function importSettings(
     themeId: data.themeId,
     fontId: data.fontId,
     fontWeight: data.fontWeight as CalendarState["fontWeight"],
-    imageRatio: data.imageRatio as CalendarState["imageRatio"],
+    imagePercent: data.imagePercent,
+    imagePosition: data.imagePosition as CalendarState["imagePosition"],
     manualHolidays: data.manualHolidays,
     removedHolidays: data.removedHolidays,
     monthThemeOverrides: data.monthThemeOverrides,

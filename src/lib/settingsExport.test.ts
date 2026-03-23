@@ -31,7 +31,8 @@ function createMockState(): CalendarState {
         mimeType: "image/jpeg",
       },
     },
-    imageRatio: DEFAULTS.IMAGE_RATIO,
+    imagePercent: DEFAULTS.IMAGE_PERCENT,
+    imagePosition: DEFAULTS.IMAGE_POSITION,
     monthThemeOverrides: { "2026-04": "dark" },
     calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
     // Actions (not used in export)
@@ -46,7 +47,8 @@ function createMockState(): CalendarState {
     setThemeId: () => {},
     setFontId: () => {},
     setFontWeight: () => {},
-    setImageRatio: () => {},
+    setImagePercent: () => {},
+    setImagePosition: () => {},
     setUseImages: () => {},
     setCalendarStyle: () => {},
     setApiHolidays: () => {},
@@ -58,6 +60,7 @@ function createMockState(): CalendarState {
     restoreApiHoliday: () => {},
     setImage: () => {},
     removeImage: () => {},
+    swapImages: () => {},
     setMonthTheme: () => {},
     clearMonthTheme: () => {},
   };

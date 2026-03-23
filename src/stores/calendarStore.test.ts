@@ -24,7 +24,8 @@ describe("calendarStore", () => {
       fontWeight: DEFAULTS.FONT_WEIGHT,
       useImages: true,
       images: {},
-      imageRatio: DEFAULTS.IMAGE_RATIO,
+      imagePercent: DEFAULTS.IMAGE_PERCENT,
+      imagePosition: DEFAULTS.IMAGE_POSITION,
       monthThemeOverrides: {},
       calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
     });
@@ -43,8 +44,11 @@ describe("calendarStore", () => {
       expect(state.themeId).toBe("classic");
       expect(state.fontId).toBe("montserrat");
       expect(state.fontWeight).toBe(400);
-      expect(state.imageRatio).toBe("50:50");
+      expect(state.imagePercent).toBe(50);
+      expect(state.imagePosition).toBe("top");
       expect(state.pageLayout).toBe("1-month");
+      expect(state.calendarStyle.contentAlign).toBe("center");
+      expect(state.calendarStyle.pageMarginTop).toBe(0);
     });
   });
 
@@ -150,6 +154,96 @@ describe("calendarStore", () => {
       useCalendarStore.getState().setImage("2026-04", image);
       useCalendarStore.getState().removeImage("2026-04");
       expect(useCalendarStore.getState().images["2026-04"]).toBeUndefined();
+    });
+  });
+
+  describe("swapImages", () => {
+    const imgA = {
+      id: "a",
+      monthKey: "2026-04",
+      fileName: "a.jpg",
+      base64: "data:image/jpeg;base64,aaa",
+      mimeType: "image/jpeg",
+    };
+    const imgB = {
+      id: "b",
+      monthKey: "2026-05",
+      fileName: "b.jpg",
+      base64: "data:image/jpeg;base64,bbb",
+      mimeType: "image/jpeg",
+    };
+
+    it("moves image from one month to an empty month", () => {
+      useCalendarStore.getState().setImage("2026-04", imgA);
+      useCalendarStore.getState().swapImages("2026-04", "2026-05");
+      const state = useCalendarStore.getState();
+      expect(state.images["2026-04"]).toBeUndefined();
+      expect(state.images["2026-05"]?.base64).toBe("data:image/jpeg;base64,aaa");
+      expect(state.images["2026-05"]?.monthKey).toBe("2026-05");
+    });
+
+    it("swaps images between two months", () => {
+      useCalendarStore.getState().setImage("2026-04", imgA);
+      useCalendarStore.getState().setImage("2026-05", imgB);
+      useCalendarStore.getState().swapImages("2026-04", "2026-05");
+      const state = useCalendarStore.getState();
+      expect(state.images["2026-04"]?.base64).toBe("data:image/jpeg;base64,bbb");
+      expect(state.images["2026-04"]?.monthKey).toBe("2026-04");
+      expect(state.images["2026-05"]?.base64).toBe("data:image/jpeg;base64,aaa");
+      expect(state.images["2026-05"]?.monthKey).toBe("2026-05");
+    });
+
+    it("does nothing when source has no image", () => {
+      useCalendarStore.getState().setImage("2026-05", imgB);
+      useCalendarStore.getState().swapImages("2026-04", "2026-05");
+      const state = useCalendarStore.getState();
+      expect(state.images["2026-05"]?.base64).toBe("data:image/jpeg;base64,bbb");
+    });
+  });
+
+  describe("image layout actions", () => {
+    it("setImagePercent updates imagePercent", () => {
+      useCalendarStore.getState().setImagePercent(65);
+      expect(useCalendarStore.getState().imagePercent).toBe(65);
+    });
+
+    it("setImagePercent clamps value below minimum to 20", () => {
+      useCalendarStore.getState().setImagePercent(5);
+      expect(useCalendarStore.getState().imagePercent).toBe(20);
+    });
+
+    it("setImagePercent clamps value above maximum to 80", () => {
+      useCalendarStore.getState().setImagePercent(95);
+      expect(useCalendarStore.getState().imagePercent).toBe(80);
+    });
+
+    it("setImagePercent rounds to integer", () => {
+      useCalendarStore.getState().setImagePercent(55.7);
+      expect(useCalendarStore.getState().imagePercent).toBe(56);
+    });
+
+    it("setImagePosition updates imagePosition", () => {
+      useCalendarStore.getState().setImagePosition("bottom");
+      expect(useCalendarStore.getState().imagePosition).toBe("bottom");
+    });
+
+    it("setImagePosition supports left and right", () => {
+      useCalendarStore.getState().setImagePosition("left");
+      expect(useCalendarStore.getState().imagePosition).toBe("left");
+      useCalendarStore.getState().setImagePosition("right");
+      expect(useCalendarStore.getState().imagePosition).toBe("right");
+    });
+  });
+
+  describe("calendar style actions", () => {
+    it("setCalendarStyle updates contentAlign", () => {
+      useCalendarStore.getState().setCalendarStyle({ contentAlign: "start" });
+      expect(useCalendarStore.getState().calendarStyle.contentAlign).toBe("start");
+    });
+
+    it("setCalendarStyle updates pageMarginTop", () => {
+      useCalendarStore.getState().setCalendarStyle({ pageMarginTop: 40 });
+      expect(useCalendarStore.getState().calendarStyle.pageMarginTop).toBe(40);
     });
   });
 
