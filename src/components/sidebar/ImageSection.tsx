@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { generateMonthRange, formatMonthLabel } from "@/lib/dateUtils";
@@ -12,17 +12,23 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
+const DRAG_MIME = "text/x-month-key";
+
 export function ImageSection() {
   const startMonth = useCalendarStore((s) => s.startMonth);
   const endMonth = useCalendarStore((s) => s.endMonth);
   const monthLabelFormat = useCalendarStore((s) => s.monthLabelFormat);
   const images = useCalendarStore((s) => s.images);
   const removeImage = useCalendarStore((s) => s.removeImage);
+  const swapImages = useCalendarStore((s) => s.swapImages);
 
   const months = useMemo(() => generateMonthRange(startMonth, endMonth), [startMonth, endMonth]);
-  const selectedMonth = useCalendarStore((s) => s.startMonth); // Default to first month
+  const selectedMonth = useCalendarStore((s) => s.startMonth);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadImage, uploading, error } = useImageUpload();
+
+  const [draggingMonth, setDraggingMonth] = useState<string | null>(null);
+  const [dragOverMonth, setDragOverMonth] = useState<string | null>(null);
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +36,6 @@ export function ImageSection() {
       if (file && selectedMonth) {
         void uploadImage(selectedMonth, file);
       }
-      // Reset input so same file can be re-selected
       if (fileInputRef.current) fileInputRef.current.value = "";
     },
     [selectedMonth, uploadImage],
@@ -39,13 +44,49 @@ export function ImageSection() {
   const handleDrop = useCallback(
     (e: React.DragEvent, monthKey: string) => {
       e.preventDefault();
+      setDragOverMonth(null);
+
+      // Check if this is a month-to-month image move
+      const sourceMonth = e.dataTransfer.getData(DRAG_MIME);
+      if (sourceMonth && sourceMonth !== monthKey) {
+        swapImages(sourceMonth, monthKey);
+        return;
+      }
+
+      // Otherwise, handle as file upload
       const file = e.dataTransfer.files[0];
       if (file) {
         void uploadImage(monthKey, file);
       }
     },
-    [uploadImage],
+    [uploadImage, swapImages],
   );
+
+  const handleDragStart = useCallback((e: React.DragEvent, monthKey: string) => {
+    e.dataTransfer.setData(DRAG_MIME, monthKey);
+    e.dataTransfer.effectAllowed = "move";
+    setDraggingMonth(monthKey);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    setDraggingMonth(null);
+    setDragOverMonth(null);
+  }, []);
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent, monthKey: string) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      if (monthKey !== draggingMonth) {
+        setDragOverMonth(monthKey);
+      }
+    },
+    [draggingMonth],
+  );
+
+  const handleDragLeave = useCallback(() => {
+    setDragOverMonth(null);
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -57,11 +98,19 @@ export function ImageSection() {
         <div className="max-h-64 space-y-1 overflow-y-auto">
           {months.map((m) => {
             const img = images[m];
+            const isDragSource = draggingMonth === m;
+            const isDragTarget = dragOverMonth === m && draggingMonth !== m;
             return (
               <div
                 key={m}
-                className="flex items-center gap-2 rounded-md bg-surface-container-high p-2"
-                onDragOver={(e) => e.preventDefault()}
+                className={`flex items-center gap-2 rounded-md p-2 transition-all ${
+                  isDragTarget ? "bg-primary/10 ring-2 ring-primary" : "bg-surface-container-high"
+                } ${isDragSource ? "opacity-40" : ""}`}
+                draggable={!!img}
+                onDragStart={img ? (e) => handleDragStart(e, m) : undefined}
+                onDragEnd={handleDragEnd}
+                onDragOver={(e) => handleDragOver(e, m)}
+                onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, m)}
               >
                 {/* Thumbnail or placeholder */}

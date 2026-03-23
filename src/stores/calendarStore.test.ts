@@ -157,6 +157,50 @@ describe("calendarStore", () => {
     });
   });
 
+  describe("swapImages", () => {
+    const imgA = {
+      id: "a",
+      monthKey: "2026-04",
+      fileName: "a.jpg",
+      base64: "data:image/jpeg;base64,aaa",
+      mimeType: "image/jpeg",
+    };
+    const imgB = {
+      id: "b",
+      monthKey: "2026-05",
+      fileName: "b.jpg",
+      base64: "data:image/jpeg;base64,bbb",
+      mimeType: "image/jpeg",
+    };
+
+    it("moves image from one month to an empty month", () => {
+      useCalendarStore.getState().setImage("2026-04", imgA);
+      useCalendarStore.getState().swapImages("2026-04", "2026-05");
+      const state = useCalendarStore.getState();
+      expect(state.images["2026-04"]).toBeUndefined();
+      expect(state.images["2026-05"]?.base64).toBe("data:image/jpeg;base64,aaa");
+      expect(state.images["2026-05"]?.monthKey).toBe("2026-05");
+    });
+
+    it("swaps images between two months", () => {
+      useCalendarStore.getState().setImage("2026-04", imgA);
+      useCalendarStore.getState().setImage("2026-05", imgB);
+      useCalendarStore.getState().swapImages("2026-04", "2026-05");
+      const state = useCalendarStore.getState();
+      expect(state.images["2026-04"]?.base64).toBe("data:image/jpeg;base64,bbb");
+      expect(state.images["2026-04"]?.monthKey).toBe("2026-04");
+      expect(state.images["2026-05"]?.base64).toBe("data:image/jpeg;base64,aaa");
+      expect(state.images["2026-05"]?.monthKey).toBe("2026-05");
+    });
+
+    it("does nothing when source has no image", () => {
+      useCalendarStore.getState().setImage("2026-05", imgB);
+      useCalendarStore.getState().swapImages("2026-04", "2026-05");
+      const state = useCalendarStore.getState();
+      expect(state.images["2026-05"]?.base64).toBe("data:image/jpeg;base64,bbb");
+    });
+  });
+
   describe("image layout actions", () => {
     it("setImagePercent updates imagePercent", () => {
       useCalendarStore.getState().setImagePercent(65);

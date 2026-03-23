@@ -150,6 +150,7 @@ export interface CalendarState {
 
   setImage: (monthKey: string, image: MonthImage) => void;
   removeImage: (monthKey: string) => void;
+  swapImages: (fromMonth: string, toMonth: string) => void;
 
   setMonthTheme: (monthKey: string, themeId: string) => void;
   clearMonthTheme: (monthKey: string) => void;

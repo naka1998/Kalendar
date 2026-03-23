@@ -80,6 +80,19 @@ export const useCalendarStore = create<CalendarState>((set) => ({
       const { [monthKey]: _, ...rest } = s.images;
       return { images: rest };
     }),
+  swapImages: (fromMonth, toMonth) =>
+    set((s) => {
+      const fromImage = s.images[fromMonth];
+      if (!fromImage) return s;
+      const toImage = s.images[toMonth];
+      const newImages = { ...s.images };
+      delete newImages[fromMonth];
+      newImages[toMonth] = { ...fromImage, monthKey: toMonth };
+      if (toImage) {
+        newImages[fromMonth] = { ...toImage, monthKey: fromMonth };
+      }
+      return { images: newImages };
+    }),
 
   // Month theme actions
   setMonthTheme: (monthKey, themeId) =>
