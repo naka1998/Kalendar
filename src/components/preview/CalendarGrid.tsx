@@ -21,9 +21,10 @@ function HolidayMark({ style, color }: { style: HolidayMarkStyle; color: string 
   switch (style) {
     case "dot":
       return (
-        <span className="block text-center text-xs leading-none" style={{ color }}>
-          ·
-        </span>
+        <span
+          className="mt-0.5 block h-1.5 w-1.5 rounded-full"
+          style={{ backgroundColor: color }}
+        />
       );
     case "circle":
       return null;

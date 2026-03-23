@@ -11,7 +11,7 @@ function escapeHtml(str: string): string {
 function renderHolidayMark(style: HolidayMarkStyle, color: string): string {
   switch (style) {
     case "dot":
-      return `<span style="display:block;text-align:center;font-size:6px;line-height:1;color:${color}">·</span>`;
+      return `<span style="display:block;margin:2px auto 0;width:6px;height:6px;border-radius:50%;background:${color}"></span>`;
     case "circle":
     case "underline":
     case "color-only":

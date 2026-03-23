@@ -60,10 +60,9 @@ describe("CalendarGrid", () => {
       "2026-01-01": "元日",
     });
     renderGrid({ grid, monthLabel: "2026.01" });
-    // Should have a dot marker
-    const dots = document.querySelectorAll('[class*="text-center"]');
-    const dotElements = Array.from(dots).filter((el) => el.textContent === "·");
-    expect(dotElements.length).toBeGreaterThan(0);
+    // Should have a dot marker (rendered as a small circle span)
+    const dots = document.querySelectorAll('[class*="rounded-full"]');
+    expect(dots.length).toBeGreaterThan(0);
   });
 
   it("renders circle mark for holidays", () => {
