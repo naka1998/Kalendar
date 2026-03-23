@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { getMonthGrid, formatMonthLabel, getWeekdayHeaders, enrichDayCells } from "@/lib/dateUtils";
 import { mergeHolidays } from "@/lib/holidayUtils";
 import { resolveTheme } from "@/lib/themeUtils";
 import { THEMES } from "@/lib/themes";
 import { FONT_PRESETS } from "@/lib/fonts";
+import { useImageUpload } from "@/hooks/useImageUpload";
 import { CalendarPage } from "./CalendarPage";
 
 export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
@@ -17,11 +18,15 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const holidayMarkStyle = useCalendarStore((s) => s.holidayMarkStyle);
   const fontId = useCalendarStore((s) => s.fontId);
   const fontWeight = useCalendarStore((s) => s.fontWeight);
+  const useImages = useCalendarStore((s) => s.useImages);
   const imageRatio = useCalendarStore((s) => s.imageRatio);
   const apiHolidays = useCalendarStore((s) => s.apiHolidays);
   const manualHolidays = useCalendarStore((s) => s.manualHolidays);
   const removedHolidays = useCalendarStore((s) => s.removedHolidays);
   const images = useCalendarStore((s) => s.images);
+  const removeImage = useCalendarStore((s) => s.removeImage);
+
+  const { uploadImage } = useImageUpload();
 
   const theme = useMemo(
     () => resolveTheme(themeId, monthKey, monthThemeOverrides, THEMES),
@@ -49,7 +54,18 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   );
 
   const font = FONT_PRESETS.find((f) => f.id === fontId) ?? FONT_PRESETS[0];
-  const imageBase64 = images[monthKey]?.base64 ?? null;
+  const imageBase64 = useImages ? (images[monthKey]?.base64 ?? null) : null;
+
+  const handleImageUpload = useCallback(
+    (file: File) => {
+      void uploadImage(monthKey, file);
+    },
+    [monthKey, uploadImage],
+  );
+
+  const handleImageRemove = useCallback(() => {
+    removeImage(monthKey);
+  }, [monthKey, removeImage]);
 
   return (
     <CalendarPage
@@ -64,6 +80,8 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       orientation={orientation}
       imageBase64={imageBase64}
       imageRatio={imageRatio}
+      onImageUpload={useImages ? handleImageUpload : undefined}
+      onImageRemove={useImages ? handleImageRemove : undefined}
     />
   );
 }

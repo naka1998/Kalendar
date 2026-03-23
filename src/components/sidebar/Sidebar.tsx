@@ -7,20 +7,19 @@ import {
 import { BasicSection } from "./BasicSection";
 import { HolidaySection } from "./HolidaySection";
 import { DesignSection } from "./DesignSection";
-import { ImageSection } from "./ImageSection";
 import { SettingsActions } from "./SettingsActions";
 
 export function Sidebar() {
   return (
     <aside className="flex w-80 shrink-0 flex-col overflow-y-auto bg-surface-container-low p-6">
       <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-        Project Config
+        設定
       </p>
 
-      <Accordion defaultValue={[0]} className="space-y-2">
+      <Accordion defaultValue={["basic"]} className="space-y-2">
         <AccordionItem value="basic" className="border-none">
           <AccordionTrigger className="rounded-lg px-3 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high hover:no-underline">
-            Basic Settings
+            基本設定
           </AccordionTrigger>
           <AccordionContent className="px-3 pt-2">
             <BasicSection />
@@ -29,7 +28,7 @@ export function Sidebar() {
 
         <AccordionItem value="holidays" className="border-none">
           <AccordionTrigger className="rounded-lg px-3 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high hover:no-underline">
-            Holidays
+            祝日
           </AccordionTrigger>
           <AccordionContent className="px-3 pt-2">
             <HolidaySection />
@@ -38,19 +37,10 @@ export function Sidebar() {
 
         <AccordionItem value="design" className="border-none">
           <AccordionTrigger className="rounded-lg px-3 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high hover:no-underline">
-            Design
+            デザイン
           </AccordionTrigger>
           <AccordionContent className="px-3 pt-2">
             <DesignSection />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="images" className="border-none">
-          <AccordionTrigger className="rounded-lg px-3 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-high hover:no-underline">
-            Images
-          </AccordionTrigger>
-          <AccordionContent className="px-3 pt-2">
-            <ImageSection />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

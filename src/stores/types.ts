@@ -101,6 +101,7 @@ export interface CalendarState {
   fontId: string;
   fontWeight: FontWeight;
 
+  useImages: boolean;
   images: Record<string, MonthImage>;
   imageRatio: ImageRatio;
 
@@ -119,6 +120,7 @@ export interface CalendarState {
   setFontId: (id: string) => void;
   setFontWeight: (w: FontWeight) => void;
   setImageRatio: (ratio: ImageRatio) => void;
+  setUseImages: (use: boolean) => void;
 
   setApiHolidays: (holidays: Record<string, string>) => void;
   setHolidaysFetched: (fetched: boolean) => void;

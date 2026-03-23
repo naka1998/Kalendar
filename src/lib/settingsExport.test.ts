@@ -21,6 +21,7 @@ function createMockState(): CalendarState {
     themeId: DEFAULTS.THEME_ID,
     fontId: DEFAULTS.FONT_ID,
     fontWeight: DEFAULTS.FONT_WEIGHT,
+    useImages: true,
     images: {
       "2026-04": {
         id: "img1",
@@ -45,6 +46,7 @@ function createMockState(): CalendarState {
     setFontId: () => {},
     setFontWeight: () => {},
     setImageRatio: () => {},
+    setUseImages: () => {},
     setApiHolidays: () => {},
     setHolidaysFetched: () => {},
     setHolidayFetchError: () => {},

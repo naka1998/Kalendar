@@ -63,7 +63,7 @@ export function PreviewArea() {
     return (
       <main className="flex flex-1 items-center justify-center bg-surface-container">
         <p className="text-on-surface-variant">
-          Invalid date range. End month must be after start month.
+          無効な期間です。終了月は開始月より後にしてください。
         </p>
       </main>
     );

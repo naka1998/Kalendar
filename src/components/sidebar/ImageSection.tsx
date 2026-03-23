@@ -52,7 +52,7 @@ export function ImageSection() {
       {/* Month image assignment overview */}
       <div className="space-y-1.5">
         <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Assign Images
+          画像の割り当て
         </Label>
         <div className="max-h-64 space-y-1 overflow-y-auto">
           {months.map((m) => {
@@ -94,7 +94,7 @@ export function ImageSection() {
                   </button>
                 ) : (
                   <label className="cursor-pointer text-[10px] text-primary hover:underline">
-                    Add
+                    追加
                     <input
                       type="file"
                       accept="image/jpeg,image/png"
@@ -116,7 +116,7 @@ export function ImageSection() {
       {/* Bulk upload */}
       <div className="space-y-1.5">
         <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Quick Upload
+          アップロード
         </Label>
         <div className="space-y-2">
           <Select
@@ -143,7 +143,7 @@ export function ImageSection() {
             disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
           >
-            {uploading ? "Uploading..." : "Choose File"}
+            {uploading ? "アップロード中..." : "ファイルを選択"}
           </Button>
           <input
             ref={fileInputRef}

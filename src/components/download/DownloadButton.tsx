@@ -106,7 +106,7 @@ export function DownloadButton() {
         disabled={downloading}
         className="rounded-xl bg-gradient-to-br from-primary to-primary-container px-4 py-2 text-sm font-semibold text-on-primary transition-opacity hover:opacity-90 disabled:opacity-50"
       >
-        {downloading ? "Exporting..." : "Export"}
+        {downloading ? "エクスポート中..." : "エクスポート"}
       </button>
     </div>
   );

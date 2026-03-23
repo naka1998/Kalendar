@@ -108,25 +108,25 @@ export function BasicSection() {
 
   return (
     <div className="space-y-4">
-      <MonthSelect label="Start Date" value={store.startMonth} onChange={store.setStartMonth} />
+      <MonthSelect label="開始月" value={store.startMonth} onChange={store.setStartMonth} />
 
-      <MonthSelect label="End Date" value={store.endMonth} onChange={store.setEndMonth} />
+      <MonthSelect label="終了月" value={store.endMonth} onChange={store.setEndMonth} />
 
       <SegmentedControl<Orientation>
-        label="Paper"
+        label="用紙"
         options={[
-          { value: "portrait", label: "Portrait" },
-          { value: "landscape", label: "Landscape" },
+          { value: "portrait", label: "縦" },
+          { value: "landscape", label: "横" },
         ]}
         value={store.orientation}
         onChange={store.setOrientation}
       />
 
       <SegmentedControl<WeekStart>
-        label="Week Start"
+        label="週の開始"
         options={[
-          { value: "sunday", label: "Sun" },
-          { value: "monday", label: "Mon" },
+          { value: "sunday", label: "日曜" },
+          { value: "monday", label: "月曜" },
         ]}
         value={store.weekStart}
         onChange={store.setWeekStart}
@@ -134,7 +134,7 @@ export function BasicSection() {
 
       <div className="space-y-1.5">
         <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Day Label Format
+          曜日表記
         </Label>
         <Select
           value={store.weekdayFormat}
@@ -155,7 +155,7 @@ export function BasicSection() {
 
       <div className="space-y-1.5">
         <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Month Label Format
+          月表記
         </Label>
         <Select
           value={store.monthLabelFormat}

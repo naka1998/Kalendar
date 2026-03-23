@@ -22,6 +22,7 @@ describe("calendarStore", () => {
       themeId: DEFAULTS.THEME_ID,
       fontId: DEFAULTS.FONT_ID,
       fontWeight: DEFAULTS.FONT_WEIGHT,
+      useImages: true,
       images: {},
       imageRatio: DEFAULTS.IMAGE_RATIO,
       monthThemeOverrides: {},

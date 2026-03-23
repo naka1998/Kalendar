@@ -18,7 +18,7 @@ function ThemeGrid() {
   return (
     <div className="space-y-1.5">
       <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-        Theme
+        テーマ
       </Label>
       <div className="grid grid-cols-3 gap-2">
         {THEMES.map((t) => (
@@ -54,6 +54,8 @@ export function DesignSection() {
   const setFontId = useCalendarStore((s) => s.setFontId);
   const fontWeight = useCalendarStore((s) => s.fontWeight);
   const setFontWeight = useCalendarStore((s) => s.setFontWeight);
+  const useImages = useCalendarStore((s) => s.useImages);
+  const setUseImages = useCalendarStore((s) => s.setUseImages);
   const imageRatio = useCalendarStore((s) => s.imageRatio);
   const setImageRatio = useCalendarStore((s) => s.setImageRatio);
 
@@ -64,7 +66,7 @@ export function DesignSection() {
       {/* Font family */}
       <div className="space-y-1.5">
         <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Font
+          フォント
         </Label>
         <Select
           value={fontId}
@@ -88,11 +90,11 @@ export function DesignSection() {
       {/* Font weight */}
       <div className="space-y-1.5">
         <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Weight
+          太さ
         </Label>
         <div className="flex rounded-lg bg-surface-container-high p-1">
           {([300, 400, 600] as FontWeight[]).map((w) => {
-            const label = w === 300 ? "Light" : w === 400 ? "Regular" : "SemiBold";
+            const label = w === 300 ? "細字" : w === 400 ? "標準" : "太字";
             return (
               <button
                 key={w}
@@ -110,27 +112,48 @@ export function DesignSection() {
         </div>
       </div>
 
-      {/* Image ratio */}
-      <div className="space-y-1.5">
+      {/* Image toggle */}
+      <div className="flex items-center justify-between">
         <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Image / Grid Ratio
+          画像を使用
         </Label>
-        <div className="flex rounded-lg bg-surface-container-high p-1">
-          {(["60:40", "50:50", "70:30"] as const).map((r) => (
-            <button
-              key={r}
-              onClick={() => setImageRatio(r)}
-              className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
-                imageRatio === r
-                  ? "bg-surface text-on-surface shadow-sm"
-                  : "text-on-surface-variant hover:text-on-surface"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
+        <button
+          onClick={() => setUseImages(!useImages)}
+          className={`relative h-5 w-9 rounded-full transition-colors ${
+            useImages ? "bg-primary" : "bg-surface-container-highest"
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+              useImages ? "translate-x-4" : "translate-x-0"
+            }`}
+          />
+        </button>
       </div>
+
+      {/* Image ratio — only when images enabled */}
+      {useImages && (
+        <div className="space-y-1.5">
+          <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+            画像比率
+          </Label>
+          <div className="flex rounded-lg bg-surface-container-high p-1">
+            {(["60:40", "50:50", "70:30"] as const).map((r) => (
+              <button
+                key={r}
+                onClick={() => setImageRatio(r)}
+                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
+                  imageRatio === r
+                    ? "bg-surface text-on-surface shadow-sm"
+                    : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

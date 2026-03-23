@@ -10,7 +10,7 @@ export function Header() {
       <div className="flex items-baseline gap-3">
         <h1 className="font-heading text-lg font-bold text-on-surface">Ethereal Calendar</h1>
         <span className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Editor
+          エディタ
         </span>
       </div>
 

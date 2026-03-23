@@ -53,12 +53,11 @@ export function HolidaySection() {
     }
   };
 
-  // Fetch status
   const statusText = store.holidaysFetchError
-    ? "Error"
+    ? "エラー"
     : store.holidaysFetched
-      ? "Loaded"
-      : "Loading...";
+      ? "取得済み"
+      : "取得中...";
   const statusColor = store.holidaysFetchError
     ? "text-sunday"
     : store.holidaysFetched
@@ -67,31 +66,28 @@ export function HolidaySection() {
 
   return (
     <div className="space-y-4">
-      {/* Fetch status */}
       <div className="flex items-center gap-2">
         <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          API Status
+          取得状態
         </span>
         <span className={`text-xs font-medium ${statusColor}`}>{statusText}</span>
       </div>
 
-      {/* Mark style */}
       <SegmentedControl
-        label="Holiday Mark"
+        label="祝日マーク"
         options={[
-          { value: "dot", label: "Dot" },
-          { value: "circle", label: "Circle" },
-          { value: "underline", label: "Line" },
-          { value: "color-only", label: "Color" },
+          { value: "dot", label: "ドット" },
+          { value: "circle", label: "丸囲み" },
+          { value: "underline", label: "下線" },
+          { value: "color-only", label: "色のみ" },
         ]}
         value={store.holidayMarkStyle}
         onChange={store.setHolidayMarkStyle}
       />
 
-      {/* Manual holiday add */}
       <div className="space-y-1.5">
         <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          Add Holiday
+          祝日を追加
         </Label>
         <div className="flex gap-2">
           <Input
@@ -102,7 +98,7 @@ export function HolidaySection() {
           />
           <Input
             type="text"
-            placeholder="Name"
+            placeholder="名称"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             className="flex-1 border-none bg-surface-container-high text-sm focus:bg-surface"
@@ -115,15 +111,14 @@ export function HolidaySection() {
           size="sm"
           className="w-full"
         >
-          Add
+          追加
         </Button>
       </div>
 
-      {/* Manual holidays list */}
       {store.manualHolidays.length > 0 && (
         <div className="space-y-1.5">
           <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-            Custom Holidays
+            手動追加した祝日
           </Label>
           <div className="max-h-32 space-y-1 overflow-y-auto">
             {store.manualHolidays.map((h) => (
@@ -146,11 +141,10 @@ export function HolidaySection() {
         </div>
       )}
 
-      {/* Removed API holidays */}
       {store.removedHolidays.length > 0 && (
         <div className="space-y-1.5">
           <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-            Hidden Holidays
+            非表示の祝日
           </Label>
           <div className="max-h-32 space-y-1 overflow-y-auto">
             {store.removedHolidays.map((date) => (
@@ -159,13 +153,13 @@ export function HolidaySection() {
                 className="flex items-center justify-between rounded-md bg-surface-container-high px-2 py-1"
               >
                 <span className="text-xs text-on-surface">
-                  {date} — {store.apiHolidays[date] ?? "Unknown"}
+                  {date} — {store.apiHolidays[date] ?? "不明"}
                 </span>
                 <button
                   onClick={() => store.restoreApiHoliday(date)}
                   className="text-xs text-primary hover:underline"
                 >
-                  Restore
+                  復元
                 </button>
               </div>
             ))}

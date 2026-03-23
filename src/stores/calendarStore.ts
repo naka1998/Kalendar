@@ -26,6 +26,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   fontWeight: DEFAULTS.FONT_WEIGHT,
 
   // Images
+  useImages: true,
   images: {},
   imageRatio: DEFAULTS.IMAGE_RATIO,
 
@@ -45,6 +46,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   setFontId: (id) => set({ fontId: id }),
   setFontWeight: (w) => set({ fontWeight: w }),
   setImageRatio: (ratio) => set({ imageRatio: ratio }),
+  setUseImages: (use) => set({ useImages: use }),
 
   // Holiday actions
   setApiHolidays: (holidays) =>

@@ -15,7 +15,6 @@ test.describe("Calendar Generation", () => {
   });
 
   test("displays month label in preview", async ({ page }) => {
-    // Month label appears in both nav and grid; check grid one
     await expect(page.locator("[data-month='2026-04'] .font-heading").first()).toBeVisible();
   });
 
@@ -36,6 +35,8 @@ test.describe("Calendar Generation", () => {
   });
 
   test("export button is visible in header", async ({ page }) => {
-    await expect(page.getByRole("banner").getByRole("button", { name: "Export" })).toBeVisible();
+    await expect(
+      page.getByRole("banner").getByRole("button", { name: "エクスポート" }),
+    ).toBeVisible();
   });
 });
