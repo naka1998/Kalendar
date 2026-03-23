@@ -6,7 +6,7 @@ export type MonthLabelFormat = "yyyy.mm" | "month-yyyy" | "ja";
 export type HolidayMarkStyle = "dot" | "circle" | "underline" | "color-only";
 export type ImageRatio = "60:40" | "50:50" | "70:30";
 export type PageLayout = "1-month" | "2-month";
-export type DownloadMode = "single-html" | "zip";
+export type DownloadMode = "pdf" | "single-html" | "zip";
 export type FontWeight = 300 | 400 | 600;
 
 // === Color Theme ===

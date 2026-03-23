@@ -31,7 +31,7 @@ function buildInput(store: ReturnType<typeof useCalendarStore.getState>): HtmlGe
       weekdayHeaders: getWeekdayHeaders(store.weekdayFormat, store.weekStart),
       theme,
       holidayMarkStyle: store.holidayMarkStyle,
-      imageBase64: store.images[monthKey]?.base64 ?? null,
+      imageBase64: store.useImages ? (store.images[monthKey]?.base64 ?? null) : null,
       imageRatio: store.imageRatio,
     };
   });
@@ -56,8 +56,22 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+function openPrintWindow(html: string) {
+  const blob = new Blob([html], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, "_blank");
+  if (!win) {
+    URL.revokeObjectURL(url);
+    return;
+  }
+  win.onload = () => {
+    win.print();
+    URL.revokeObjectURL(url);
+  };
+}
+
 export function DownloadButton() {
-  const [mode, setMode] = useState<DownloadMode>("single-html");
+  const [mode, setMode] = useState<DownloadMode>("pdf");
   const [downloading, setDownloading] = useState(false);
 
   const handleDownload = useCallback(async () => {
@@ -66,7 +80,10 @@ export function DownloadButton() {
       const store = useCalendarStore.getState();
       const input = buildInput(store);
 
-      if (mode === "single-html") {
+      if (mode === "pdf") {
+        const html = generateSingleHtml(input);
+        openPrintWindow(html);
+      } else if (mode === "single-html") {
         const html = generateSingleHtml(input);
         const blob = new Blob([html], { type: "text/html" });
         downloadBlob(blob, "calendar.html");
@@ -79,27 +96,26 @@ export function DownloadButton() {
     }
   }, [mode]);
 
+  const modes: { value: DownloadMode; label: string }[] = [
+    { value: "pdf", label: "PDF" },
+    { value: "single-html", label: "HTML" },
+    { value: "zip", label: "ZIP" },
+  ];
+
   return (
     <div className="flex items-center gap-2">
       <div className="flex rounded-lg bg-surface-container-high p-0.5">
-        <button
-          onClick={() => setMode("single-html")}
-          className={`rounded-md px-2 py-1 text-[10px] font-medium transition-all ${
-            mode === "single-html"
-              ? "bg-surface text-on-surface shadow-sm"
-              : "text-on-surface-variant"
-          }`}
-        >
-          HTML
-        </button>
-        <button
-          onClick={() => setMode("zip")}
-          className={`rounded-md px-2 py-1 text-[10px] font-medium transition-all ${
-            mode === "zip" ? "bg-surface text-on-surface shadow-sm" : "text-on-surface-variant"
-          }`}
-        >
-          ZIP
-        </button>
+        {modes.map((m) => (
+          <button
+            key={m.value}
+            onClick={() => setMode(m.value)}
+            className={`rounded-md px-2 py-1 text-[10px] font-medium transition-all ${
+              mode === m.value ? "bg-surface text-on-surface shadow-sm" : "text-on-surface-variant"
+            }`}
+          >
+            {m.label}
+          </button>
+        ))}
       </div>
       <button
         onClick={() => void handleDownload()}
