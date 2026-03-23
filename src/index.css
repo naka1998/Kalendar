@@ -136,3 +136,17 @@
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
+
+/* --- Bottom Sheet Animation --- */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
