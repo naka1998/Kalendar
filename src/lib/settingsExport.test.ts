@@ -60,6 +60,7 @@ function createMockState(): CalendarState {
     restoreApiHoliday: () => {},
     setImage: () => {},
     removeImage: () => {},
+    swapImages: () => {},
     setMonthTheme: () => {},
     clearMonthTheme: () => {},
   };
