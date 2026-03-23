@@ -1,32 +1,23 @@
 import { importSettings } from "./settingsExport";
 import { generateMonthRange } from "./dateUtils";
+import { unescapeHtml } from "./htmlUtils";
 import type { CalendarState, MonthImage } from "@/stores/types";
 
-export function parseSettingsFromHtml(html: string): ReturnType<typeof importSettings> | null {
-  // Extract kalendar-settings meta tag content
+function extractSettingsJson(html: string): string | null {
   const match = html.match(/<meta\s+name="kalendar-settings"\s+content='([^']*)'/);
   if (!match?.[1]) return null;
+  return unescapeHtml(match[1]);
+}
 
-  // Unescape HTML entities
-  const json = match[1]
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"');
-
+export function parseSettingsFromHtml(html: string): ReturnType<typeof importSettings> | null {
+  const json = extractSettingsJson(html);
+  if (!json) return null;
   return importSettings(json);
 }
 
 function parseRawSettingsJson(html: string): Record<string, unknown> | null {
-  const match = html.match(/<meta\s+name="kalendar-settings"\s+content='([^']*)'/);
-  if (!match?.[1]) return null;
-
-  const json = match[1]
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"');
-
+  const json = extractSettingsJson(html);
+  if (!json) return null;
   return JSON.parse(json) as Record<string, unknown>;
 }
 

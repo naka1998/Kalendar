@@ -1,13 +1,6 @@
 import type { HtmlGeneratorInput, PageData, HolidayMarkStyle, ImagePosition } from "@/stores/types";
 import { isHorizontalLayout } from "./layoutUtils";
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+import { escapeHtml } from "./htmlUtils";
 
 function renderHolidayMark(style: HolidayMarkStyle, color: string): string {
   switch (style) {
