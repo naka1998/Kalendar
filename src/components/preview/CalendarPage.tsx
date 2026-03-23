@@ -9,8 +9,11 @@ import type {
   Orientation,
 } from "@/stores/types";
 import { CalendarGrid } from "./CalendarGrid";
+import { DividerHandle } from "./DividerHandle";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
 import { A4 } from "@/lib/constants";
+
+const POSITION_CYCLE: ImagePosition[] = ["top", "right", "bottom", "left"];
 
 export interface CalendarPageProps {
   monthKey: string;
@@ -28,6 +31,12 @@ export interface CalendarPageProps {
   calendarStyle: CalendarStyle;
   onImageUpload?: (file: File) => void;
   onImageRemove?: () => void;
+  // Divider drag
+  dividerProps?: { onPointerDown: (e: React.PointerEvent) => void };
+  isDividerDragging?: boolean;
+  livePercent?: number | null;
+  // Position toggle
+  onPositionChange?: (pos: ImagePosition) => void;
 }
 
 export function CalendarPage({
@@ -45,12 +54,19 @@ export function CalendarPage({
   calendarStyle,
   onImageUpload,
   onImageRemove,
+  dividerProps,
+  isDividerDragging = false,
+  livePercent,
+  onPositionChange,
 }: CalendarPageProps) {
   const { colors } = theme;
   const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
   const pageHeight = orientation === "portrait" ? A4.PORTRAIT_HEIGHT_PX : A4.LANDSCAPE_HEIGHT_PX;
+
+  // Use livePercent during drag for responsiveness
+  const displayPercent = livePercent ?? imagePercent;
   const { imagePercent: effectiveImagePercent, gridPercent: effectiveGridPercent } =
-    calcLayoutPercent(imagePercent, !!imageBase64);
+    calcLayoutPercent(displayPercent, !!imageBase64);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -82,6 +98,13 @@ export function CalendarPage({
     setIsDragOver(false);
   }, []);
 
+  const handlePositionToggle = useCallback(() => {
+    if (!onPositionChange) return;
+    const currentIndex = POSITION_CYCLE.indexOf(imagePosition);
+    const nextIndex = (currentIndex + 1) % POSITION_CYCLE.length;
+    onPositionChange(POSITION_CYCLE[nextIndex]);
+  }, [imagePosition, onPositionChange]);
+
   // Show image area only when images are enabled (onImageUpload provided)
   const imagesEnabled = !!onImageUpload;
   const showImageArea = imagesEnabled && (effectiveImagePercent > 0 || !imageBase64);
@@ -99,6 +122,8 @@ export function CalendarPage({
     : isReversed
       ? ("column-reverse" as const)
       : ("column" as const);
+
+  const showDivider = showImageArea && !!imageBase64 && !!dividerProps;
 
   const imageAreaElement = showImageArea && (
     <div
@@ -161,6 +186,36 @@ export function CalendarPage({
     </div>
   );
 
+  const dividerElement = showDivider && (
+    <div className="relative">
+      <DividerHandle
+        direction={horizontal ? "vertical" : "horizontal"}
+        isDragging={isDividerDragging}
+        dividerProps={dividerProps}
+      />
+      {/* Position toggle button — shown on hover */}
+      {onPositionChange && (
+        <button
+          data-testid="position-toggle"
+          onClick={handlePositionToggle}
+          className="absolute top-1/2 right-1 z-20 -translate-y-1/2 rounded-full bg-surface/80 p-1 text-on-surface-variant opacity-0 shadow-sm transition-opacity hover:bg-surface hover:text-on-surface group-hover/page:opacity-100"
+          title="配置を変更"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+
   const calendarAreaElement = (
     <div
       data-testid="calendar-area"
@@ -184,7 +239,7 @@ export function CalendarPage({
 
   return (
     <div
-      className="overflow-hidden rounded-sm"
+      className="group/page overflow-hidden rounded-sm"
       style={{
         width: `${pageWidth}px`,
         height: `${pageHeight}px`,
@@ -192,8 +247,13 @@ export function CalendarPage({
         boxShadow: "var(--shadow-a4)",
       }}
     >
-      <div data-testid="page-container" className="flex h-full" style={{ flexDirection }}>
+      <div
+        data-testid="page-container"
+        className={`flex h-full ${isDividerDragging ? "select-none" : ""}`}
+        style={{ flexDirection }}
+      >
         {imageAreaElement}
+        {dividerElement}
         {calendarAreaElement}
       </div>
     </div>

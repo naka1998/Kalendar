@@ -5,7 +5,10 @@ import { mergeHolidays } from "@/lib/holidayUtils";
 import { resolveTheme } from "@/lib/themeUtils";
 import { THEMES } from "@/lib/themes";
 import { FONT_PRESETS } from "@/lib/fonts";
+import { A4 } from "@/lib/constants";
 import { useImageUpload } from "@/hooks/useImageUpload";
+import { useDividerDrag } from "@/hooks/useDividerDrag";
+import { useScale } from "./ScaledPage";
 import { CalendarPage } from "./CalendarPage";
 
 export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
@@ -21,6 +24,8 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const useImages = useCalendarStore((s) => s.useImages);
   const imagePercent = useCalendarStore((s) => s.imagePercent);
   const imagePosition = useCalendarStore((s) => s.imagePosition);
+  const setImagePercent = useCalendarStore((s) => s.setImagePercent);
+  const setImagePosition = useCalendarStore((s) => s.setImagePosition);
   const calendarStyle = useCalendarStore((s) => s.calendarStyle);
   const apiHolidays = useCalendarStore((s) => s.apiHolidays);
   const manualHolidays = useCalendarStore((s) => s.manualHolidays);
@@ -29,6 +34,19 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const removeImage = useCalendarStore((s) => s.removeImage);
 
   const { uploadImage } = useImageUpload();
+  const scale = useScale();
+
+  const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
+  const pageHeight = orientation === "portrait" ? A4.PORTRAIT_HEIGHT_PX : A4.LANDSCAPE_HEIGHT_PX;
+
+  const { dividerProps, isDragging, livePercent } = useDividerDrag({
+    pageWidth,
+    pageHeight,
+    scale,
+    currentPercent: imagePercent,
+    imagePosition,
+    onPercentCommit: setImagePercent,
+  });
 
   const theme = useMemo(
     () => resolveTheme(themeId, monthKey, monthThemeOverrides, THEMES),
@@ -86,6 +104,10 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       calendarStyle={calendarStyle}
       onImageUpload={useImages ? handleImageUpload : undefined}
       onImageRemove={useImages ? handleImageRemove : undefined}
+      dividerProps={dividerProps}
+      isDividerDragging={isDragging}
+      livePercent={livePercent}
+      onPositionChange={setImagePosition}
     />
   );
 }
