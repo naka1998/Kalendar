@@ -62,7 +62,19 @@ interface DayCell {
 }
 ```
 
-### 2.4 HTML生成入力型
+### 2.4 カレンダースタイル
+
+```typescript
+interface CalendarStyle {
+  monthFontSize: number; // px (default: 48)
+  dayFontSize: number; // px (default: 14)
+  weekdayFontSize: number; // px (default: 12)
+  cellPadding: number; // px (default: 8)
+  headerGap: number; // px (default: 8)
+}
+```
+
+### 2.5 HTML生成入力型
 
 ```typescript
 interface HtmlGeneratorInput {
@@ -132,27 +144,30 @@ interface PageData {
 
 ```
 App.tsx
-├── Header.tsx (レイアウト)
-├── Sidebar.tsx (コンテナ)
-│   ├── BasicSection.tsx
-│   ├── HolidaySection.tsx
-│   ├── DesignSection.tsx
-│   └── ImageSection.tsx
-├── PreviewArea.tsx (コンテナ: スクロール + 月ジャンプ)
-│   └── CalendarPageContainer.tsx (コンテナ: ストア → props)
-│       └── CalendarPage.tsx (プレゼンテーショナル)
-│           └── CalendarGrid.tsx (プレゼンテーショナル)
-├── DownloadButton.tsx
-└── Footer.tsx (レイアウト)
+├── Header.tsx (レイアウト: タイトル + ヘルプ + 出力ボタン)
+│   ├── HelpModal.tsx (印刷手順ガイド)
+│   └── DownloadButton.tsx (PDF/HTML/ZIP ドロップダウン)
+├── Sidebar.tsx (コンテナ: アコーディオン、複数同時展開可)
+│   ├── BasicSection.tsx (期間, 向き, 曜日, 表記)
+│   ├── HolidaySection.tsx (取得状態, マーク, 手動追加/削除)
+│   ├── DesignSection.tsx (テーマ, フォント, 文字サイズ, 画像設定)
+│   └── SettingsActions.tsx (設定保存/読込/HTMLから読込)
+├── PreviewArea.tsx (コンテナ: 連続スクロール + 月ジャンプ)
+│   └── CalendarPageContainer.tsx (コンテナ: ストア → props + 画像操作)
+│       └── CalendarPage.tsx (プレゼンテーショナル: 画像D&D対応)
+│           └── CalendarGrid.tsx (プレゼンテーショナル: カスタマイズ可能なサイズ)
+├── BottomSheet.tsx (モバイル: スライドアップ設定パネル)
+└── FAB (モバイル: 設定ボタン、md:hidden)
 ```
 
 **プレゼンテーショナルコンポーネント**（`CalendarPage`, `CalendarGrid`）:
 
-- 全データをpropsで受け取る
-- テーマカラーにはインラインスタイルを使用（Tailwindではない）
+- 全データをpropsで受け取る（calendarStyleを含む）
+- テーマカラーとサイズはインラインスタイルで適用（HTMLエクスポートと一致）
 - ストアへの依存ゼロ — propsだけでテスト可能
+- CalendarPageは画像のクリック/D&Dアップロード、ホバー削除に対応
 
-**コンテナコンポーネント**（`CalendarPageContainer`, `CalendarGridContainer`）:
+**コンテナコンポーネント**（`CalendarPageContainer`）:
 
 - Zustandストアから読み取り
 - `lib/` の純粋関数で派生データを計算
@@ -197,15 +212,36 @@ App.tsx
   → <img src={base64} style={{ objectFit: 'contain' }} />
 ```
 
-### 4.3 HTMLエクスポートフロー
+### 4.3 エクスポートフロー
 
 ```
-ダウンロードボタンクリック
-  → ストアからHtmlGeneratorInputを構築
-    → 各月: テーマ解決、グリッド計算、祝日マージ
-    → 全て純粋関数で処理
-  → generateSingleHtml(input)  // 純粋関数: input → HTML文字列
-  → Blob → URL.createObjectURL → 自動ダウンロード
+出力ボタンクリック → モード選択 (PDF / HTML / ZIP)
+
+PDF:
+  → generateSingleHtml(input) → Blob URL → window.open → window.print()
+
+HTML:
+  → exportSettings(store) → settingsJson
+  → generateSingleHtml(input, settingsJson)
+    → <meta name="kalendar-settings"> にJSON埋め込み
+  → Blob → ダウンロード
+
+ZIP:
+  → generateZip(input) → Blob → ダウンロード
+```
+
+### 4.4 HTMLインポートフロー
+
+```
+「HTMLから読込」ボタンクリック
+  → ファイル選択 (.html)
+  → FileReader.readAsText()
+  → parseSettingsFromHtml(html)
+    → <meta name="kalendar-settings"> のcontent属性を抽出
+    → HTMLエンティティをデコード
+    → importSettings(json) で設定オブジェクトに変換
+  → useCalendarStore.setState(settings)
+  → プレビューが設定に基づいて更新
 ```
 
 ---
