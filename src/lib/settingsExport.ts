@@ -1,23 +1,7 @@
-import type { CalendarState } from "@/stores/types";
+import type { CalendarState, PersistedCalendarSettings } from "@/stores/types";
 
-interface ExportedSettings {
+interface ExportedSettings extends PersistedCalendarSettings {
   version: 1;
-  startMonth: string;
-  endMonth: string;
-  orientation: string;
-  weekStart: string;
-  weekdayFormat: string;
-  monthLabelFormat: string;
-  pageLayout: string;
-  holidayMarkStyle: string;
-  themeId: string;
-  fontId: string;
-  fontWeight: number;
-  imagePercent: number;
-  imagePosition: string;
-  manualHolidays: { date: string; name: string }[];
-  removedHolidays: string[];
-  monthThemeOverrides: Record<string, string>;
   imageFileNames: Record<string, string>;
 }
 
@@ -47,46 +31,24 @@ export function exportSettings(state: CalendarState): string {
   return JSON.stringify(exported, null, 2);
 }
 
-export function importSettings(
-  json: string,
-): Partial<
-  Pick<
-    CalendarState,
-    | "startMonth"
-    | "endMonth"
-    | "orientation"
-    | "weekStart"
-    | "weekdayFormat"
-    | "monthLabelFormat"
-    | "pageLayout"
-    | "holidayMarkStyle"
-    | "themeId"
-    | "fontId"
-    | "fontWeight"
-    | "imagePercent"
-    | "imagePosition"
-    | "manualHolidays"
-    | "removedHolidays"
-    | "monthThemeOverrides"
-  >
-> {
+export function importSettings(json: string): Partial<PersistedCalendarSettings> {
   const data = JSON.parse(json) as ExportedSettings;
   if (data.version !== 1) throw new Error("Unsupported settings version");
 
   return {
     startMonth: data.startMonth,
     endMonth: data.endMonth,
-    orientation: data.orientation as CalendarState["orientation"],
-    weekStart: data.weekStart as CalendarState["weekStart"],
-    weekdayFormat: data.weekdayFormat as CalendarState["weekdayFormat"],
-    monthLabelFormat: data.monthLabelFormat as CalendarState["monthLabelFormat"],
-    pageLayout: data.pageLayout as CalendarState["pageLayout"],
-    holidayMarkStyle: data.holidayMarkStyle as CalendarState["holidayMarkStyle"],
+    orientation: data.orientation,
+    weekStart: data.weekStart,
+    weekdayFormat: data.weekdayFormat,
+    monthLabelFormat: data.monthLabelFormat,
+    pageLayout: data.pageLayout,
+    holidayMarkStyle: data.holidayMarkStyle,
     themeId: data.themeId,
     fontId: data.fontId,
-    fontWeight: data.fontWeight as CalendarState["fontWeight"],
+    fontWeight: data.fontWeight,
     imagePercent: data.imagePercent,
-    imagePosition: data.imagePosition as CalendarState["imagePosition"],
+    imagePosition: data.imagePosition,
     manualHolidays: data.manualHolidays,
     removedHolidays: data.removedHolidays,
     monthThemeOverrides: data.monthThemeOverrides,

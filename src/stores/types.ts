@@ -73,6 +73,26 @@ export interface DayCell {
   isSaturday: boolean;
 }
 
+// === Persisted Settings (shared base for export/storage) ===
+export interface PersistedCalendarSettings {
+  startMonth: string;
+  endMonth: string;
+  orientation: Orientation;
+  weekStart: WeekStart;
+  weekdayFormat: WeekdayFormat;
+  monthLabelFormat: MonthLabelFormat;
+  pageLayout: PageLayout;
+  holidayMarkStyle: HolidayMarkStyle;
+  themeId: string;
+  fontId: string;
+  fontWeight: FontWeight;
+  imagePercent: number;
+  imagePosition: ImagePosition;
+  manualHolidays: ManualHoliday[];
+  removedHolidays: string[];
+  monthThemeOverrides: Record<string, string>;
+}
+
 // === HTML Generator ===
 export interface HtmlGeneratorInput {
   pages: PageData[];
