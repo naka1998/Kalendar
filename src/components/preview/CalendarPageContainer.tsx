@@ -1,9 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
-import { getMonthGrid, formatMonthLabel, getWeekdayHeaders, enrichDayCells } from "@/lib/dateUtils";
-import { mergeHolidays } from "@/lib/holidayUtils";
-import { resolveTheme } from "@/lib/themeUtils";
-import { THEMES } from "@/lib/themes";
+import { buildPageData } from "@/lib/buildPageData";
 import { FONT_PRESETS } from "@/lib/fonts";
 import { A4 } from "@/lib/constants";
 import { useImageUpload } from "@/hooks/useImageUpload";
@@ -48,33 +45,42 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
     onPercentCommit: setImagePercent,
   });
 
-  const theme = useMemo(
-    () => resolveTheme(themeId, monthKey, monthThemeOverrides, THEMES),
-    [themeId, monthKey, monthThemeOverrides],
-  );
-
-  const holidays = useMemo(
-    () => mergeHolidays(apiHolidays, manualHolidays, removedHolidays),
-    [apiHolidays, manualHolidays, removedHolidays],
-  );
-
-  const grid = useMemo(() => {
-    const raw = getMonthGrid(monthKey, weekStart);
-    return enrichDayCells(raw, holidays);
-  }, [monthKey, weekStart, holidays]);
-
-  const weekdayHeaders = useMemo(
-    () => getWeekdayHeaders(weekdayFormat, weekStart),
-    [weekdayFormat, weekStart],
-  );
-
-  const monthLabel = useMemo(
-    () => formatMonthLabel(monthKey, monthLabelFormat),
-    [monthKey, monthLabelFormat],
+  const pageData = useMemo(
+    () =>
+      buildPageData(monthKey, {
+        weekStart,
+        weekdayFormat,
+        monthLabelFormat,
+        themeId,
+        monthThemeOverrides,
+        holidayMarkStyle,
+        apiHolidays,
+        manualHolidays,
+        removedHolidays,
+        useImages,
+        images,
+        imagePercent,
+        imagePosition,
+      }),
+    [
+      monthKey,
+      weekStart,
+      weekdayFormat,
+      monthLabelFormat,
+      themeId,
+      monthThemeOverrides,
+      holidayMarkStyle,
+      apiHolidays,
+      manualHolidays,
+      removedHolidays,
+      useImages,
+      images,
+      imagePercent,
+      imagePosition,
+    ],
   );
 
   const font = FONT_PRESETS.find((f) => f.id === fontId) ?? FONT_PRESETS[0];
-  const imageBase64 = useImages ? (images[monthKey]?.base64 ?? null) : null;
 
   const handleImageUpload = useCallback(
     (file: File) => {
@@ -90,17 +96,17 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   return (
     <CalendarPage
       monthKey={monthKey}
-      monthLabel={monthLabel}
-      grid={grid}
-      weekdayHeaders={weekdayHeaders}
-      theme={theme}
-      holidayMarkStyle={holidayMarkStyle}
+      monthLabel={pageData.monthLabel}
+      grid={pageData.grid}
+      weekdayHeaders={pageData.weekdayHeaders}
+      theme={pageData.theme}
+      holidayMarkStyle={pageData.holidayMarkStyle}
       fontFamily={font.family}
       fontWeight={fontWeight}
       orientation={orientation}
-      imageBase64={imageBase64}
-      imagePercent={imagePercent}
-      imagePosition={imagePosition}
+      imageBase64={pageData.imageBase64}
+      imagePercent={pageData.imagePercent}
+      imagePosition={pageData.imagePosition}
       calendarStyle={calendarStyle}
       onImageUpload={useImages ? handleImageUpload : undefined}
       onImageRemove={useImages ? handleImageRemove : undefined}
