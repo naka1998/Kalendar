@@ -40,7 +40,7 @@ export function SettingsActions() {
   return (
     <div className="flex gap-2">
       <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={handleExport}>
-        エクスポート
+        設定を保存
       </Button>
       <Button
         variant="outline"
@@ -48,7 +48,7 @@ export function SettingsActions() {
         className="flex-1 text-xs"
         onClick={() => fileInputRef.current?.click()}
       >
-        インポート
+        設定を読込
       </Button>
       <input
         ref={fileInputRef}

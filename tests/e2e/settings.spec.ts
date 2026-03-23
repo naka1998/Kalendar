@@ -40,7 +40,7 @@ test.describe("Settings", () => {
 
   test("export and import buttons are visible in sidebar", async ({ page }) => {
     const sidebar = page.getByRole("complementary");
-    await expect(sidebar.getByRole("button", { name: "エクスポート" })).toBeVisible();
-    await expect(sidebar.getByRole("button", { name: "インポート" })).toBeVisible();
+    await expect(sidebar.getByRole("button", { name: "設定を保存" })).toBeVisible();
+    await expect(sidebar.getByRole("button", { name: "設定を読込" })).toBeVisible();
   });
 });

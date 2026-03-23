@@ -35,8 +35,6 @@ test.describe("Calendar Generation", () => {
   });
 
   test("export button is visible in header", async ({ page }) => {
-    await expect(
-      page.getByRole("banner").getByRole("button", { name: "エクスポート" }),
-    ).toBeVisible();
+    await expect(page.getByRole("banner").getByRole("button", { name: "出力" })).toBeVisible();
   });
 });
