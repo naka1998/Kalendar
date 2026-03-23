@@ -68,7 +68,11 @@ export function calcResizeDimensions(
   };
 }
 
-export function createImageProcessor(resizer: ImageResizer = defaultResizer) {
+export interface ImageProcessor {
+  resizeImage(file: File): Promise<ResizeResult>;
+}
+
+export function createImageProcessor(resizer: ImageResizer = defaultResizer): ImageProcessor {
   return {
     async resizeImage(file: File): Promise<ResizeResult> {
       // Validate file size
