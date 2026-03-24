@@ -29,4 +29,13 @@ describe("HelpModal", () => {
     await screen.findByText("出力形式の使い分け");
     expect(screen.getByText("一時保存について")).toBeDefined();
   });
+
+  it("renders convenience store printing accordion for 3 chains", async () => {
+    render(<HelpModal />);
+    screen.getByLabelText("Help").click();
+    await screen.findByText("コンビニで印刷する");
+    expect(screen.getByText("セブン‐イレブン")).toBeDefined();
+    expect(screen.getByText("ローソン")).toBeDefined();
+    expect(screen.getByText("ファミリーマート")).toBeDefined();
+  });
 });

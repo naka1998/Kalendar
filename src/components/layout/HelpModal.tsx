@@ -1,4 +1,10 @@
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -93,12 +99,100 @@ export function HelpModal() {
 
           <section>
             <h3 className="mb-2 font-semibold">コンビニで印刷する</h3>
-            <ol className="list-inside list-decimal space-y-1 text-on-surface-variant">
-              <li>上記の手順でPDFファイルを保存する</li>
-              <li>PDFをUSBメモリに保存、またはネットプリントに登録する</li>
-              <li>コンビニのマルチコピー機でA4カラー印刷を選択</li>
-              <li>両面印刷は不要（片面で印刷）</li>
-            </ol>
+            <p className="mb-2 text-on-surface-variant">
+              この案内は、このアプリで保存したPDFを各コンビニの「ネットワークプリント」で印刷する手順です。
+              まずPDFを保存してから、各社のサービスに登録して印刷します。
+            </p>
+            <Accordion>
+              <AccordionItem value="seven">
+                <AccordionTrigger>セブン‐イレブン</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2 text-on-surface-variant">
+                    <p>
+                      「かんたんnetprint」または「netprint」にPDFを登録します。
+                      すぐ印刷するなら「かんたんnetprint」（登録不要・有効期限
+                      翌日）、後で印刷するなら「netprint」（要登録・有効期限30日）が便利です。
+                    </p>
+                    <p>
+                      店頭ではマルチコピー機で「プリント」→「ネットプリント」を選び、予約番号の入力またはQRコードの読み取りで印刷します。
+                    </p>
+                    <p className="font-semibold text-on-surface">
+                      A4料金目安（普通紙）: 白黒 20円 / カラー 60円
+                    </p>
+                    <p>
+                      <a
+                        href="https://www.printing.ne.jp/support/lite/pricelist_lite.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        公式案内（料金・使い方）
+                      </a>
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="lawson">
+                <AccordionTrigger>ローソン</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2 text-on-surface-variant">
+                    <p>ネットワークプリントにPDFを登録します（会員登録なしでも利用可能）。</p>
+                    <p>
+                      店頭ではマルチコピー機で「ネットワークプリント」を選び、ユーザー番号または2次元コードでログインして印刷します。
+                    </p>
+                    <p className="font-semibold text-on-surface">
+                      A4料金目安: 普通紙 白黒 20円 / カラー 60円、光沢紙 白黒 80円 / カラー
+                      120円（おすすめ）
+                    </p>
+                    <p>
+                      <a
+                        href="https://networkprint.ne.jp/info/price/price_l.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        公式案内（料金・使い方）
+                      </a>
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="familymart">
+                <AccordionTrigger>ファミリーマート</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2 text-on-surface-variant">
+                    <p>
+                      ファミマネットワークプリントにPDFを登録します（会員登録不要）。
+                      登録後に表示されるユーザー番号または2次元コードは必ず控えてください（ブラウザを閉じると再表示できません）。
+                    </p>
+                    <p>
+                      店頭ではマルチコピー機で「ネットワークプリント」を選び、ユーザー番号または2次元コードでログインして印刷します。
+                    </p>
+                    <p className="font-semibold text-on-surface">
+                      A4料金目安: 普通紙 白黒 20円 / カラー 60円、光沢紙 白黒 80円 / カラー
+                      120円（おすすめ）
+                    </p>
+                    <p>
+                      <a
+                        href="https://networkprint.family.co.jp/info/price/price_f.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        公式案内（料金・使い方）
+                      </a>
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            <p className="mt-2 text-xs text-on-surface-variant">
+              USBメモリを持ち込めばさらに安く印刷できます（A4普通紙 白黒 10円 / カラー
+              50円が目安）。
+            </p>
+            <p className="mt-1 text-xs text-on-surface-variant">
+              ※
+              料金や画面は変更されることがあります。最新情報は各社の公式案内を確認してください。（2026年3月時点の情報）
+            </p>
           </section>
 
           {hasDarkBackground && (
