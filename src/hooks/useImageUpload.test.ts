@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useImageUpload } from "./useImageUpload";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DEFAULT_CALENDAR_STYLE, DEFAULTS } from "@/lib/constants";
 import { useCalendarStore } from "@/stores/calendarStore";
-import { DEFAULTS, DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
+import { useImageUpload } from "./useImageUpload";
 
 function resetStore() {
   useCalendarStore.setState({
@@ -103,12 +103,49 @@ describe("useImageUpload", () => {
     expect(result.current.error).toBe("Upload failed");
   });
 
+  it("uses new processor after re-render with different processor", async () => {
+    const processorA = {
+      resizeImage: vi.fn().mockResolvedValue({
+        base64: "data:image/png;base64,aaa",
+        mimeType: "image/png",
+      }),
+    };
+    const processorB = {
+      resizeImage: vi.fn().mockResolvedValue({
+        base64: "data:image/png;base64,bbb",
+        mimeType: "image/png",
+      }),
+    };
+
+    const file = new File(["x"], "photo.png", { type: "image/png" });
+    const { result, rerender } = renderHook(({ proc }) => useImageUpload(proc), {
+      initialProps: { proc: processorA },
+    });
+
+    await act(async () => {
+      await result.current.uploadImage("2026-04", file);
+    });
+    expect(processorA.resizeImage).toHaveBeenCalledTimes(1);
+
+    rerender({ proc: processorB });
+
+    await act(async () => {
+      await result.current.uploadImage("2026-05", file);
+    });
+    expect(processorB.resizeImage).toHaveBeenCalledTimes(1);
+    expect(processorA.resizeImage).toHaveBeenCalledTimes(1);
+
+    const images = useCalendarStore.getState().images;
+    expect(images["2026-04"].base64).toBe("data:image/png;base64,aaa");
+    expect(images["2026-05"].base64).toBe("data:image/png;base64,bbb");
+  });
+
   it("clears previous error on new upload", async () => {
     const processor = {
-      resizeImage: vi
-        .fn()
-        .mockRejectedValueOnce(new Error("fail"))
-        .mockResolvedValueOnce({ base64: "data:image/png;base64,ok", mimeType: "image/png" }),
+      resizeImage: vi.fn().mockRejectedValueOnce(new Error("fail")).mockResolvedValueOnce({
+        base64: "data:image/png;base64,ok",
+        mimeType: "image/png",
+      }),
     };
 
     const file = new File(["x"], "a.png", { type: "image/png" });
