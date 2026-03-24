@@ -40,6 +40,9 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   monthThemeOverrides: {},
   calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
 
+  // Transient
+  lastAutoSavedAt: null,
+
   // Basic setting actions
   setStartMonth: (month) => set({ startMonth: month }),
   setEndMonth: (month) => set({ endMonth: month }),

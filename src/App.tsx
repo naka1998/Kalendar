@@ -3,14 +3,20 @@ import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { PreviewArea } from "@/components/preview/PreviewArea";
 import { BottomSheet } from "@/components/layout/BottomSheet";
+import { RestoreDialog } from "@/components/layout/RestoreDialog";
 import { useHolidays } from "@/hooks/useHolidays";
 import { useFontLoader } from "@/hooks/useFontLoader";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { useCalendarStore } from "@/stores/calendarStore";
+import { hasSavedData } from "@/lib/storageService";
 import { FONT_PRESETS } from "@/lib/fonts";
 
 export default function App() {
   useHolidays();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [restored, setRestored] = useState(() => !hasSavedData());
+
+  useAutoSave(restored);
 
   const fontId = useCalendarStore((s) => s.fontId);
   const font = FONT_PRESETS.find((f) => f.id === fontId);
@@ -18,6 +24,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen flex-col">
+      {!restored && <RestoreDialog onComplete={() => setRestored(true)} />}
       <Header />
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop sidebar */}

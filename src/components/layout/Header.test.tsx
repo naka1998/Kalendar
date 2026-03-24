@@ -18,8 +18,8 @@ describe("Header", () => {
     expect(screen.getByText("出力")).toBeDefined();
   });
 
-  it("renders temp save button", () => {
+  it("does not render temp save button (replaced by auto-save)", () => {
     render(<Header />);
-    expect(screen.getByText("一時保存")).toBeDefined();
+    expect(screen.queryByText("一時保存")).toBeNull();
   });
 });

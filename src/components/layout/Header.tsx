@@ -1,5 +1,5 @@
 import { DownloadButton } from "@/components/download/DownloadButton";
-import { TempSaveButton } from "./TempSaveButton";
+import { AutoSaveIndicator } from "./AutoSaveIndicator";
 import { HelpModal } from "./HelpModal";
 
 export function Header() {
@@ -13,8 +13,8 @@ export function Header() {
       </h1>
 
       <div className="flex items-center gap-2 md:gap-3">
+        <AutoSaveIndicator />
         <HelpModal />
-        <TempSaveButton />
         <DownloadButton />
       </div>
     </header>

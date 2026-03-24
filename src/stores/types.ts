@@ -143,6 +143,9 @@ export interface CalendarState {
   monthThemeOverrides: Record<string, string>;
   calendarStyle: CalendarStyle;
 
+  // Transient (not persisted)
+  lastAutoSavedAt: string | null;
+
   // Actions (sync only)
   setStartMonth: (month: string) => void;
   setEndMonth: (month: string) => void;

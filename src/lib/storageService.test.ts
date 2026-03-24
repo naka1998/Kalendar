@@ -49,6 +49,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
       contentAlign: "center",
       pageMarginTop: 0,
     },
+    lastAutoSavedAt: null,
     // Actions (stubs)
     setStartMonth: () => {},
     setEndMonth: () => {},
