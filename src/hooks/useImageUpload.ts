@@ -1,10 +1,8 @@
 import { useCallback, useState } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
-import { createImageProcessor } from "@/lib/imageService";
+import { createImageProcessor, type ImageProcessor } from "@/lib/imageService";
 
-const processor = createImageProcessor();
-
-export function useImageUpload() {
+export function useImageUpload(processor: ImageProcessor = createImageProcessor()) {
   const setImage = useCalendarStore((s) => s.setImage);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
