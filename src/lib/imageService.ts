@@ -11,6 +11,7 @@ export interface ImageResizer {
   ): Promise<string>;
 }
 
+/* v8 ignore start -- browser-only Image/Canvas APIs, tested via E2E */
 const defaultResizer: ImageResizer = {
   loadImage(dataUrl: string): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
@@ -46,6 +47,7 @@ const defaultResizer: ImageResizer = {
     });
   },
 };
+/* v8 ignore stop */
 
 export interface ResizeResult {
   base64: string;
