@@ -22,4 +22,11 @@ describe("HelpModal", () => {
     render(<HelpModal />);
     expect(screen.queryByText("背景色ありテーマを使用中")).toBeNull();
   });
+
+  it("renders export format descriptions when opened", async () => {
+    render(<HelpModal />);
+    screen.getByLabelText("Help").click();
+    await screen.findByText("出力形式の使い分け");
+    expect(screen.getByText("一時保存について")).toBeDefined();
+  });
 });

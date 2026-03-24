@@ -30,7 +30,7 @@ test.describe("Calendar Generation", () => {
 
   test("help button opens print guide modal", async ({ page }) => {
     await page.getByLabel("Help").click();
-    await expect(page.getByText("印刷手順ガイド")).toBeVisible();
+    await expect(page.getByText("ヘルプ")).toBeVisible();
     await expect(page.getByText("Ctrl + P")).toBeVisible();
   });
 
