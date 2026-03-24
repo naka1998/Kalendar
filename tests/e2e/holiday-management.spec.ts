@@ -21,9 +21,21 @@ test.describe("Holiday Management", () => {
   });
 
   test("can switch holiday mark style", async ({ page }) => {
+    // Click "丸囲み" and verify it gets the selected style
     const circleButton = page.getByRole("button", { name: "丸囲み" });
     await circleButton.click();
-    await expect(circleButton).toBeVisible();
+
+    // Selected button should have the active background class
+    await expect(circleButton).toHaveClass(/bg-surface/);
+    // The previously default "ドット" should lose the active class
+    const dotButton = page.getByRole("button", { name: "ドット" });
+    await expect(dotButton).not.toHaveClass(/bg-surface\b/);
+
+    // Switch to "下線" and verify selection moves
+    const underlineButton = page.getByRole("button", { name: "下線" });
+    await underlineButton.click();
+    await expect(underlineButton).toHaveClass(/bg-surface/);
+    await expect(circleButton).not.toHaveClass(/bg-surface\b/);
   });
 
   test("add holiday form is visible", async ({ page }) => {

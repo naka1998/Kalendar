@@ -2,6 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { DownloadButton } from "./DownloadButton";
 
+vi.mock("@/lib/zipGenerator", () => ({
+  generateZip: vi.fn(),
+}));
+
 beforeEach(() => {
   vi.restoreAllMocks();
 });
@@ -93,18 +97,47 @@ describe("DownloadButton", () => {
   });
 
   it("shows 出力中... while downloading", async () => {
-    vi.spyOn(window, "open").mockReturnValue(null);
+    // Use ZIP mode which has an async await, allowing us to observe the intermediate state
+    const { generateZip } = await import("@/lib/zipGenerator");
+    const generateZipMock = vi.mocked(generateZip);
+
+    // Create a deferred promise so we control when the export completes
+    let resolveZip!: (blob: Blob) => void;
+    generateZipMock.mockReturnValue(
+      new Promise((resolve) => {
+        resolveZip = resolve;
+      }),
+    );
 
     render(<DownloadButton />);
     fireEvent.click(screen.getByText("出力"));
 
-    // Click export and check button text changes
-    const promise = act(async () => {
-      fireEvent.click(screen.getByText("PDF"));
+    // Click ZIP to start an async export
+    await act(async () => {
+      fireEvent.click(screen.getByText("ZIP"));
     });
 
-    await promise;
-    // After export completes, button should revert
+    // During download, button text should show "出力中..." and be disabled
+    expect(screen.getByText("出力中...")).toBeDefined();
+    expect(screen.getByText("出力中...").closest("button")?.disabled).toBe(true);
+
+    // Resolve the zip generation to complete the export
+    const mockBlob = new Blob(["test"], { type: "application/zip" });
+    const origCreateElement = document.createElement.bind(document);
+    vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      const el = origCreateElement(tag);
+      if (tag === "a") {
+        Object.defineProperty(el, "click", { value: () => {} });
+      }
+      return el;
+    });
+
+    await act(async () => {
+      resolveZip(mockBlob);
+    });
+
+    // After export completes, button should revert to "出力" and be enabled
     expect(screen.getByText("出力")).toBeDefined();
+    expect(screen.getByText("出力").closest("button")?.disabled).toBe(false);
   });
 });

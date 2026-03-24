@@ -16,19 +16,32 @@ test.describe("Design Customization", () => {
   });
 
   test("can switch theme and see background color change", async ({ page }) => {
-    // Get the initial page background
-    const firstPage = page.locator('[data-testid="page-container"]').first();
-    const parentPage = firstPage.locator("..");
-    const initialBg = await parentPage.evaluate((el) => el.style.background);
+    // Get the initial page background color
+    const pageOuter = page.locator('[data-testid="page-container"]').first().locator("..");
+    const initialBg = await pageOuter.evaluate((el) => el.style.background);
 
-    // Click on a different theme (e.g., second theme)
+    // Remember which theme button is initially selected (has ring-2 class)
     const themeButtons = page.locator(".grid-cols-3 button");
-    await themeButtons.nth(1).click();
+    const firstSelected = await themeButtons.evaluateAll((buttons) =>
+      buttons.findIndex((b) => b.className.includes("ring-2")),
+    );
 
-    // Background should change
-    const newBg = await parentPage.evaluate((el) => el.style.background);
-    // At least the click should work without error (bg might or might not change depending on theme)
-    expect(newBg).toBeDefined();
+    // Click a theme with a distinct background color (index 2 = "Dark" with #1F2937)
+    // This ensures the background actually changes from the default white themes
+    const targetIndex = firstSelected === 2 ? 3 : 2;
+    await themeButtons.nth(targetIndex).click();
+
+    // The clicked theme button should now have the selected ring
+    await expect(themeButtons.nth(targetIndex)).toHaveClass(/ring-2/);
+
+    // The previously selected button should no longer have the ring
+    if (firstSelected >= 0) {
+      await expect(themeButtons.nth(firstSelected)).not.toHaveClass(/ring-2/);
+    }
+
+    // Background color should actually change
+    const newBg = await pageOuter.evaluate((el) => el.style.background);
+    expect(newBg).not.toBe(initialBg);
   });
 
   test("font weight buttons work", async ({ page }) => {
