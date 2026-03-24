@@ -42,6 +42,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
 
   // Transient
   lastAutoSavedAt: null,
+  saveError: null,
 
   // Basic setting actions
   setStartMonth: (month) => set({ startMonth: month }),

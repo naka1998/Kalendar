@@ -78,4 +78,13 @@ describe("RestoreDialog", () => {
     expect(storageService.clearStorage).toHaveBeenCalled();
     expect(onComplete).toHaveBeenCalled();
   });
+
+  it("clears storage when restore fails to load data", () => {
+    vi.mocked(storageService.loadFromStorage).mockReturnValue(null);
+    const onComplete = vi.fn();
+    render(<RestoreDialog onComplete={onComplete} />);
+    fireEvent.click(screen.getByText("復元する"));
+    expect(storageService.clearStorage).toHaveBeenCalled();
+    expect(onComplete).toHaveBeenCalled();
+  });
 });

@@ -94,7 +94,9 @@ export function useAutoSave(enabled: boolean): void {
       const state = useCalendarStore.getState();
       const result = saveToStorage(state);
       if (result.success) {
-        useCalendarStore.setState({ lastAutoSavedAt: new Date().toISOString() });
+        useCalendarStore.setState({ lastAutoSavedAt: new Date().toISOString(), saveError: null });
+      } else {
+        useCalendarStore.setState({ saveError: result.error ?? "保存に失敗しました。" });
       }
     };
 

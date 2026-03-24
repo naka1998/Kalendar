@@ -26,6 +26,8 @@ export function RestoreDialog({ onComplete }: { onComplete: () => void }) {
     if (loaded) {
       suppressNextAutoSave();
       useCalendarStore.setState((prev) => ({ ...prev, ...loaded }));
+    } else {
+      clearStorage();
     }
     onComplete();
   };

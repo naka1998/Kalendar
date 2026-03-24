@@ -145,6 +145,7 @@ export interface CalendarState {
 
   // Transient (not persisted)
   lastAutoSavedAt: string | null;
+  saveError: string | null;
 
   // Actions (sync only)
   setStartMonth: (month: string) => void;

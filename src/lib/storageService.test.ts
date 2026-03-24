@@ -50,6 +50,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
       pageMarginTop: 0,
     },
     lastAutoSavedAt: null,
+    saveError: null,
     // Actions (stubs)
     setStartMonth: () => {},
     setEndMonth: () => {},
@@ -170,6 +171,19 @@ describe("hasSavedData", () => {
   it("returns true after save", () => {
     saveToStorage(createMockState());
     expect(hasSavedData()).toBe(true);
+  });
+
+  it("returns false for invalid JSON", () => {
+    localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, "not json");
+    expect(hasSavedData()).toBe(false);
+  });
+
+  it("returns false for unsupported version", () => {
+    localStorage.setItem(
+      STORAGE_KEYS.USER_SETTINGS,
+      JSON.stringify({ version: 99, savedAt: "", state: {} }),
+    );
+    expect(hasSavedData()).toBe(false);
   });
 });
 

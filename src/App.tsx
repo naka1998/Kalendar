@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/sidebar/Sidebar";
 import { PreviewArea } from "@/components/preview/PreviewArea";
 import { BottomSheet } from "@/components/layout/BottomSheet";
 import { RestoreDialog } from "@/components/layout/RestoreDialog";
+import { SaveErrorBanner } from "@/components/layout/SaveErrorBanner";
 import { useHolidays } from "@/hooks/useHolidays";
 import { useFontLoader } from "@/hooks/useFontLoader";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -25,6 +26,7 @@ export default function App() {
   return (
     <div className="flex h-screen flex-col">
       {!restored && <RestoreDialog onComplete={() => setRestored(true)} />}
+      <SaveErrorBanner />
       <Header />
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop sidebar */}

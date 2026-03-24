@@ -36,6 +36,7 @@ function createMockState(): CalendarState {
     monthThemeOverrides: { "2026-04": "dark" },
     calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
     lastAutoSavedAt: null,
+    saveError: null,
     // Actions (not used in export)
     setStartMonth: () => {},
     setEndMonth: () => {},
