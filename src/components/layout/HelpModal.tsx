@@ -137,13 +137,16 @@ export function HelpModal() {
                           <p className="font-semibold text-on-surface">
                             A4料金目安（普通紙）: 白黒 20円 / カラー 60円
                           </p>
+                          <p className="text-xs">
+                            ※ 光沢紙はネットプリントでは選択できません（普通紙のみ）
+                          </p>
                           <p>
                             <a
                               href="https://www.printing.ne.jp/support/lite/pricelist_lite.html"
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              公式案内（料金・使い方）
+                              サービス公式（料金・使い方）
                             </a>
                           </p>
                         </div>
@@ -168,7 +171,7 @@ export function HelpModal() {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              公式案内（料金・使い方）
+                              サービス公式（料金・使い方）
                             </a>
                           </p>
                         </div>
@@ -196,13 +199,14 @@ export function HelpModal() {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              公式案内（料金・使い方）
+                              サービス公式（料金・使い方）
                             </a>
                           </p>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
+                  <p className="text-xs font-semibold text-on-surface">補足</p>
                   <p className="text-xs text-on-surface-variant">
                     USBメモリを持ち込めばさらに安く印刷できます（A4普通紙 白黒 10円 / カラー
                     50円が目安）。

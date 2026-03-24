@@ -39,4 +39,24 @@ describe("HelpModal", () => {
     expect(screen.getByText("ローソン")).toBeDefined();
     expect(screen.getByText("ファミリーマート")).toBeDefined();
   });
+
+  it("shows glossy paper note for Seven-Eleven", async () => {
+    render(<HelpModal />);
+    screen.getByLabelText("Help").click();
+    const conveniTrigger = await screen.findByText("コンビニで印刷する");
+    conveniTrigger.click();
+    const sevenTrigger = await screen.findByText("セブン‐イレブン");
+    sevenTrigger.click();
+    expect(await screen.findByText(/光沢紙はネットプリントでは選択できません/)).toBeDefined();
+  });
+
+  it("uses サービス公式 link text", async () => {
+    render(<HelpModal />);
+    screen.getByLabelText("Help").click();
+    const conveniTrigger = await screen.findByText("コンビニで印刷する");
+    conveniTrigger.click();
+    const sevenTrigger = await screen.findByText("セブン‐イレブン");
+    sevenTrigger.click();
+    expect(await screen.findByText("サービス公式（料金・使い方）")).toBeDefined();
+  });
 });
