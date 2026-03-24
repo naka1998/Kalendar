@@ -73,4 +73,28 @@ describe("CalendarGrid", () => {
     const el = screen.getByText("1");
     expect(el.style.borderRadius).toBe("50%");
   });
+
+  it("renders underline mark for holidays", () => {
+    const grid = enrichDayCells(getMonthGrid("2026-01", "sunday"), {
+      "2026-01-01": "元日",
+    });
+    renderGrid({ grid, monthLabel: "2026.01", holidayMarkStyle: "underline" });
+    const el = screen.getByText("1");
+    expect(el.style.borderBottom).toContain("2px solid");
+  });
+
+  it("renders color-only style without extra decoration", () => {
+    const grid = enrichDayCells(getMonthGrid("2026-01", "sunday"), {
+      "2026-01-01": "元日",
+    });
+    renderGrid({ grid, monthLabel: "2026.01", holidayMarkStyle: "color-only" });
+    const el = screen.getByText("1");
+    // Should have holiday color (sunday color) but no border-radius or underline
+    expect(el.style.color).toBe("rgb(220, 38, 38)");
+    expect(el.style.borderRadius).toBe("");
+    expect(el.style.borderBottom).toBe("");
+    // No dot marker should exist
+    const dots = document.querySelectorAll('[class*="rounded-full"]');
+    expect(dots.length).toBe(0);
+  });
 });
