@@ -33,8 +33,9 @@ describe("HelpModal", () => {
   it("renders convenience store printing accordion for 3 chains", async () => {
     render(<HelpModal />);
     screen.getByLabelText("Help").click();
-    await screen.findByText("コンビニで印刷する");
-    expect(screen.getByText("セブン‐イレブン")).toBeDefined();
+    const conveniTrigger = await screen.findByText("コンビニで印刷する");
+    conveniTrigger.click();
+    expect(await screen.findByText("セブン‐イレブン")).toBeDefined();
     expect(screen.getByText("ローソン")).toBeDefined();
     expect(screen.getByText("ファミリーマート")).toBeDefined();
   });
