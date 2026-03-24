@@ -21,11 +21,59 @@ export function HelpModal() {
       >
         ?
       </DialogTrigger>
-      <DialogContent className="glass-panel max-w-lg">
+      <DialogContent className="glass-panel max-w-xl">
         <DialogHeader>
-          <DialogTitle className="font-heading text-lg font-bold">印刷手順ガイド</DialogTitle>
+          <DialogTitle className="font-heading text-lg font-bold">ヘルプ</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 text-sm text-on-surface">
+          <section>
+            <h3 className="mb-2 font-semibold">基本の使い方</h3>
+            <p className="text-on-surface-variant">
+              設定 → プレビュー確認 → PDF出力 → 印刷が基本の流れです。
+              まずはPDFで保存し、それを印刷してお使いください。
+            </p>
+          </section>
+
+          <section>
+            <h3 className="mb-2 font-semibold">出力形式の使い分け</h3>
+            <dl className="space-y-2 text-on-surface-variant">
+              <div>
+                <dt className="font-semibold text-on-surface">PDF</dt>
+                <dd>
+                  印刷して使うための基本の出力形式です。
+                  ブラウザの印刷ダイアログからPDFに保存できます。
+                </dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-on-surface">HTML</dt>
+                <dd>
+                  設定や画像を含んだ再利用用の保存形式です。
+                  あとで開き直して再編集したいときや、今年のデザインを来年もベースとして使いたいときに向いています。
+                  気に入ったカレンダーをHTML出力しておけば、セーブポイントとしても使えます。
+                </dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-on-surface">ZIP</dt>
+                <dd>
+                  配布・保管向けの出力形式です。
+                  アプリに直接読み込むことはできません。読み込み可能なのはHTMLファイルです。
+                </dd>
+              </div>
+            </dl>
+          </section>
+
+          <section>
+            <h3 className="mb-2 font-semibold">一時保存について</h3>
+            <p className="text-on-surface-variant">
+              編集中にこまめに退避したい場合は、ヘッダーの「一時保存」ボタンが手軽です。
+              ブラウザに状態を保存するため、ファイルは作成されません。
+            </p>
+            <p className="mt-1 text-on-surface-variant">
+              HTML出力との違い:
+              一時保存は編集中の手軽な退避向け、HTML出力はファイルとして残す・持ち運ぶ・来年も再利用する場合に使います。
+            </p>
+          </section>
+
           <section>
             <h3 className="mb-2 font-semibold">ブラウザからPDF化する</h3>
             <ol className="list-inside list-decimal space-y-1 text-on-surface-variant">
