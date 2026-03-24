@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseSettingsFromHtml, parseImagesFromHtml } from "./htmlImporter";
+import { parseSettingsFromHtml, parseImagesFromHtml, importFromHtmlFile } from "./htmlImporter";
 
 const BASE_SETTINGS = {
   version: 1,
@@ -147,5 +147,52 @@ describe("parseImagesFromHtml", () => {
 
     const result = parseImagesFromHtml(html, "2026-04", "2026-05", {});
     expect(Object.keys(result)).toHaveLength(2);
+  });
+});
+
+describe("importFromHtmlFile", () => {
+  function createHtmlFile(html: string): File {
+    return new File([html], "calendar.html", { type: "text/html" });
+  }
+
+  it("imports settings from a valid HTML file", async () => {
+    const html = buildHtml(BASE_SETTINGS);
+    const file = createHtmlFile(html);
+
+    const result = await importFromHtmlFile(file);
+    expect(result).not.toBeNull();
+    expect(result?.startMonth).toBe("2026-04");
+    expect(result?.themeId).toBe("classic");
+  });
+
+  it("returns null for HTML without settings", async () => {
+    const file = createHtmlFile("<html><body></body></html>");
+    const result = await importFromHtmlFile(file);
+    expect(result).toBeNull();
+  });
+
+  it("imports images along with settings", async () => {
+    const settings = {
+      ...BASE_SETTINGS,
+      startMonth: "2026-04",
+      endMonth: "2026-05",
+      imageFileNames: { "2026-04": "april.jpg" },
+    };
+    const html = buildHtml(settings, [{ hasImage: true }, { hasImage: false }]);
+    const file = createHtmlFile(html);
+
+    const result = await importFromHtmlFile(file);
+    expect(result).not.toBeNull();
+    expect(result?.useImages).toBe(true);
+    expect(result?.images?.["2026-04"]).toBeDefined();
+  });
+
+  it("does not set useImages when no images are present", async () => {
+    const html = buildHtml(BASE_SETTINGS, [{ hasImage: false }]);
+    const file = createHtmlFile(html);
+
+    const result = await importFromHtmlFile(file);
+    expect(result).not.toBeNull();
+    expect(result?.useImages).toBeUndefined();
   });
 });

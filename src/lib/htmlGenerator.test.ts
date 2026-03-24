@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateSingleHtml } from "./htmlGenerator";
+import { generateSingleHtml, generateExternalHtml } from "./htmlGenerator";
 import type { HtmlGeneratorInput, PageData } from "@/stores/types";
 import { THEMES } from "./themes";
 import { getMonthGrid, getWeekdayHeaders, formatMonthLabel, enrichDayCells } from "./dateUtils";
@@ -194,5 +194,31 @@ describe("generateSingleHtml", () => {
       createTestInput({ grid, monthLabel: "2026.01", holidayMarkStyle: "circle" }),
     );
     expect(html).toContain("border-radius:50%");
+  });
+});
+
+describe("generateExternalHtml", () => {
+  it("replaces base64 images with external file paths", () => {
+    const input = createTestInput({
+      imageBase64: "data:image/jpeg;base64,abc123",
+    });
+    const html = generateExternalHtml(input, "images");
+    expect(html).toContain("images/00.jpg");
+    expect(html).not.toContain("data:image/jpeg;base64,abc123");
+  });
+
+  it("uses png extension for PNG images", () => {
+    const input = createTestInput({
+      imageBase64: "data:image/png;base64,abc123",
+    });
+    const html = generateExternalHtml(input, "img");
+    expect(html).toContain("img/00.png");
+  });
+
+  it("preserves pages without images", () => {
+    const input = createTestInput({ imageBase64: null });
+    const html = generateExternalHtml(input, "images");
+    expect(html).toContain("<!DOCTYPE html>");
+    expect(html).not.toContain("images/");
   });
 });
