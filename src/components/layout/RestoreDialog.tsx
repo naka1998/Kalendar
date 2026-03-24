@@ -1,12 +1,3 @@
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { loadFromStorage, clearStorage, getSavedTimestamp } from "@/lib/storageService";
@@ -28,7 +19,6 @@ function formatTimestamp(iso: string): string {
 }
 
 export function RestoreDialog({ onComplete }: { onComplete: () => void }) {
-  const [open, setOpen] = useState(true);
   const timestamp = getSavedTimestamp();
 
   const handleRestore = () => {
@@ -37,37 +27,39 @@ export function RestoreDialog({ onComplete }: { onComplete: () => void }) {
       suppressNextAutoSave();
       useCalendarStore.setState((prev) => ({ ...prev, ...loaded }));
     }
-    setOpen(false);
     onComplete();
   };
 
   const handleDiscard = () => {
     clearStorage();
-    setOpen(false);
     onComplete();
   };
 
   return (
-    <Dialog open={open}>
-      <DialogContent showCloseButton={false} className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="font-heading text-lg font-bold">編集データの復元</DialogTitle>
-          <DialogDescription>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div
+        className="pointer-events-none fixed inset-0 bg-black/10 backdrop-blur-xs"
+        aria-hidden="true"
+      />
+      <div className="relative z-10 grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-xl bg-background p-4 text-sm ring-1 ring-foreground/10 sm:max-w-md">
+        <div className="flex flex-col gap-2">
+          <h2 className="font-heading text-lg leading-none font-bold">編集データの復元</h2>
+          <p className="text-sm text-muted-foreground">
             前回の編集中データがあります。復元しますか？
             {timestamp && (
               <span className="mt-1 block text-xs text-on-surface-variant">
                 最終保存: {formatTimestamp(timestamp)}
               </span>
             )}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+          </p>
+        </div>
+        <div className="-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end">
           <Button variant="outline" onClick={handleDiscard}>
             破棄して新規作成
           </Button>
           <Button onClick={handleRestore}>復元する</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </div>
+    </div>
   );
 }

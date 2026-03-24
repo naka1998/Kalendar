@@ -43,9 +43,14 @@ test.describe("Download Flow", () => {
     expect(download.suggestedFilename()).toBe("calendar.zip");
   });
 
-  test("temp save button works", async ({ page }) => {
-    await page.getByRole("button", { name: "一時保存" }).click();
-    await expect(page.getByText("保存しました")).toBeVisible();
-    await expect(page.getByRole("button", { name: "復元" })).toBeVisible();
+  test("auto-save indicator appears after setting change", async ({ page }) => {
+    // Wait for basic settings to be visible
+    await page.getByText("開始月").waitFor();
+    // Change orientation to trigger auto-save
+    const landscapeButton = page.getByRole("button", { name: "横" });
+    await landscapeButton.click();
+    // Wait for debounce (1.5s) + margin
+    await page.waitForTimeout(3000);
+    await expect(page.getByText(/自動保存済み/)).toBeVisible({ timeout: 5000 });
   });
 });
