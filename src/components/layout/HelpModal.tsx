@@ -27,11 +27,11 @@ export function HelpModal() {
       >
         ?
       </DialogTrigger>
-      <DialogContent className="glass-panel max-h-[85vh] max-w-xl overflow-hidden">
+      <DialogContent className="glass-panel flex max-h-[85vh] max-w-xl flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="font-heading text-lg font-bold">ヘルプ</DialogTitle>
         </DialogHeader>
-        <div className="overflow-y-auto text-sm text-on-surface">
+        <div className="min-h-0 flex-1 overflow-y-auto text-sm text-on-surface">
           <p className="mb-3 text-on-surface-variant">
             設定 → プレビュー確認 → PDF出力 → 印刷が基本の流れです。
             まずはPDFで保存し、それを印刷してお使いください。
@@ -121,100 +121,106 @@ export function HelpModal() {
                     この案内は、このアプリで保存したPDFを各コンビニの「ネットワークプリント」で印刷する手順です。
                     まずPDFを保存してから、各社のサービスに登録して印刷します。
                   </p>
-                  <Accordion>
-                    <AccordionItem value="seven">
-                      <AccordionTrigger>セブン‐イレブン</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2 text-on-surface-variant">
-                          <p>
-                            「かんたんnetprint」または「netprint」にPDFを登録します。
-                            すぐ印刷するなら「かんたんnetprint」（登録不要・有効期限
-                            翌日）、後で印刷するなら「netprint」（要登録・有効期限30日）が便利です。
-                          </p>
-                          <p>
-                            店頭ではマルチコピー機で「プリント」→「ネットプリント」を選び、予約番号の入力またはQRコードの読み取りで印刷します。
-                          </p>
-                          <p className="font-semibold text-on-surface">
-                            A4料金目安（普通紙）: 白黒 20円 / カラー 60円
-                          </p>
-                          <p className="text-xs">
-                            ※ 光沢紙はネットプリントでは選択できません（普通紙のみ）
-                          </p>
-                          <p>
-                            <a
-                              href="https://www.printing.ne.jp/support/lite/pricelist_lite.html"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              サービス公式（料金・使い方）
-                            </a>
-                          </p>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                  <section className="space-y-2 border-l-2 border-on-surface-variant/20 pl-3">
+                    <h4 className="font-semibold text-on-surface">セブン‐イレブン</h4>
+                    <div className="space-y-2 text-on-surface-variant">
+                      <p>
+                        「かんたんnetprint」または「netprint」にPDFを登録します。
+                        すぐ印刷するなら「かんたんnetprint」（登録不要・有効期限
+                        翌日）、後で印刷するなら「netprint」（要登録・有効期限30日）が便利です。
+                      </p>
+                      <p>
+                        店頭ではマルチコピー機で「プリント」→「ネットプリント」を選び、予約番号の入力またはQRコードの読み取りで印刷します。
+                      </p>
+                      <p className="font-semibold text-on-surface">
+                        A4料金目安（普通紙）: 白黒 20円 / カラー 60円
+                      </p>
+                      <p className="text-xs">
+                        ※ 光沢紙はネットプリントでは選択できません（普通紙のみ）
+                      </p>
+                      <p>
+                        <a
+                          href="https://www.printing.ne.jp/support/lite/pricelist_lite.html"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          サービス公式（料金・使い方）
+                        </a>
+                      </p>
+                    </div>
+                  </section>
 
-                    <AccordionItem value="lawson">
-                      <AccordionTrigger>ローソン</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2 text-on-surface-variant">
-                          <p>ネットワークプリントにPDFを登録します（会員登録なしでも利用可能）。</p>
-                          <p>
-                            店頭ではマルチコピー機で「ネットワークプリント」を選び、ユーザー番号または2次元コードでログインして印刷します。
-                          </p>
-                          <p className="font-semibold text-on-surface">
-                            A4料金目安: 普通紙 白黒 20円 / カラー 60円、光沢紙 白黒 80円 / カラー
-                            120円（おすすめ）
-                          </p>
-                          <p>
-                            <a
-                              href="https://networkprint.ne.jp/info/price/price_l.html"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              サービス公式（料金・使い方）
-                            </a>
-                          </p>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                  <section className="space-y-2 border-l-2 border-on-surface-variant/20 pl-3">
+                    <h4 className="font-semibold text-on-surface">ローソン</h4>
+                    <div className="space-y-2 text-on-surface-variant">
+                      <p>ネットワークプリントにPDFを登録します（会員登録なしでも利用可能）。</p>
+                      <p>
+                        店頭ではマルチコピー機で「ネットワークプリント」を選び、ユーザー番号または2次元コードでログインして印刷します。
+                      </p>
+                      <p className="font-semibold text-on-surface">
+                        A4料金目安: 普通紙 白黒 20円 / カラー 60円、光沢紙 白黒 80円 / カラー
+                        120円（おすすめ）
+                      </p>
+                      <p>
+                        <a
+                          href="https://networkprint.ne.jp/info/price/price_l.html"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          サービス公式（料金・使い方）
+                        </a>
+                      </p>
+                    </div>
+                  </section>
 
-                    <AccordionItem value="familymart">
-                      <AccordionTrigger>ファミリーマート</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2 text-on-surface-variant">
-                          <p>
-                            ファミマネットワークプリントにPDFを登録します（会員登録不要）。
-                            登録後に表示されるユーザー番号または2次元コードは必ず控えてください（ブラウザを閉じると再表示できません）。
-                          </p>
-                          <p>
-                            店頭ではマルチコピー機で「ネットワークプリント」を選び、ユーザー番号または2次元コードでログインして印刷します。
-                          </p>
-                          <p className="font-semibold text-on-surface">
-                            A4料金目安: 普通紙 白黒 20円 / カラー 60円、光沢紙 白黒 80円 / カラー
-                            120円（おすすめ）
-                          </p>
-                          <p>
-                            <a
-                              href="https://networkprint.family.co.jp/info/price/price_f.html"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              サービス公式（料金・使い方）
-                            </a>
-                          </p>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                  <p className="text-xs font-semibold text-on-surface">補足</p>
-                  <p className="text-xs text-on-surface-variant">
-                    USBメモリを持ち込めばさらに安く印刷できます（A4普通紙 白黒 10円 / カラー
-                    50円が目安）。
-                  </p>
-                  <p className="text-xs text-on-surface-variant">
-                    ※
-                    料金や画面は変更されることがあります。最新情報は各社の公式案内を確認してください。（2026年3月時点の情報）
-                  </p>
+                  <section className="space-y-2 border-l-2 border-on-surface-variant/20 pl-3">
+                    <h4 className="font-semibold text-on-surface">ファミリーマート</h4>
+                    <div className="space-y-2 text-on-surface-variant">
+                      <p>
+                        ファミマネットワークプリントにPDFを登録します（会員登録不要）。
+                        登録後に表示されるユーザー番号または2次元コードは必ず控えてください（ブラウザを閉じると再表示できません）。
+                      </p>
+                      <p>
+                        店頭ではマルチコピー機で「ネットワークプリント」を選び、ユーザー番号または2次元コードでログインして印刷します。
+                      </p>
+                      <p className="font-semibold text-on-surface">
+                        A4料金目安: 普通紙 白黒 20円 / カラー 60円、光沢紙 白黒 80円 / カラー
+                        120円（おすすめ）
+                      </p>
+                      <p>
+                        <a
+                          href="https://networkprint.family.co.jp/info/price/price_f.html"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          サービス公式（料金・使い方）
+                        </a>
+                      </p>
+                    </div>
+                  </section>
+
+                  <section className="rounded-lg bg-surface-container-high p-3">
+                    <p className="font-semibold text-on-surface">
+                      写真入りカレンダーなら光沢紙・カラー印刷がおすすめ
+                    </p>
+                    <p className="mt-1 text-on-surface-variant">
+                      写真を入れたカレンダーは、光沢紙にカラー印刷するときれいに仕上がります。
+                      ローソン・ファミマの光沢紙カラー（A4
+                      120円/枚）なら、12ヶ月分で約1,440円が目安です。
+                    </p>
+                  </section>
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-on-surface">補足</p>
+                    <p className="text-xs text-on-surface-variant">
+                      USBメモリを持ち込めばさらに安く印刷できます（A4普通紙 白黒 10円 / カラー
+                      50円が目安）。
+                    </p>
+                    <p className="text-xs text-on-surface-variant">
+                      ※
+                      料金や画面は変更されることがあります。最新情報は各社の公式案内を確認してください。（2026年3月時点の情報）
+                    </p>
+                  </div>
                 </div>
               </AccordionContent>
             </AccordionItem>

@@ -30,7 +30,7 @@ describe("HelpModal", () => {
     expect(screen.getByText("一時保存について")).toBeDefined();
   });
 
-  it("renders convenience store printing accordion for 3 chains", async () => {
+  it("renders convenience store printing sections for 3 chains", async () => {
     render(<HelpModal />);
     screen.getByLabelText("Help").click();
     const conveniTrigger = await screen.findByText("コンビニで印刷する");
@@ -45,8 +45,6 @@ describe("HelpModal", () => {
     screen.getByLabelText("Help").click();
     const conveniTrigger = await screen.findByText("コンビニで印刷する");
     conveniTrigger.click();
-    const sevenTrigger = await screen.findByText("セブン‐イレブン");
-    sevenTrigger.click();
     expect(await screen.findByText(/光沢紙はネットプリントでは選択できません/)).toBeDefined();
   });
 
@@ -55,8 +53,19 @@ describe("HelpModal", () => {
     screen.getByLabelText("Help").click();
     const conveniTrigger = await screen.findByText("コンビニで印刷する");
     conveniTrigger.click();
-    const sevenTrigger = await screen.findByText("セブン‐イレブン");
-    sevenTrigger.click();
-    expect(await screen.findByText("サービス公式（料金・使い方）")).toBeDefined();
+    expect(
+      (await screen.findAllByText("サービス公式（料金・使い方）")).length,
+    ).toBeGreaterThanOrEqual(1);
+  });
+
+  it("shows photo calendar glossy paper recommendation", async () => {
+    render(<HelpModal />);
+    screen.getByLabelText("Help").click();
+    const conveniTrigger = await screen.findByText("コンビニで印刷する");
+    conveniTrigger.click();
+    expect(
+      await screen.findByText("写真入りカレンダーなら光沢紙・カラー印刷がおすすめ"),
+    ).toBeDefined();
+    expect(screen.getByText(/約1,440円/)).toBeDefined();
   });
 });
