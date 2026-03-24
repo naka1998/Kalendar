@@ -27,11 +27,11 @@ export function HelpModal() {
       >
         ?
       </DialogTrigger>
-      <DialogContent className="glass-panel max-w-xl">
+      <DialogContent className="glass-panel max-h-[85vh] max-w-xl overflow-hidden">
         <DialogHeader>
           <DialogTitle className="font-heading text-lg font-bold">ヘルプ</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 text-sm text-on-surface">
+        <div className="space-y-4 overflow-y-auto text-sm text-on-surface">
           <section>
             <h3 className="mb-2 font-semibold">基本の使い方</h3>
             <p className="text-on-surface-variant">
