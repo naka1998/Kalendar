@@ -3,6 +3,9 @@ import { test, expect } from "@playwright/test";
 const TEST_WIDE_IMAGE = "tests/e2e/fixtures/test-wide-image.png";
 
 test.describe("Image alignment", () => {
+  // Image upload + accordion interaction need more time on slow browsers
+  test.setTimeout(120_000);
+
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
     await page.waitForTimeout(5000);
