@@ -19,6 +19,7 @@ export interface CalendarStyle {
   cellPadding: number;
   headerGap: number;
   contentAlign: ContentAlign;
+  imageAlign: ContentAlign;
   pageMarginTop: number;
 }
 
@@ -101,7 +102,7 @@ export interface HtmlGeneratorInput {
   fontFamily: string;
   fontWeight: FontWeight;
   googleFontsUrl: string;
-  calendarStyle?: Partial<Pick<CalendarStyle, "contentAlign" | "pageMarginTop">>;
+  calendarStyle?: Partial<Pick<CalendarStyle, "contentAlign" | "imageAlign" | "pageMarginTop">>;
 }
 
 export interface PageData {

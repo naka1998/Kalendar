@@ -138,6 +138,13 @@ export function CalendarPage({
         ? "justify-end"
         : "justify-center";
 
+  const imageObjectPosition =
+    calendarStyle.imageAlign === "start"
+      ? "top"
+      : calendarStyle.imageAlign === "end"
+        ? "bottom"
+        : "center";
+
   const imageAreaElement = showImageArea && (
     <div
       data-testid="image-area"
@@ -153,7 +160,7 @@ export function CalendarPage({
             src={imageBase64}
             alt=""
             className="h-full w-full"
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", objectPosition: imageObjectPosition }}
           />
           {/* Hover overlay with remove button */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity hover:bg-black/30 hover:opacity-100">

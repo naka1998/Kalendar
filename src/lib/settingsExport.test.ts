@@ -139,4 +139,20 @@ describe("importSettings", () => {
     expect(imported.fontId).toBe(original.fontId);
     expect(imported.monthThemeOverrides).toEqual(original.monthThemeOverrides);
   });
+
+  it("round-trips calendarStyle including imageAlign", () => {
+    const original = createMockState();
+    original.calendarStyle = {
+      ...DEFAULT_CALENDAR_STYLE,
+      imageAlign: "start",
+      contentAlign: "end",
+      pageMarginTop: 20,
+    };
+    const json = exportSettings(original);
+    const imported = importSettings(json);
+    expect(imported.calendarStyle).toBeDefined();
+    expect(imported.calendarStyle!.imageAlign).toBe("start");
+    expect(imported.calendarStyle!.contentAlign).toBe("end");
+    expect(imported.calendarStyle!.pageMarginTop).toBe(20);
+  });
 });

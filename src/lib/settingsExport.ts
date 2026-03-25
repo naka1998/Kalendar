@@ -1,9 +1,14 @@
-import type { CalendarState, PersistedCalendarSettings } from "@/stores/types";
+import type { CalendarState, CalendarStyle, PersistedCalendarSettings } from "@/stores/types";
 
 interface ExportedSettings extends PersistedCalendarSettings {
   version: 1;
   imageFileNames: Record<string, string>;
+  calendarStyle?: CalendarStyle;
 }
+
+export type ImportedSettings = Partial<PersistedCalendarSettings> & {
+  calendarStyle?: CalendarStyle;
+};
 
 export function exportSettings(state: CalendarState): string {
   const exported: ExportedSettings = {
@@ -27,11 +32,12 @@ export function exportSettings(state: CalendarState): string {
     imageFileNames: Object.fromEntries(
       Object.entries(state.images).map(([k, v]) => [k, v.fileName]),
     ),
+    calendarStyle: state.calendarStyle,
   };
   return JSON.stringify(exported, null, 2);
 }
 
-export function importSettings(json: string): Partial<PersistedCalendarSettings> {
+export function importSettings(json: string): ImportedSettings {
   const data = JSON.parse(json) as ExportedSettings;
   if (data.version !== 1) throw new Error("Unsupported settings version");
 
@@ -52,5 +58,6 @@ export function importSettings(json: string): Partial<PersistedCalendarSettings>
     manualHolidays: data.manualHolidays,
     removedHolidays: data.removedHolidays,
     monthThemeOverrides: data.monthThemeOverrides,
+    ...(data.calendarStyle ? { calendarStyle: data.calendarStyle } : {}),
   };
 }

@@ -61,6 +61,7 @@ describe("RestoreDialog", () => {
         cellPadding: 8,
         headerGap: 8,
         contentAlign: "center",
+        imageAlign: "center",
         pageMarginTop: 0,
       },
     });
