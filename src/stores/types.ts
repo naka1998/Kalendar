@@ -184,4 +184,5 @@ export interface CalendarState {
 
   setMonthTheme: (monthKey: string, themeId: string) => void;
   clearMonthTheme: (monthKey: string) => void;
+  resetCalendar: () => void;
 }

@@ -7,7 +7,7 @@ import {
 } from "@/lib/constants";
 import type { CalendarState } from "./types";
 
-export const useCalendarStore = create<CalendarState>((set) => ({
+const initialState = {
   // Basic settings
   startMonth: DEFAULTS.START_MONTH,
   endMonth: DEFAULTS.END_MONTH,
@@ -18,11 +18,11 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   pageLayout: DEFAULTS.PAGE_LAYOUT,
 
   // Holidays
-  apiHolidays: {},
+  apiHolidays: {} as Record<string, string>,
   holidaysFetched: false,
-  holidaysFetchError: null,
-  manualHolidays: [],
-  removedHolidays: [],
+  holidaysFetchError: null as string | null,
+  manualHolidays: [] as { date: string; name: string }[],
+  removedHolidays: [] as string[],
   holidayMarkStyle: DEFAULTS.HOLIDAY_MARK_STYLE,
 
   // Design
@@ -32,19 +32,23 @@ export const useCalendarStore = create<CalendarState>((set) => ({
 
   // Images
   useImages: true,
-  images: {},
+  images: {} as Record<string, CalendarState["images"][string]>,
   imagePercent: DEFAULTS.IMAGE_PERCENT,
   imagePosition: DEFAULTS.IMAGE_POSITION,
 
   // Month theme overrides
-  monthThemeOverrides: {},
+  monthThemeOverrides: {} as Record<string, string>,
   calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
 
   // Transient
-  lastAutoSavedAt: null,
-  saveError: null,
+  lastAutoSavedAt: null as string | null,
+  saveError: null as string | null,
   showSafeMargin: false,
-  previewZoom: "standard",
+  previewZoom: "standard" as const,
+};
+
+export const useCalendarStore = create<CalendarState>((set) => ({
+  ...initialState,
 
   // Basic setting actions
   setStartMonth: (month) => set({ startMonth: month }),
@@ -110,4 +114,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
       const { [monthKey]: _, ...rest } = s.monthThemeOverrides;
       return { monthThemeOverrides: rest };
     }),
+
+  // Reset
+  resetCalendar: () => set({ ...initialState }),
 }));

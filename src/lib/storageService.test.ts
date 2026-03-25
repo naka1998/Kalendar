@@ -84,6 +84,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
     swapImages: () => {},
     setMonthTheme: () => {},
     clearMonthTheme: () => {},
+    resetCalendar: () => {},
     ...overrides,
   };
 }
