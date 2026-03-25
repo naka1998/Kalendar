@@ -121,7 +121,7 @@ export function PreviewArea() {
             );
           })}
         </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <div className="flex rounded-lg bg-surface-container-high p-0.5">
             {ZOOM_OPTIONS.map(({ value, label }) => (
               <button
@@ -154,7 +154,7 @@ export function PreviewArea() {
 
       {/* Scrollable preview */}
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="mx-auto flex w-full flex-col items-center gap-8">
+        <div className="mx-auto flex max-w-5xl flex-col gap-8">
           {months.map((monthKey) => (
             <div key={monthKey} ref={setPageRef(monthKey)} data-month={monthKey}>
               <ScaledPage scrollViewportHeight={scrollViewportHeight} previewZoom={previewZoom}>
