@@ -29,6 +29,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const removedHolidays = useCalendarStore((s) => s.removedHolidays);
   const images = useCalendarStore((s) => s.images);
   const removeImage = useCalendarStore((s) => s.removeImage);
+  const showSafeMargin = useCalendarStore((s) => s.showSafeMargin);
 
   const { uploadImage } = useImageUpload();
   const scale = useScale();
@@ -114,6 +115,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       isDividerDragging={isDragging}
       livePercent={livePercent}
       onPositionChange={setImagePosition}
+      showSafeMargin={showSafeMargin}
     />
   );
 }

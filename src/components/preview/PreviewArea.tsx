@@ -8,6 +8,8 @@ export function PreviewArea() {
   const startMonth = useCalendarStore((s) => s.startMonth);
   const endMonth = useCalendarStore((s) => s.endMonth);
   const monthLabelFormat = useCalendarStore((s) => s.monthLabelFormat);
+  const showSafeMargin = useCalendarStore((s) => s.showSafeMargin);
+  const setShowSafeMargin = useCalendarStore((s) => s.setShowSafeMargin);
 
   const months = useMemo(() => generateMonthRange(startMonth, endMonth), [startMonth, endMonth]);
 
@@ -95,6 +97,17 @@ export function PreviewArea() {
             );
           })}
         </div>
+        <button
+          onClick={() => setShowSafeMargin(!showSafeMargin)}
+          className={`ml-auto shrink-0 rounded-md px-2 py-0.5 text-xs transition-all ${
+            showSafeMargin
+              ? "bg-primary text-on-primary"
+              : "text-on-surface-variant hover:bg-surface-container-high"
+          }`}
+          title="印刷セーフマージンを表示"
+        >
+          余白ガイド
+        </button>
       </div>
 
       {/* Scrollable preview */}

@@ -39,6 +39,9 @@ export const DEFAULT_CALENDAR_STYLE = {
   pageMarginTop: 0,
 } as const;
 
+/** Safe margin for print: 5mm at 96dpi ≈ 19px */
+export const SAFE_MARGIN_PX = 19;
+
 export const IMAGE_PERCENT_MIN = 20;
 export const IMAGE_PERCENT_MAX = 80;
 

@@ -10,6 +10,7 @@ import type {
 } from "@/stores/types";
 import { CalendarGrid } from "./CalendarGrid";
 import { DividerHandle } from "./DividerHandle";
+import { SafeMarginOverlay } from "./SafeMarginOverlay";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
 import { A4 } from "@/lib/constants";
 
@@ -37,6 +38,8 @@ export interface CalendarPageProps {
   livePercent?: number | null;
   // Position toggle
   onPositionChange?: (pos: ImagePosition) => void;
+  // Print safety guide
+  showSafeMargin?: boolean;
 }
 
 export function CalendarPage({
@@ -58,6 +61,7 @@ export function CalendarPage({
   isDividerDragging = false,
   livePercent,
   onPositionChange,
+  showSafeMargin,
 }: CalendarPageProps) {
   const { colors } = theme;
   const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
@@ -258,7 +262,7 @@ export function CalendarPage({
 
   return (
     <div
-      className="group/page overflow-hidden rounded-sm"
+      className="group/page relative overflow-hidden rounded-sm"
       style={{
         width: `${pageWidth}px`,
         height: `${pageHeight}px`,
@@ -266,6 +270,7 @@ export function CalendarPage({
         boxShadow: "var(--shadow-a4)",
       }}
     >
+      {showSafeMargin && <SafeMarginOverlay />}
       <div
         data-testid="page-container"
         className={`flex h-full ${isDividerDragging ? "select-none" : ""}`}
