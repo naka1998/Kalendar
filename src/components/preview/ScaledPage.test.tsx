@@ -22,7 +22,7 @@ function ScaleReader() {
 describe("ScaledPage", () => {
   it("renders children", () => {
     render(
-      <ScaledPage>
+      <ScaledPage scrollViewportHeight={800} previewZoom="standard">
         <span>Child content</span>
       </ScaledPage>,
     );
@@ -31,7 +31,7 @@ describe("ScaledPage", () => {
 
   it("provides scale context to children", () => {
     render(
-      <ScaledPage>
+      <ScaledPage scrollViewportHeight={800} previewZoom="standard">
         <ScaleReader />
       </ScaledPage>,
     );
@@ -41,7 +41,7 @@ describe("ScaledPage", () => {
 
   it("renders portrait page dimensions", () => {
     const { container } = render(
-      <ScaledPage>
+      <ScaledPage scrollViewportHeight={800} previewZoom="standard">
         <span>Content</span>
       </ScaledPage>,
     );
@@ -52,11 +52,23 @@ describe("ScaledPage", () => {
   it("renders landscape page dimensions", () => {
     useCalendarStore.setState({ orientation: "landscape" });
     const { container } = render(
-      <ScaledPage>
+      <ScaledPage scrollViewportHeight={800} previewZoom="standard">
         <span>Content</span>
       </ScaledPage>,
     );
     const inner = container.querySelector('[style*="width: 1123px"]');
     expect(inner).toBeTruthy();
+  });
+
+  it("accepts all three zoom levels without error", () => {
+    for (const zoom of ["large", "standard", "small"] as const) {
+      const { unmount } = render(
+        <ScaledPage scrollViewportHeight={800} previewZoom={zoom}>
+          <span>{zoom}</span>
+        </ScaledPage>,
+      );
+      expect(screen.getByText(zoom)).toBeDefined();
+      unmount();
+    }
   });
 });

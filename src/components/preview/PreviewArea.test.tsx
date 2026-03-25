@@ -50,6 +50,7 @@ beforeEach(() => {
     removedHolidays: [],
     monthThemeOverrides: {},
     calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
+    previewZoom: "standard",
   });
 });
 
@@ -87,5 +88,21 @@ describe("PreviewArea", () => {
     expect(useCalendarStore.getState().showSafeMargin).toBe(true);
     fireEvent.click(screen.getByText("余白ガイド"));
     expect(useCalendarStore.getState().showSafeMargin).toBe(false);
+  });
+
+  it("renders zoom control buttons", () => {
+    render(<PreviewArea />);
+    expect(screen.getByTestId("zoom-large")).toBeDefined();
+    expect(screen.getByTestId("zoom-standard")).toBeDefined();
+    expect(screen.getByTestId("zoom-small")).toBeDefined();
+  });
+
+  it("clicking zoom button updates store", () => {
+    render(<PreviewArea />);
+    expect(useCalendarStore.getState().previewZoom).toBe("standard");
+    fireEvent.click(screen.getByTestId("zoom-large"));
+    expect(useCalendarStore.getState().previewZoom).toBe("large");
+    fireEvent.click(screen.getByTestId("zoom-small"));
+    expect(useCalendarStore.getState().previewZoom).toBe("small");
   });
 });
