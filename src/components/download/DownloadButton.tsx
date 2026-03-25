@@ -21,6 +21,7 @@ function buildInput(store: ReturnType<typeof useCalendarStore.getState>): HtmlGe
     googleFontsUrl: font.googleFontsUrl,
     calendarStyle: {
       contentAlign: store.calendarStyle.contentAlign,
+      imageAlign: store.calendarStyle.imageAlign,
       pageMarginTop: store.calendarStyle.pageMarginTop,
     },
   };

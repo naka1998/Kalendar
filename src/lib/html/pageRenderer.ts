@@ -3,9 +3,9 @@ import { isHorizontalLayout } from "../layoutUtils";
 import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
 
-function alignItemsValue(align: string | undefined): string {
-  if (align === "start") return "flex-start";
-  if (align === "end") return "flex-end";
+function objectPositionValue(align: string | undefined): string {
+  if (align === "start") return "top";
+  if (align === "end") return "bottom";
   return "center";
 }
 
@@ -15,8 +15,8 @@ function renderImageHtml(
   sizeValue: string,
   imageAlign?: string,
 ): string {
-  const ai = alignItemsValue(imageAlign);
-  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:${ai};justify-content:${ai};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:contain" /></div>`;
+  const op = objectPositionValue(imageAlign);
+  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:contain;object-position:${op}" /></div>`;
 }
 
 function justifyContentValue(align: string | undefined): string {

@@ -138,17 +138,17 @@ export function CalendarPage({
         ? "justify-end"
         : "justify-center";
 
-  const imageAlignClass =
+  const imageObjectPosition =
     calendarStyle.imageAlign === "start"
-      ? "items-start justify-start"
+      ? "top"
       : calendarStyle.imageAlign === "end"
-        ? "items-end justify-end"
-        : "items-center justify-center";
+        ? "bottom"
+        : "center";
 
   const imageAreaElement = showImageArea && (
     <div
       data-testid="image-area"
-      className={`relative flex ${imageAlignClass} overflow-hidden`}
+      className="relative flex items-center justify-center overflow-hidden"
       style={{ [sizeProperty]: `${placeholderImagePercent}%` }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -160,7 +160,7 @@ export function CalendarPage({
             src={imageBase64}
             alt=""
             className="h-full w-full"
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", objectPosition: imageObjectPosition }}
           />
           {/* Hover overlay with remove button */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity hover:bg-black/30 hover:opacity-100">

@@ -1,7 +1,6 @@
 import { test, expect } from "@playwright/test";
-import path from "path";
 
-const TEST_WIDE_IMAGE = path.join("tests", "e2e", "fixtures", "test-wide-image.png");
+const TEST_WIDE_IMAGE = "tests/e2e/fixtures/test-wide-image.png";
 
 // Helper: upload a wide test image to the first month
 async function uploadWideImage(page: import("@playwright/test").Page) {
@@ -24,10 +23,7 @@ async function openDesignSection(page: import("@playwright/test").Page) {
 }
 
 // Helper: click the nth "上揃え"/"中央"/"下揃え" button (0=image align, 1=content align)
-async function clickImageAlignButton(
-  page: import("@playwright/test").Page,
-  label: string,
-) {
+async function clickImageAlignButton(page: import("@playwright/test").Page, label: string) {
   const buttons = await page.getByText(label, { exact: true }).all();
   // First occurrence is image align, second is content align
   if (buttons.length > 0) {
@@ -38,9 +34,7 @@ async function clickImageAlignButton(
 
 // Helper: get the bounding box of the actual rendered image content
 // by reading the computed object-position style on the img element
-async function getImageObjectPosition(
-  page: import("@playwright/test").Page,
-): Promise<string> {
+async function getImageObjectPosition(page: import("@playwright/test").Page): Promise<string> {
   return page.evaluate(() => {
     const img = document.querySelector('[data-testid="image-area"] img');
     if (!img) return "none";
@@ -87,6 +81,6 @@ test.describe("Image alignment", () => {
 
     // The screenshots should be different because the image is
     // positioned differently (top vs bottom of the container)
-    expect(Buffer.compare(screenshotTop, screenshotBottom)).not.toBe(0);
+    expect(screenshotTop.equals(screenshotBottom)).toBe(false);
   });
 });
