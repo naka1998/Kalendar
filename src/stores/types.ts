@@ -9,6 +9,7 @@ export type PageLayout = "1-month" | "2-month";
 export type DownloadMode = "pdf" | "single-html" | "zip";
 export type FontWeight = 300 | 400 | 600;
 export type ContentAlign = "start" | "center" | "end";
+export type PreviewZoom = "large" | "standard" | "small";
 
 // === Calendar Style ===
 export interface CalendarStyle {
@@ -147,6 +148,7 @@ export interface CalendarState {
   lastAutoSavedAt: string | null;
   saveError: string | null;
   showSafeMargin: boolean;
+  previewZoom: PreviewZoom;
 
   // Actions (sync only)
   setStartMonth: (month: string) => void;
@@ -165,6 +167,7 @@ export interface CalendarState {
   setUseImages: (use: boolean) => void;
   setCalendarStyle: (style: Partial<CalendarStyle>) => void;
   setShowSafeMargin: (show: boolean) => void;
+  setPreviewZoom: (zoom: PreviewZoom) => void;
 
   setApiHolidays: (holidays: Record<string, string>) => void;
   setHolidaysFetched: (fetched: boolean) => void;

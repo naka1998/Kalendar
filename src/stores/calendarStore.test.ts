@@ -49,6 +49,7 @@ describe("calendarStore", () => {
       expect(state.pageLayout).toBe("1-month");
       expect(state.calendarStyle.contentAlign).toBe("center");
       expect(state.calendarStyle.pageMarginTop).toBe(0);
+      expect(state.previewZoom).toBe("standard");
     });
   });
 
@@ -232,6 +233,20 @@ describe("calendarStore", () => {
       expect(useCalendarStore.getState().imagePosition).toBe("left");
       useCalendarStore.getState().setImagePosition("right");
       expect(useCalendarStore.getState().imagePosition).toBe("right");
+    });
+  });
+
+  describe("preview zoom actions", () => {
+    it("setPreviewZoom updates previewZoom", () => {
+      useCalendarStore.getState().setPreviewZoom("large");
+      expect(useCalendarStore.getState().previewZoom).toBe("large");
+    });
+
+    it("setPreviewZoom supports all zoom levels", () => {
+      for (const zoom of ["large", "standard", "small"] as const) {
+        useCalendarStore.getState().setPreviewZoom(zoom);
+        expect(useCalendarStore.getState().previewZoom).toBe(zoom);
+      }
     });
   });
 

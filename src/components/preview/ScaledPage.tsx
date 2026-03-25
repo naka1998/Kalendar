@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { A4 } from "@/lib/constants";
+import type { PreviewZoom } from "@/stores/types";
 
 const ScaleContext = createContext<number>(1);
 
@@ -8,7 +9,13 @@ export function useScale(): number {
   return useContext(ScaleContext);
 }
 
-export function ScaledPage({ children }: { children: React.ReactNode }) {
+interface ScaledPageProps {
+  children: React.ReactNode;
+  scrollViewportHeight: number;
+  previewZoom: PreviewZoom;
+}
+
+export function ScaledPage({ children, scrollViewportHeight, previewZoom }: ScaledPageProps) {
   const orientation = useCalendarStore((s) => s.orientation);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -23,13 +30,26 @@ export function ScaledPage({ children }: { children: React.ReactNode }) {
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const availableWidth = entry.contentRect.width;
-        setScale(Math.min(availableWidth / pageWidth, 1));
+        const widthScale = availableWidth / pageWidth;
+
+        let newScale: number;
+        if (previewZoom === "large") {
+          newScale = Math.min(widthScale, 1);
+        } else {
+          const padding = 32;
+          const effectiveHeight = scrollViewportHeight - padding;
+          const heightScale = effectiveHeight > 0 ? effectiveHeight / pageHeight : widthScale;
+          const fitScale = Math.min(widthScale, heightScale, 1);
+          newScale = previewZoom === "small" ? fitScale * 0.5 : fitScale;
+        }
+
+        setScale(newScale);
       }
     });
 
     observer.observe(container);
     return () => observer.disconnect();
-  }, [pageWidth]);
+  }, [pageWidth, pageHeight, previewZoom, scrollViewportHeight]);
 
   return (
     <div ref={containerRef} className="w-full" style={{ height: pageHeight * scale }}>
