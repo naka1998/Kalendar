@@ -2,14 +2,12 @@ import { test, expect } from "@playwright/test";
 
 const TEST_WIDE_IMAGE = "tests/e2e/fixtures/test-wide-image.png";
 
-// Helper: upload a wide test image to the first month
+// Helper: upload a wide test image to the first month via file input
 async function uploadWideImage(page: import("@playwright/test").Page) {
-  const fileChooserPromise = page.waitForEvent("filechooser");
-  const firstPage = page.locator("[data-month]").first();
-  const placeholder = firstPage.getByText("クリックまたはドラッグで画像を追加");
-  await placeholder.click();
-  const fileChooser = await fileChooserPromise;
-  await fileChooser.setFiles(TEST_WIDE_IMAGE);
+  const imageInput = page.locator('input[type=file][accept="image/jpeg,image/png"]').first();
+  await imageInput.setInputFiles(TEST_WIDE_IMAGE);
+  // Wait for image to appear
+  await page.getByTestId("image-area").locator("img").first().waitFor({ timeout: 10000 });
 }
 
 // Helper: open design section and click image align button via JS dispatch
