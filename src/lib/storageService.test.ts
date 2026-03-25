@@ -52,6 +52,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
     lastAutoSavedAt: null,
     saveError: null,
     showSafeMargin: false,
+    previewZoom: "standard",
     // Actions (stubs)
     setStartMonth: () => {},
     setEndMonth: () => {},
@@ -69,6 +70,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
     setUseImages: () => {},
     setCalendarStyle: () => {},
     setShowSafeMargin: () => {},
+    setPreviewZoom: () => {},
     setApiHolidays: () => {},
     setHolidaysFetched: () => {},
     setHolidayFetchError: () => {},

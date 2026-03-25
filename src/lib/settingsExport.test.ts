@@ -38,6 +38,7 @@ function createMockState(): CalendarState {
     lastAutoSavedAt: null,
     saveError: null,
     showSafeMargin: false,
+    previewZoom: "standard",
     // Actions (not used in export)
     setStartMonth: () => {},
     setEndMonth: () => {},
@@ -55,6 +56,7 @@ function createMockState(): CalendarState {
     setUseImages: () => {},
     setCalendarStyle: () => {},
     setShowSafeMargin: () => {},
+    setPreviewZoom: () => {},
     setApiHolidays: () => {},
     setHolidaysFetched: () => {},
     setHolidayFetchError: () => {},
