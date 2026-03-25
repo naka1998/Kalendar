@@ -123,6 +123,31 @@ describe("renderPage", () => {
     expect(html).toContain("justify-content:flex-start");
   });
 
+  it("applies imageAlign start to image container", () => {
+    const page = makePage({ imageBase64: "data:image/png;base64,abc" });
+    const html = renderPage(page, "portrait", "Montserrat", 400, {
+      imageAlign: "start",
+    });
+    expect(html).toContain("align-items:flex-start");
+    expect(html).toContain("justify-content:flex-start");
+  });
+
+  it("applies imageAlign end to image container", () => {
+    const page = makePage({ imageBase64: "data:image/png;base64,abc" });
+    const html = renderPage(page, "portrait", "Montserrat", 400, {
+      imageAlign: "end",
+    });
+    expect(html).toContain("align-items:flex-end");
+    expect(html).toContain("justify-content:flex-end");
+  });
+
+  it("defaults imageAlign to center when not specified", () => {
+    const page = makePage({ imageBase64: "data:image/png;base64,abc" });
+    const html = renderPage(page, "portrait", "Montserrat", 400);
+    expect(html).toContain("align-items:center");
+    expect(html).toContain("justify-content:center");
+  });
+
   it("escapes font family name with special chars", () => {
     const html = renderPage(makePage(), "portrait", "Noto Sans JP", 400);
     expect(html).toContain("font-family:'Noto Sans JP',sans-serif");

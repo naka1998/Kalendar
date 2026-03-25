@@ -3,8 +3,20 @@ import { isHorizontalLayout } from "../layoutUtils";
 import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
 
-function renderImageHtml(page: PageData, sizeProperty: string, sizeValue: string): string {
-  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:contain" /></div>`;
+function alignItemsValue(align: string | undefined): string {
+  if (align === "start") return "flex-start";
+  if (align === "end") return "flex-end";
+  return "center";
+}
+
+function renderImageHtml(
+  page: PageData,
+  sizeProperty: string,
+  sizeValue: string,
+  imageAlign?: string,
+): string {
+  const ai = alignItemsValue(imageAlign);
+  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:${ai};justify-content:${ai};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:contain" /></div>`;
 }
 
 function justifyContentValue(align: string | undefined): string {
@@ -28,7 +40,7 @@ export function renderPage(
   orientation: string,
   fontFamily: string,
   fontWeight: number,
-  calendarStyle?: Partial<{ contentAlign: string; pageMarginTop: number }>,
+  calendarStyle?: Partial<{ contentAlign: string; imageAlign: string; pageMarginTop: number }>,
 ): string {
   const { colors } = page.theme;
   const width = orientation === "portrait" ? "210mm" : "297mm";
@@ -47,7 +59,7 @@ export function renderPage(
 
   if (page.imageBase64) {
     const gridHtml = renderGridHtml(page);
-    const imageBlock = renderImageHtml(page, sizeProperty, `${imgPct}%`);
+    const imageBlock = renderImageHtml(page, sizeProperty, `${imgPct}%`, calendarStyle?.imageAlign);
     const gridBlock = renderGridContainer(
       gridHtml,
       sizeProperty,

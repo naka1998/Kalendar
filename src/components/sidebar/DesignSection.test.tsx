@@ -50,9 +50,9 @@ describe("DesignSection", () => {
   it("renders content alignment options", () => {
     render(<DesignSection />);
     expect(screen.getByText("配置揃え")).toBeDefined();
-    expect(screen.getByText("上揃え")).toBeDefined();
-    expect(screen.getByText("中央")).toBeDefined();
-    expect(screen.getByText("下揃え")).toBeDefined();
+    // "上揃え" etc. appear in both image align and content align sections
+    expect(screen.getAllByText("上揃え").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("下揃え").length).toBeGreaterThanOrEqual(1);
   });
 
   it("changes font weight on click", () => {
@@ -72,8 +72,29 @@ describe("DesignSection", () => {
 
   it("changes content alignment on click", () => {
     render(<DesignSection />);
-    fireEvent.click(screen.getByText("下揃え"));
+    // "下揃え" appears twice (image align + content align); content align is the second one
+    const buttons = screen.getAllByText("下揃え");
+    fireEvent.click(buttons[1]);
     expect(useCalendarStore.getState().calendarStyle.contentAlign).toBe("end");
+  });
+
+  it("renders image alignment options when images enabled", () => {
+    render(<DesignSection />);
+    expect(screen.getByText("画像揃え")).toBeDefined();
+  });
+
+  it("hides image alignment when images disabled", () => {
+    useCalendarStore.setState({ useImages: false });
+    render(<DesignSection />);
+    expect(screen.queryByText("画像揃え")).toBeNull();
+  });
+
+  it("changes image alignment on click", () => {
+    render(<DesignSection />);
+    // Find all "上揃え" buttons — first is image align, second is content align
+    const buttons = screen.getAllByText("上揃え");
+    fireEvent.click(buttons[0]);
+    expect(useCalendarStore.getState().calendarStyle.imageAlign).toBe("start");
   });
 
   it("shows warning color when font size is at warning threshold", () => {

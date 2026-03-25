@@ -184,6 +184,33 @@ export function DesignSection() {
         />
       </div>
 
+      {/* Image alignment — only when images enabled */}
+      {useImages && (
+        <div className="space-y-1.5">
+          <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+            画像揃え
+          </Label>
+          <div className="flex rounded-lg bg-surface-container-high p-1">
+            {(["start", "center", "end"] as ContentAlign[]).map((a) => {
+              const label = a === "start" ? "上揃え" : a === "center" ? "中央" : "下揃え";
+              return (
+                <button
+                  key={a}
+                  onClick={() => setCalendarStyle({ imageAlign: a })}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
+                    calendarStyle.imageAlign === a
+                      ? "bg-surface text-on-surface shadow-sm"
+                      : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Content alignment */}
       <div className="space-y-1.5">
         <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">

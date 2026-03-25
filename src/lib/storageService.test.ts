@@ -47,6 +47,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
       cellPadding: 8,
       headerGap: 8,
       contentAlign: "center",
+      imageAlign: "center",
       pageMarginTop: 0,
     },
     lastAutoSavedAt: null,
@@ -218,6 +219,7 @@ describe("round-trip", () => {
         cellPadding: 4,
         headerGap: 12,
         contentAlign: "start",
+        imageAlign: "center",
         pageMarginTop: 20,
       },
     });

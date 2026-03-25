@@ -138,10 +138,17 @@ export function CalendarPage({
         ? "justify-end"
         : "justify-center";
 
+  const imageAlignClass =
+    calendarStyle.imageAlign === "start"
+      ? "items-start justify-start"
+      : calendarStyle.imageAlign === "end"
+        ? "items-end justify-end"
+        : "items-center justify-center";
+
   const imageAreaElement = showImageArea && (
     <div
       data-testid="image-area"
-      className="relative flex items-center justify-center overflow-hidden"
+      className={`relative flex ${imageAlignClass} overflow-hidden`}
       style={{ [sizeProperty]: `${placeholderImagePercent}%` }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

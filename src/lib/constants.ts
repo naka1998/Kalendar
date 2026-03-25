@@ -36,6 +36,7 @@ export const DEFAULT_CALENDAR_STYLE = {
   cellPadding: 8,
   headerGap: 8,
   contentAlign: "center" as const,
+  imageAlign: "center" as const,
   pageMarginTop: 0,
 } as const;
 
