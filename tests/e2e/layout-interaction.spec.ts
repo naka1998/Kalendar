@@ -153,9 +153,9 @@ test.describe("Layout interaction", () => {
     await page.waitForTimeout(500);
 
     // Verify the click worked by checking button class
-    const clicked = await page.getByTestId("zoom-large").evaluate(
-      (el) => el.className.includes("shadow-sm"),
-    );
+    const clicked = await page
+      .getByTestId("zoom-large")
+      .evaluate((el) => el.className.includes("shadow-sm"));
 
     if (!clicked) {
       // Fallback: programmatically trigger the button click via DOM event

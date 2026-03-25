@@ -154,7 +154,15 @@ export function PreviewArea() {
 
       {/* Scrollable preview */}
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="mx-auto flex max-w-5xl flex-col gap-8">
+        <div
+          className={`mx-auto ${
+            previewZoom === "small"
+              ? "grid max-w-5xl grid-cols-2 gap-4"
+              : previewZoom === "large"
+                ? "flex flex-col gap-8"
+                : "flex max-w-5xl flex-col gap-8"
+          }`}
+        >
           {months.map((monthKey) => (
             <div key={monthKey} ref={setPageRef(monthKey)} data-month={monthKey}>
               <ScaledPage scrollViewportHeight={scrollViewportHeight} previewZoom={previewZoom}>

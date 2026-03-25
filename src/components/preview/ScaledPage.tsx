@@ -43,15 +43,17 @@ export function ScaledPage({ children, scrollViewportHeight, previewZoom }: Scal
     const widthScale = availableWidth / pageWidth;
 
     if (previewZoom === "large") {
-      return Math.min(widthScale, 1);
+      const heightScaleForLarge =
+        scrollViewportHeight > 0 ? scrollViewportHeight / pageHeight : widthScale;
+      return Math.min(Math.max(widthScale, heightScaleForLarge), 1);
     }
 
-    const padding = 32;
+    const padding = 16;
     const effectiveHeight = scrollViewportHeight - padding;
     const heightScale = effectiveHeight > 0 ? effectiveHeight / pageHeight : widthScale;
     const fitScale = Math.min(widthScale, heightScale, 1);
 
-    return previewZoom === "small" ? fitScale * 0.5 : fitScale;
+    return previewZoom === "small" ? Math.min(widthScale, 1) : fitScale;
   }, [availableWidth, pageWidth, pageHeight, previewZoom, scrollViewportHeight]);
 
   return (
