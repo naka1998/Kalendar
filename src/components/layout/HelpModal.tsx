@@ -78,18 +78,34 @@ export function HelpModal() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="temp-save">
-              <AccordionTrigger>一時保存について</AccordionTrigger>
+            <AccordionItem value="auto-save">
+              <AccordionTrigger>自動保存について</AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-1 text-on-surface-variant">
+                <div className="space-y-2 text-on-surface-variant">
                   <p>
-                    編集中にこまめに退避したい場合は、ヘッダーの「一時保存」ボタンが手軽です。
-                    ブラウザに状態を保存するため、ファイルは作成されません。
+                    編集内容は自動的にブラウザに一時保存されます。設定を変更すると、約1.5秒後に自動保存されます。
+                    ヘッダーに「自動保存済み」と表示されていれば、保存されています。
                   </p>
                   <p>
-                    HTML出力との違い:
-                    一時保存は編集中の手軽な退避向け、HTML出力はファイルとして残す・持ち運ぶ・来年も再利用する場合に使います。
+                    次回アクセス時に前回の編集データがある場合、復元するか破棄するかを選べます。
                   </p>
+                  <p className="font-semibold text-on-surface">保存方法の使い分け</p>
+                  <dl className="space-y-1">
+                    <div>
+                      <dt className="font-semibold text-on-surface">自動保存（ブラウザ内）</dt>
+                      <dd>編集中の手軽な退避。同じ端末・同じブラウザでの作業継続向けです。</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-on-surface">HTML出力</dt>
+                      <dd>
+                        ファイルとして残す・来年も同じデザインを流用する・他端末に持ち運ぶ場合に使います。
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-on-surface">PDF出力</dt>
+                      <dd>印刷して使うための最終出力です。</dd>
+                    </div>
+                  </dl>
                 </div>
               </AccordionContent>
             </AccordionItem>

@@ -27,7 +27,7 @@ describe("HelpModal", () => {
     render(<HelpModal />);
     screen.getByLabelText("Help").click();
     await screen.findByText("出力形式の使い分け");
-    expect(screen.getByText("一時保存について")).toBeDefined();
+    expect(screen.getByText("自動保存について")).toBeDefined();
   });
 
   it("renders convenience store printing sections for 3 chains", async () => {

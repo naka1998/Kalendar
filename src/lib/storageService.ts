@@ -75,7 +75,15 @@ export function clearStorage(): void {
 }
 
 export function hasSavedData(): boolean {
-  return localStorage.getItem(STORAGE_KEYS.USER_SETTINGS) !== null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
+    if (!raw) return false;
+
+    const data = JSON.parse(raw) as SavedData;
+    return data.version === 1 && data.state != null;
+  } catch {
+    return false;
+  }
 }
 
 export function getSavedTimestamp(): string | null {
