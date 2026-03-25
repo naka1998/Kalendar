@@ -249,4 +249,15 @@ describe("CalendarPage", () => {
     const placeholder = imageArea.querySelector("button")!;
     expect(placeholder.className).not.toContain("bg-primary/10");
   });
+
+  it("renders SafeMarginOverlay when showSafeMargin is true", () => {
+    renderPage({ showSafeMargin: true });
+    expect(screen.getByTestId("safe-margin-overlay")).toBeDefined();
+    expect(screen.getByText("印刷安全マージン (5mm)")).toBeDefined();
+  });
+
+  it("does not render SafeMarginOverlay when showSafeMargin is false", () => {
+    renderPage({ showSafeMargin: false });
+    expect(screen.queryByTestId("safe-margin-overlay")).toBeNull();
+  });
 });

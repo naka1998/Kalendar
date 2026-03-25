@@ -146,6 +146,7 @@ export interface CalendarState {
   // Transient (not persisted)
   lastAutoSavedAt: string | null;
   saveError: string | null;
+  showSafeMargin: boolean;
 
   // Actions (sync only)
   setStartMonth: (month: string) => void;
@@ -163,6 +164,7 @@ export interface CalendarState {
   setImagePosition: (pos: ImagePosition) => void;
   setUseImages: (use: boolean) => void;
   setCalendarStyle: (style: Partial<CalendarStyle>) => void;
+  setShowSafeMargin: (show: boolean) => void;
 
   setApiHolidays: (holidays: Record<string, string>) => void;
   setHolidaysFetched: (fetched: boolean) => void;

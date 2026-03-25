@@ -75,4 +75,36 @@ describe("DesignSection", () => {
     fireEvent.click(screen.getByText("下揃え"));
     expect(useCalendarStore.getState().calendarStyle.contentAlign).toBe("end");
   });
+
+  it("shows warning color when font size is at warning threshold", () => {
+    useCalendarStore.setState({
+      calendarStyle: {
+        ...DEFAULT_CALENDAR_STYLE,
+        monthFontSize: 30,
+      },
+    });
+    render(<DesignSection />);
+    const monthLabel = screen.getByText("月タイトル");
+    expect(monthLabel.className).toContain("text-amber-500");
+  });
+
+  it("shows danger color when font size is at danger threshold", () => {
+    useCalendarStore.setState({
+      calendarStyle: {
+        ...DEFAULT_CALENDAR_STYLE,
+        monthFontSize: 26,
+      },
+    });
+    render(<DesignSection />);
+    const monthLabel = screen.getByText("月タイトル");
+    expect(monthLabel.className).toContain("text-red-500");
+  });
+
+  it("shows no warning color when font size is above thresholds", () => {
+    render(<DesignSection />);
+    const monthLabel = screen.getByText("月タイトル");
+    expect(monthLabel.className).toContain("text-on-surface-variant");
+    expect(monthLabel.className).not.toContain("text-amber-500");
+    expect(monthLabel.className).not.toContain("text-red-500");
+  });
 });

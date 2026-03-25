@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { PreviewArea } from "./PreviewArea";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { DEFAULTS, DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
@@ -78,5 +78,14 @@ describe("PreviewArea", () => {
   it("renders active month label in navigation", () => {
     render(<PreviewArea />);
     expect(screen.getAllByText("2026.04").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("toggles showSafeMargin when clicking margin guide button", () => {
+    render(<PreviewArea />);
+    expect(useCalendarStore.getState().showSafeMargin).toBe(false);
+    fireEvent.click(screen.getByText("余白ガイド"));
+    expect(useCalendarStore.getState().showSafeMargin).toBe(true);
+    fireEvent.click(screen.getByText("余白ガイド"));
+    expect(useCalendarStore.getState().showSafeMargin).toBe(false);
   });
 });

@@ -43,6 +43,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   // Transient
   lastAutoSavedAt: null,
   saveError: null,
+  showSafeMargin: false,
 
   // Basic setting actions
   setStartMonth: (month) => set({ startMonth: month }),
@@ -63,6 +64,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   setImagePosition: (pos) => set({ imagePosition: pos }),
   setUseImages: (use) => set({ useImages: use }),
   setCalendarStyle: (style) => set((s) => ({ calendarStyle: { ...s.calendarStyle, ...style } })),
+  setShowSafeMargin: (show) => set({ showSafeMargin: show }),
 
   // Holiday actions
   setApiHolidays: (holidays) =>
