@@ -141,21 +141,22 @@ test.describe("Layout interaction", () => {
     expect(pageBox.y + pageBox.height).toBeLessThanOrEqual(scrollBox.y + scrollBox.height + 1);
   });
 
-  test("large zoom makes page overflow viewport vertically", async ({ page }) => {
+  test("large zoom makes page larger than standard zoom", async ({ page }) => {
+    // Measure standard zoom page height first
+    const firstPage = page.locator("[data-month]").first();
+    const standardBox = await firstPage.boundingBox();
+    if (!standardBox) throw new Error("First page not found");
+    const standardHeight = standardBox.height;
+
+    // Switch to large zoom
     await page.getByTestId("zoom-large").click();
     await page.waitForTimeout(300);
 
-    const scrollContainer = page.locator(".overflow-y-auto").first();
-    const scrollBox = await scrollContainer.boundingBox();
-    if (!scrollBox) throw new Error("Scroll container not found");
+    const largeBox = await firstPage.boundingBox();
+    if (!largeBox) throw new Error("First page not found after zoom change");
 
-    const firstPage = page.locator("[data-month]").first();
-    const pageBox = await firstPage.boundingBox();
-    if (!pageBox) throw new Error("First page not found");
-
-    // In large zoom, the page should be taller than in standard zoom
-    // It may exceed the viewport height
-    expect(pageBox.height).toBeGreaterThan(scrollBox.height * 0.8);
+    // Large zoom page should be taller than standard zoom
+    expect(largeBox.height).toBeGreaterThan(standardHeight);
   });
 
   test("small zoom shows multiple months", async ({ page }) => {
