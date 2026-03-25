@@ -123,29 +123,26 @@ describe("renderPage", () => {
     expect(html).toContain("justify-content:flex-start");
   });
 
-  it("applies imageAlign start to image container", () => {
+  it("applies imageAlign start as object-position on img", () => {
     const page = makePage({ imageBase64: "data:image/png;base64,abc" });
     const html = renderPage(page, "portrait", "Montserrat", 400, {
       imageAlign: "start",
     });
-    expect(html).toContain("align-items:flex-start");
-    expect(html).toContain("justify-content:flex-start");
+    expect(html).toContain("object-position:top");
   });
 
-  it("applies imageAlign end to image container", () => {
+  it("applies imageAlign end as object-position on img", () => {
     const page = makePage({ imageBase64: "data:image/png;base64,abc" });
     const html = renderPage(page, "portrait", "Montserrat", 400, {
       imageAlign: "end",
     });
-    expect(html).toContain("align-items:flex-end");
-    expect(html).toContain("justify-content:flex-end");
+    expect(html).toContain("object-position:bottom");
   });
 
-  it("defaults imageAlign to center when not specified", () => {
+  it("defaults imageAlign to center object-position", () => {
     const page = makePage({ imageBase64: "data:image/png;base64,abc" });
     const html = renderPage(page, "portrait", "Montserrat", 400);
-    expect(html).toContain("align-items:center");
-    expect(html).toContain("justify-content:center");
+    expect(html).toContain("object-position:center");
   });
 
   it("escapes font family name with special chars", () => {
