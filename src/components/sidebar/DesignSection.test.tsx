@@ -75,7 +75,7 @@ describe("DesignSection", () => {
     // "下揃え" appears twice (image align + content align); content align is the second one
     const buttons = screen.getAllByText("下揃え");
     fireEvent.click(buttons[1]);
-    expect(useCalendarStore.getState().calendarStyle.contentAlign).toBe("end");
+    expect(useCalendarStore.getState().calendarStyle.contentAlignV).toBe("end");
   });
 
   it("renders image alignment options when images enabled", () => {
@@ -94,7 +94,7 @@ describe("DesignSection", () => {
     // Find all "上揃え" buttons — first is image align, second is content align
     const buttons = screen.getAllByText("上揃え");
     fireEvent.click(buttons[0]);
-    expect(useCalendarStore.getState().calendarStyle.imageAlign).toBe("start");
+    expect(useCalendarStore.getState().calendarStyle.imageAlignV).toBe("start");
   });
 
   it("shows warning color when font size is at warning threshold", () => {

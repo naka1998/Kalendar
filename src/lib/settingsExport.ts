@@ -10,6 +10,21 @@ export type ImportedSettings = Partial<PersistedCalendarSettings> & {
   calendarStyle?: CalendarStyle;
 };
 
+function migrateCalendarStyle(style: CalendarStyle): CalendarStyle {
+  const s = style as unknown as Record<string, unknown>;
+  if ("contentAlign" in s && !("contentAlignV" in s)) {
+    s.contentAlignV = s.contentAlign;
+    s.contentAlignH = "center";
+    delete s.contentAlign;
+  }
+  if ("imageAlign" in s && !("imageAlignV" in s)) {
+    s.imageAlignV = s.imageAlign;
+    s.imageAlignH = "center";
+    delete s.imageAlign;
+  }
+  return s as unknown as CalendarStyle;
+}
+
 export function exportSettings(state: CalendarState): string {
   const exported: ExportedSettings = {
     version: 1,
@@ -61,7 +76,7 @@ export function importSettings(json: string): ImportedSettings {
     manualHolidays: data.manualHolidays,
     removedHolidays: data.removedHolidays,
     monthThemeOverrides: data.monthThemeOverrides,
-    ...(data.calendarStyle ? { calendarStyle: data.calendarStyle } : {}),
+    ...(data.calendarStyle ? { calendarStyle: migrateCalendarStyle(data.calendarStyle) } : {}),
     ...(data.imageCropSettings ? { imageCropSettings: data.imageCropSettings } : {}),
   };
 }

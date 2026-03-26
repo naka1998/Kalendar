@@ -42,22 +42,37 @@ export function calcCropRender(
 
   if (fitMode === "cover") {
     if (cropRealAR > containerAR) {
-      // Crop is wider: match height, overflow width
       displayCropHRatio = 1;
       displayCropWRatio = cropRealAR / containerAR;
     } else {
-      // Crop is taller: match width, overflow height
       displayCropWRatio = 1;
       displayCropHRatio = containerAR / cropRealAR;
     }
-  } else {
-    // contain
+  } else if (fitMode === "none") {
+    // Display at original pixel size relative to container
+    // cropW fraction of original image width / containerW gives the ratio
+    // Since we don't have actual pixel sizes here, treat as contain (best approximation)
     if (cropRealAR > containerAR) {
-      // Crop is wider: match width, fit height within
       displayCropWRatio = 1;
       displayCropHRatio = containerAR / cropRealAR;
     } else {
-      // Crop is taller: match height, fit width within
+      displayCropHRatio = 1;
+      displayCropWRatio = cropRealAR / containerAR;
+    }
+  } else if (fitMode === "fit-width") {
+    // Match width, let height be natural
+    displayCropWRatio = 1;
+    displayCropHRatio = containerAR / cropRealAR;
+  } else if (fitMode === "fit-height") {
+    // Match height, let width be natural
+    displayCropHRatio = 1;
+    displayCropWRatio = cropRealAR / containerAR;
+  } else {
+    // contain (default)
+    if (cropRealAR > containerAR) {
+      displayCropWRatio = 1;
+      displayCropHRatio = containerAR / cropRealAR;
+    } else {
       displayCropHRatio = 1;
       displayCropWRatio = cropRealAR / containerAR;
     }

@@ -159,21 +159,34 @@ export function CalendarPage({
 
   const showDivider = showImageArea && !!imageBase64 && !!dividerProps;
 
-  // Content alignment: applied inside each area as justify-content,
-  // not as align-items on the container (which would shrink children).
+  // Content alignment: vertical (justify-content) and horizontal (align-items)
   const justifyContentClass =
-    calendarStyle.contentAlign === "start"
+    calendarStyle.contentAlignV === "start"
       ? "justify-start"
-      : calendarStyle.contentAlign === "end"
+      : calendarStyle.contentAlignV === "end"
         ? "justify-end"
         : "justify-center";
 
-  const imageObjectPosition =
-    calendarStyle.imageAlign === "start"
+  const alignItemsClass =
+    calendarStyle.contentAlignH === "start"
+      ? "items-start"
+      : calendarStyle.contentAlignH === "end"
+        ? "items-end"
+        : "items-center";
+
+  const imageAlignV =
+    calendarStyle.imageAlignV === "start"
       ? "top"
-      : calendarStyle.imageAlign === "end"
+      : calendarStyle.imageAlignV === "end"
         ? "bottom"
         : "center";
+  const imageAlignH =
+    calendarStyle.imageAlignH === "start"
+      ? "left"
+      : calendarStyle.imageAlignH === "end"
+        ? "right"
+        : "center";
+  const imageObjectPosition = `${imageAlignV} ${imageAlignH}`;
 
   // Determine effective crop settings: editing draft takes priority, then committed, then none
   // During editing, we show the full image (for frame placement), not the cropped result
@@ -237,8 +250,37 @@ export function CalendarPage({
                 height: `${cropRender.imgHeightPct}%`,
               }}
             />
+          ) : imageFitMode === "fit-width" ? (
+            /* fit-width: width 100%, natural height */
+            <img
+              ref={imageRef}
+              src={imageBase64}
+              alt=""
+              className="w-full"
+              onLoad={handleImageLoad}
+              style={{ objectPosition: imageObjectPosition }}
+            />
+          ) : imageFitMode === "fit-height" ? (
+            /* fit-height: height 100%, natural width */
+            <img
+              ref={imageRef}
+              src={imageBase64}
+              alt=""
+              className="h-full"
+              onLoad={handleImageLoad}
+              style={{ objectPosition: imageObjectPosition }}
+            />
+          ) : imageFitMode === "none" ? (
+            /* none: original size */
+            <img
+              ref={imageRef}
+              src={imageBase64}
+              alt=""
+              onLoad={handleImageLoad}
+              style={{ objectFit: "none", objectPosition: imageObjectPosition }}
+            />
           ) : (
-            /* Default display: no crop (or full image crop) */
+            /* Default display: cover or contain */
             <img
               ref={imageRef}
               src={imageBase64}
@@ -265,7 +307,7 @@ export function CalendarPage({
                 onSave={onEditSave}
                 onCancel={onEditCancel}
                 onReset={onEditReset}
-                imageAlign={calendarStyle.imageAlign}
+                imageAlign={calendarStyle.imageAlignV}
               />
             )}
           {/* Overlay with edit/remove buttons (when not editing) */}
@@ -387,7 +429,7 @@ export function CalendarPage({
   const calendarAreaElement = (
     <div
       data-testid="calendar-area"
-      className={`flex flex-col overflow-hidden px-6 py-4 ${justifyContentClass}`}
+      className={`flex flex-col overflow-hidden px-6 py-4 ${justifyContentClass} ${alignItemsClass}`}
       style={{
         flex: 1,
         [sizeProperty]: imageBase64 ? `${placeholderGridPercent}%` : undefined,

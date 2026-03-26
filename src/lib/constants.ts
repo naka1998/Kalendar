@@ -36,8 +36,10 @@ export const DEFAULT_CALENDAR_STYLE = {
   weekdayFontSize: 12,
   cellPadding: 8,
   headerGap: 8,
-  contentAlign: "center" as const,
-  imageAlign: "center" as const,
+  contentAlignV: "center" as const,
+  contentAlignH: "center" as const,
+  imageAlignV: "center" as const,
+  imageAlignH: "center" as const,
   pageMarginTop: 0,
 } as const;
 

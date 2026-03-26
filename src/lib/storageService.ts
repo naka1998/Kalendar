@@ -68,6 +68,21 @@ export function loadFromStorage(): SavedState | null {
     const data = JSON.parse(raw) as SavedData;
     if (data.version !== 1) return null;
 
+    // Backward compatibility: migrate old contentAlign/imageAlign to V/H variants
+    if (data.state.calendarStyle) {
+      const style = data.state.calendarStyle as unknown as Record<string, unknown>;
+      if ("contentAlign" in style && !("contentAlignV" in style)) {
+        style.contentAlignV = style.contentAlign;
+        style.contentAlignH = "center";
+        delete style.contentAlign;
+      }
+      if ("imageAlign" in style && !("imageAlignV" in style)) {
+        style.imageAlignV = style.imageAlign;
+        style.imageAlignH = "center";
+        delete style.imageAlign;
+      }
+    }
+
     return data.state;
   } catch {
     return null;

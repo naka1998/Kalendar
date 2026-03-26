@@ -4,10 +4,20 @@ import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
 import { calcCropRender, isFullImageCrop } from "../cropUtils";
 
-function objectPositionValue(align: string | undefined): string {
+function alignToPositionV(align: string | undefined): string {
   if (align === "start") return "top";
   if (align === "end") return "bottom";
   return "center";
+}
+
+function alignToPositionH(align: string | undefined): string {
+  if (align === "start") return "left";
+  if (align === "end") return "right";
+  return "center";
+}
+
+function objectPositionValue(alignV: string | undefined, alignH: string | undefined): string {
+  return `${alignToPositionV(alignV)} ${alignToPositionH(alignH)}`;
 }
 
 // Page dimensions in mm for export rendering
@@ -18,7 +28,8 @@ function renderImageHtml(
   page: PageData,
   sizeProperty: string,
   sizeValue: string,
-  imageAlign: string | undefined,
+  imageAlignV: string | undefined,
+  imageAlignH: string | undefined,
   containerWMm: number,
   containerHMm: number,
 ): string {
@@ -31,8 +42,19 @@ function renderImageHtml(
     return `<div style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${r.imgLeftPct.toFixed(4)}%;top:${r.imgTopPct.toFixed(4)}%;width:${r.imgWidthPct.toFixed(4)}%;height:${r.imgHeightPct.toFixed(4)}%" /></div>`;
   }
 
-  const op = objectPositionValue(imageAlign);
+  const op = objectPositionValue(imageAlignV, imageAlignH);
   const fitMode = page.imageFitMode ?? "contain";
+
+  if (fitMode === "fit-width") {
+    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;object-position:${op}" /></div>`;
+  }
+  if (fitMode === "fit-height") {
+    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="height:100%;object-position:${op}" /></div>`;
+  }
+  if (fitMode === "none") {
+    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="object-fit:none;object-position:${op}" /></div>`;
+  }
+
   return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${op}" /></div>`;
 }
 
@@ -42,14 +64,22 @@ function justifyContentValue(align: string | undefined): string {
   return "center";
 }
 
+function alignItemsValue(align: string | undefined): string {
+  if (align === "start") return "flex-start";
+  if (align === "end") return "flex-end";
+  return "center";
+}
+
 function renderGridContainer(
   gridHtml: string,
   sizeProperty: string,
   sizeValue: string,
-  contentAlign?: string,
+  contentAlignV?: string,
+  contentAlignH?: string,
 ): string {
-  const justify = `justify-content:${justifyContentValue(contentAlign)}`;
-  return `<div style="${sizeProperty}:${sizeValue};display:flex;flex-direction:column;${justify};padding:16px 24px;overflow:hidden">${gridHtml}</div>`;
+  const justify = `justify-content:${justifyContentValue(contentAlignV)}`;
+  const align = `align-items:${alignItemsValue(contentAlignH)}`;
+  return `<div style="${sizeProperty}:${sizeValue};display:flex;flex-direction:column;${justify};${align};padding:16px 24px;overflow:hidden">${gridHtml}</div>`;
 }
 
 export function renderPage(
@@ -57,7 +87,13 @@ export function renderPage(
   orientation: string,
   fontFamily: string,
   fontWeight: number,
-  calendarStyle?: Partial<{ contentAlign: string; imageAlign: string; pageMarginTop: number }>,
+  calendarStyle?: Partial<{
+    contentAlignV: string;
+    contentAlignH: string;
+    imageAlignV: string;
+    imageAlignH: string;
+    pageMarginTop: number;
+  }>,
 ): string {
   const { colors } = page.theme;
   const width = orientation === "portrait" ? "210mm" : "297mm";
@@ -87,7 +123,8 @@ export function renderPage(
       page,
       sizeProperty,
       `${imgPct}%`,
-      calendarStyle?.imageAlign,
+      calendarStyle?.imageAlignV,
+      calendarStyle?.imageAlignH,
       containerWMm,
       containerHMm,
     );
@@ -95,7 +132,8 @@ export function renderPage(
       gridHtml,
       sizeProperty,
       `${gridPct}%`,
-      calendarStyle?.contentAlign,
+      calendarStyle?.contentAlignV,
+      calendarStyle?.contentAlignH,
     );
 
     const isReversed = position === "bottom" || position === "right";

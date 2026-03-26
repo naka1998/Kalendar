@@ -10,7 +10,7 @@ export type DownloadMode = "pdf" | "single-html" | "zip";
 export type FontWeight = 300 | 400 | 600;
 export type ContentAlign = "start" | "center" | "end";
 export type PreviewZoom = "large" | "standard" | "small";
-export type FitMode = "cover" | "contain";
+export type FitMode = "contain" | "cover" | "none" | "fit-width" | "fit-height";
 
 // Per-month image crop settings (crop-rect model)
 export interface ImageCropSettings {
@@ -27,8 +27,10 @@ export interface CalendarStyle {
   weekdayFontSize: number;
   cellPadding: number;
   headerGap: number;
-  contentAlign: ContentAlign;
-  imageAlign: ContentAlign;
+  contentAlignV: ContentAlign;
+  contentAlignH: ContentAlign;
+  imageAlignV: ContentAlign;
+  imageAlignH: ContentAlign;
   pageMarginTop: number;
 }
 
@@ -114,7 +116,12 @@ export interface HtmlGeneratorInput {
   fontFamily: string;
   fontWeight: FontWeight;
   googleFontsUrl: string;
-  calendarStyle?: Partial<Pick<CalendarStyle, "contentAlign" | "imageAlign" | "pageMarginTop">>;
+  calendarStyle?: Partial<
+    Pick<
+      CalendarStyle,
+      "contentAlignV" | "contentAlignH" | "imageAlignV" | "imageAlignH" | "pageMarginTop"
+    >
+  >;
 }
 
 export interface PageData {

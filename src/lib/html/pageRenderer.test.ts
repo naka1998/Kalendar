@@ -115,34 +115,42 @@ describe("renderPage", () => {
     expect(html).toContain("padding-top:16px");
   });
 
-  it("applies contentAlign start", () => {
+  it("applies contentAlignV start", () => {
     const page = makePage({ imageBase64: "data:image/png;base64,abc" });
     const html = renderPage(page, "portrait", "Montserrat", 400, {
-      contentAlign: "start",
+      contentAlignV: "start",
     });
     expect(html).toContain("justify-content:flex-start");
   });
 
-  it("applies imageAlign start as object-position on img", () => {
+  it("applies imageAlignV start as object-position top", () => {
     const page = makePage({ imageBase64: "data:image/png;base64,abc" });
     const html = renderPage(page, "portrait", "Montserrat", 400, {
-      imageAlign: "start",
+      imageAlignV: "start",
     });
-    expect(html).toContain("object-position:top");
+    expect(html).toContain("object-position:top center");
   });
 
-  it("applies imageAlign end as object-position on img", () => {
+  it("applies imageAlignV end as object-position bottom", () => {
     const page = makePage({ imageBase64: "data:image/png;base64,abc" });
     const html = renderPage(page, "portrait", "Montserrat", 400, {
-      imageAlign: "end",
+      imageAlignV: "end",
     });
-    expect(html).toContain("object-position:bottom");
+    expect(html).toContain("object-position:bottom center");
   });
 
-  it("defaults imageAlign to center object-position", () => {
+  it("applies imageAlignH end as object-position right", () => {
+    const page = makePage({ imageBase64: "data:image/png;base64,abc" });
+    const html = renderPage(page, "portrait", "Montserrat", 400, {
+      imageAlignH: "end",
+    });
+    expect(html).toContain("object-position:center right");
+  });
+
+  it("defaults imageAlign to center center object-position", () => {
     const page = makePage({ imageBase64: "data:image/png;base64,abc" });
     const html = renderPage(page, "portrait", "Montserrat", 400);
-    expect(html).toContain("object-position:center");
+    expect(html).toContain("object-position:center center");
   });
 
   it("escapes font family name with special chars", () => {

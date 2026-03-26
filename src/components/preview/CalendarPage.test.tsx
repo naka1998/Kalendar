@@ -174,19 +174,19 @@ describe("CalendarPage", () => {
   });
 
   it("applies justify-center for center content alignment", () => {
-    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlign: "center" } });
+    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "center" } });
     const calendarArea = screen.getByTestId("calendar-area");
     expect(calendarArea.className).toContain("justify-center");
   });
 
   it("applies justify-start for start content alignment", () => {
-    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlign: "start" } });
+    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "start" } });
     const calendarArea = screen.getByTestId("calendar-area");
     expect(calendarArea.className).toContain("justify-start");
   });
 
   it("applies justify-end for end content alignment", () => {
-    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlign: "end" } });
+    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "end" } });
     const calendarArea = screen.getByTestId("calendar-area");
     expect(calendarArea.className).toContain("justify-end");
   });

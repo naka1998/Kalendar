@@ -164,7 +164,7 @@ describe("generateSingleHtml", () => {
       imageBase64: "data:image/jpeg;base64,abc123",
       imagePosition: "left",
     });
-    input.calendarStyle = { contentAlign: "center" };
+    input.calendarStyle = { contentAlignV: "center" };
     const html = generateSingleHtml(input);
     expect(html).toContain("justify-content:center");
   });
@@ -174,7 +174,7 @@ describe("generateSingleHtml", () => {
       imageBase64: "data:image/jpeg;base64,abc123",
       imagePosition: "left",
     });
-    input.calendarStyle = { contentAlign: "start" };
+    input.calendarStyle = { contentAlignV: "start" };
     const html = generateSingleHtml(input);
     expect(html).toContain("justify-content:flex-start");
   });

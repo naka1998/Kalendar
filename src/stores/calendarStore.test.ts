@@ -49,7 +49,7 @@ describe("calendarStore", () => {
       expect(state.imagePercent).toBe(50);
       expect(state.imagePosition).toBe("top");
       expect(state.pageLayout).toBe("1-month");
-      expect(state.calendarStyle.contentAlign).toBe("center");
+      expect(state.calendarStyle.contentAlignV).toBe("center");
       expect(state.calendarStyle.pageMarginTop).toBe(0);
       expect(state.previewZoom).toBe("standard");
     });
@@ -253,9 +253,9 @@ describe("calendarStore", () => {
   });
 
   describe("calendar style actions", () => {
-    it("setCalendarStyle updates contentAlign", () => {
-      useCalendarStore.getState().setCalendarStyle({ contentAlign: "start" });
-      expect(useCalendarStore.getState().calendarStyle.contentAlign).toBe("start");
+    it("setCalendarStyle updates contentAlignV", () => {
+      useCalendarStore.getState().setCalendarStyle({ contentAlignV: "start" });
+      expect(useCalendarStore.getState().calendarStyle.contentAlignV).toBe("start");
     });
 
     it("setCalendarStyle updates pageMarginTop", () => {
