@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calcCropRender, clampCropRect, calcInitialCropRect } from "./cropUtils";
+import { calcCropRender, clampCropRect, calcInitialCropRect, isFullImageCrop } from "./cropUtils";
 import type { ImageCropSettings } from "@/stores/types";
 
 const fullCrop: ImageCropSettings = {
@@ -90,6 +90,24 @@ describe("clampCropRect", () => {
     const result = clampCropRect(0, 0, 0.01, 0.01);
     expect(result.cropW).toBe(0.1);
     expect(result.cropH).toBe(0.1);
+  });
+});
+
+describe("isFullImageCrop", () => {
+  it("returns true for default full image crop", () => {
+    expect(isFullImageCrop({ cropX: 0, cropY: 0, cropW: 1, cropH: 1 })).toBe(true);
+  });
+
+  it("returns true for nearly-full crop (floating point)", () => {
+    expect(isFullImageCrop({ cropX: 0.0005, cropY: 0, cropW: 0.9995, cropH: 1 })).toBe(true);
+  });
+
+  it("returns false for a partial crop", () => {
+    expect(isFullImageCrop({ cropX: 0.1, cropY: 0, cropW: 0.8, cropH: 1 })).toBe(false);
+  });
+
+  it("returns false for half-height crop", () => {
+    expect(isFullImageCrop({ cropX: 0, cropY: 0, cropW: 1, cropH: 0.5 })).toBe(false);
   });
 });
 

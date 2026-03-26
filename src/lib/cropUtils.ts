@@ -11,6 +11,14 @@ export interface CropRenderResult {
 }
 
 /**
+ * Check if a crop rect represents the full image (no actual cropping).
+ * Uses a small epsilon to handle floating point imprecision.
+ */
+export function isFullImageCrop(crop: ImageCropSettings): boolean {
+  return crop.cropX <= 0.001 && crop.cropY <= 0.001 && crop.cropW >= 0.999 && crop.cropH >= 0.999;
+}
+
+/**
  * Calculate CSS rendering properties for a cropped image.
  * Returns percentage-based values relative to the container, so the result
  * is independent of the actual container pixel dimensions.

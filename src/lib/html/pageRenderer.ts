@@ -2,7 +2,7 @@ import type { PageData, ImagePosition } from "@/stores/types";
 import { isHorizontalLayout } from "../layoutUtils";
 import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
-import { calcCropRender } from "../cropUtils";
+import { calcCropRender, isFullImageCrop } from "../cropUtils";
 
 function objectPositionValue(align: string | undefined): string {
   if (align === "start") return "top";
@@ -25,14 +25,15 @@ function renderImageHtml(
   const crop = page.imageCropSettings;
   const aspectRatio = page.imageAspectRatio;
 
-  if (crop && aspectRatio) {
+  if (crop && aspectRatio && !isFullImageCrop(crop)) {
     const fitMode = page.imageFitMode ?? "cover";
     const r = calcCropRender(crop, containerWMm, containerHMm, aspectRatio, fitMode);
     return `<div style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${r.imgLeftPct.toFixed(4)}%;top:${r.imgTopPct.toFixed(4)}%;width:${r.imgWidthPct.toFixed(4)}%;height:${r.imgHeightPct.toFixed(4)}%" /></div>`;
   }
 
   const op = objectPositionValue(imageAlign);
-  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:contain;object-position:${op}" /></div>`;
+  const fitMode = page.imageFitMode ?? "contain";
+  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${op}" /></div>`;
 }
 
 function justifyContentValue(align: string | undefined): string {

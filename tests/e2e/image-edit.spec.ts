@@ -1,6 +1,7 @@
 import { test, expect } from "./fixtures/global-setup";
 
 const TEST_IMAGE_PATH = "tests/e2e/fixtures/test-image.png";
+const TEST_WIDE_IMAGE_PATH = "tests/e2e/fixtures/test-wide-image.png";
 
 async function uploadTestImage(page: import("@playwright/test").Page) {
   const imageInput = page.locator('input[type=file][accept="image/jpeg,image/png"]').first();
@@ -78,10 +79,17 @@ test.describe("Image editing", () => {
   });
 
   test("save persists crop settings and cancel discards them", async ({ page }) => {
-    await uploadTestImage(page);
+    // Use wide image so square mode creates an actual crop
+    const imageInput = page.locator('input[type=file][accept="image/jpeg,image/png"]').first();
+    await imageInput.setInputFiles(TEST_WIDE_IMAGE_PATH);
+    await page.waitForTimeout(2000);
 
-    // Edit and save
+    // Edit: switch to square mode (creates real crop on 4:1 image), then save
     await openImageEditMode(page);
+    await page.waitForTimeout(300);
+    await page.evaluate(() => {
+      (document.querySelector('[data-testid="aspect-mode-square"]') as HTMLButtonElement)?.click();
+    });
     await page.waitForTimeout(300);
     await page.evaluate(() => {
       (document.querySelector('[data-testid="crop-save"]') as HTMLButtonElement)?.click();
@@ -91,9 +99,8 @@ test.describe("Image editing", () => {
     // Overlay should close
     await expect(page.getByTestId("image-edit-overlay")).toHaveCount(0);
 
-    // Cropped image should be visible
-    const croppedImg = page.getByTestId("cropped-image").first();
-    await expect(croppedImg).toBeVisible();
+    // Cropped image should be visible (square crop on wide image = actual crop)
+    await expect(page.getByTestId("cropped-image").first()).toBeVisible();
 
     // Edit again and cancel
     await openImageEditMode(page);
@@ -103,7 +110,7 @@ test.describe("Image editing", () => {
     });
     await page.waitForTimeout(500);
 
-    // Should revert to saved settings
+    // Should revert to saved crop settings
     await expect(page.getByTestId("cropped-image").first()).toBeVisible();
   });
 
@@ -131,10 +138,17 @@ test.describe("Image editing", () => {
   });
 
   test("editing one month does not affect another month's image", async ({ page }) => {
-    await uploadTestImage(page);
+    // Use wide image so square mode creates actual crop
+    const imageInput = page.locator('input[type=file][accept="image/jpeg,image/png"]').first();
+    await imageInput.setInputFiles(TEST_WIDE_IMAGE_PATH);
+    await page.waitForTimeout(2000);
 
-    // Edit first month and save
+    // Edit first month with actual crop (square on 4:1 image) and save
     await openImageEditMode(page);
+    await page.waitForTimeout(300);
+    await page.evaluate(() => {
+      (document.querySelector('[data-testid="aspect-mode-square"]') as HTMLButtonElement)?.click();
+    });
     await page.waitForTimeout(300);
     await page.evaluate(() => {
       (document.querySelector('[data-testid="crop-save"]') as HTMLButtonElement)?.click();
@@ -147,5 +161,34 @@ test.describe("Image editing", () => {
     const secondPage = page.locator("[data-month]").nth(1);
     const secondCropped = secondPage.locator("[data-testid='cropped-image']");
     await expect(secondCropped).toHaveCount(0);
+  });
+
+  test("no-op trim save does not change image display (no right margin)", async ({ page }) => {
+    await uploadTestImage(page);
+
+    // Get the image element's bounding box before trim
+    const imgBefore = page.locator('[data-testid="image-area"] img').first();
+    const boxBefore = await imgBefore.boundingBox();
+
+    // Enter trim mode and save immediately without changes
+    await openImageEditMode(page);
+    await page.waitForTimeout(300);
+    await page.evaluate(() => {
+      (document.querySelector('[data-testid="crop-save"]') as HTMLButtonElement)?.click();
+    });
+    await page.waitForTimeout(500);
+
+    // After no-op save, cropped-image should NOT exist
+    // (full image crop should fall back to default object-fit rendering)
+    const croppedImg = page.locator('[data-testid="cropped-image"]');
+    await expect(croppedImg).toHaveCount(0);
+
+    // The image should still fill the same area as before
+    const imgAfter = page.locator('[data-testid="image-area"] img').first();
+    const boxAfter = await imgAfter.boundingBox();
+    if (boxBefore && boxAfter) {
+      // Width should be approximately the same (no right margin)
+      expect(Math.abs(boxAfter.width - boxBefore.width)).toBeLessThan(2);
+    }
   });
 });

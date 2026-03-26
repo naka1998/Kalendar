@@ -16,7 +16,7 @@ import { DividerHandle } from "./DividerHandle";
 import { ImageEditOverlay } from "./ImageEditOverlay";
 import { SafeMarginOverlay } from "./SafeMarginOverlay";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
-import { calcCropRender } from "@/lib/cropUtils";
+import { calcCropRender, isFullImageCrop } from "@/lib/cropUtils";
 import { A4 } from "@/lib/constants";
 
 const POSITION_CYCLE: ImagePosition[] = ["top", "right", "bottom", "left"];
@@ -178,7 +178,8 @@ export function CalendarPage({
   // Determine effective crop settings: editing draft takes priority, then committed, then none
   // During editing, we show the full image (for frame placement), not the cropped result
   const committedCrop = imageCropSettings;
-  const hasCrop = !!committedCrop && !isImageEditing && !!imageAspectRatio;
+  const hasCrop =
+    !!committedCrop && !isImageEditing && !!imageAspectRatio && !isFullImageCrop(committedCrop);
 
   // Calculate container size for edit overlay
   const containerW = horizontal ? (pageWidth * placeholderImagePercent) / 100 : pageWidth;
@@ -237,14 +238,14 @@ export function CalendarPage({
               }}
             />
           ) : (
-            /* Default display: no crop */
+            /* Default display: no crop (or full image crop) */
             <img
               ref={imageRef}
               src={imageBase64}
               alt=""
               className="h-full w-full"
               onLoad={handleImageLoad}
-              style={{ objectFit: "contain", objectPosition: imageObjectPosition }}
+              style={{ objectFit: imageFitMode, objectPosition: imageObjectPosition }}
             />
           )}
           {/* Edit overlay (when editing) */}
