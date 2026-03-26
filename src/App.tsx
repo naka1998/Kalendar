@@ -3,21 +3,26 @@ import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { PreviewArea } from "@/components/preview/PreviewArea";
 import { BottomSheet } from "@/components/layout/BottomSheet";
-import { RestoreDialog } from "@/components/layout/RestoreDialog";
 import { SaveErrorBanner } from "@/components/layout/SaveErrorBanner";
 import { useHolidays } from "@/hooks/useHolidays";
 import { useFontLoader } from "@/hooks/useFontLoader";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useCalendarStore } from "@/stores/calendarStore";
-import { hasSavedData } from "@/lib/storageService";
+import { loadFromStorage } from "@/lib/storageService";
 import { FONT_PRESETS } from "@/lib/fonts";
+
+// Auto-restore saved data on startup (runs once at module load).
+// This runs before useAutoSave subscribes, so no suppress flag is needed.
+const savedData = loadFromStorage();
+if (savedData) {
+  useCalendarStore.setState((prev) => ({ ...prev, ...savedData }));
+}
 
 export default function App() {
   useHolidays();
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [restored, setRestored] = useState(() => !hasSavedData());
 
-  useAutoSave(restored);
+  useAutoSave(true);
 
   const fontId = useCalendarStore((s) => s.fontId);
   const font = FONT_PRESETS.find((f) => f.id === fontId);
@@ -25,7 +30,6 @@ export default function App() {
 
   return (
     <div className="flex h-screen flex-col">
-      {!restored && <RestoreDialog onComplete={() => setRestored(true)} />}
       <SaveErrorBanner />
       <Header />
       <div className="flex flex-1 overflow-hidden">

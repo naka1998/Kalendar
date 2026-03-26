@@ -69,6 +69,7 @@ function createMockState(): CalendarState {
     swapImages: () => {},
     setMonthTheme: () => {},
     clearMonthTheme: () => {},
+    resetCalendar: () => {},
   };
 }
 

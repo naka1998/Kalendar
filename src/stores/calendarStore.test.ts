@@ -274,4 +274,35 @@ describe("calendarStore", () => {
       expect(useCalendarStore.getState().monthThemeOverrides["2026-04"]).toBeUndefined();
     });
   });
+
+  describe("resetCalendar", () => {
+    it("resets all persisted fields to initial defaults", () => {
+      // Modify several fields
+      useCalendarStore.getState().setThemeId("dark");
+      useCalendarStore.getState().setOrientation("landscape");
+      useCalendarStore.getState().setFontId("noto-sans-jp");
+      useCalendarStore.getState().addManualHoliday("2026-12-29", "会社休日");
+      useCalendarStore.getState().setMonthTheme("2026-04", "ocean");
+
+      // Reset
+      useCalendarStore.getState().resetCalendar();
+
+      const state = useCalendarStore.getState();
+      expect(state.themeId).toBe(DEFAULTS.THEME_ID);
+      expect(state.orientation).toBe(DEFAULTS.ORIENTATION);
+      expect(state.fontId).toBe(DEFAULTS.FONT_ID);
+      expect(state.manualHolidays).toEqual([]);
+      expect(state.monthThemeOverrides).toEqual({});
+      expect(state.calendarStyle).toEqual(DEFAULT_CALENDAR_STYLE);
+      expect(state.images).toEqual({});
+    });
+
+    it("resets transient fields", () => {
+      useCalendarStore.setState({ lastAutoSavedAt: "2026-03-01T00:00:00Z", saveError: "error" });
+      useCalendarStore.getState().resetCalendar();
+      const state = useCalendarStore.getState();
+      expect(state.lastAutoSavedAt).toBeNull();
+      expect(state.saveError).toBeNull();
+    });
+  });
 });
