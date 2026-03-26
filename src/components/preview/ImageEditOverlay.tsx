@@ -16,7 +16,8 @@ interface ImageEditOverlayProps {
   imageAlign: ContentAlign;
 }
 
-type DragMode = "move" | "resize-br" | null;
+type ResizeCorner = "resize-tl" | "resize-tr" | "resize-bl" | "resize-br";
+type DragMode = "move" | ResizeCorner | null;
 
 function calcImageFit(containerW: number, containerH: number, imageAspectRatio: number) {
   const containerAR = containerW / containerH;
@@ -45,11 +46,6 @@ function adjustCropToAspect(
   imageAspectRatio: number,
 ): Partial<ImageCropSettings> {
   if (targetAR === null) return {};
-  // targetAR is in real-world coords; in image-relative coords:
-  // cropW_real / cropH_real = targetAR
-  // cropW_real = cropW * imgW, cropH_real = cropH * imgH
-  // (cropW * imgW) / (cropH * imgH) = targetAR
-  // cropW / cropH = targetAR / imageAspectRatio
   const cropAR = targetAR / imageAspectRatio;
   const centerX = crop.cropX + crop.cropW / 2;
   const centerY = crop.cropY + crop.cropH / 2;
@@ -86,6 +82,13 @@ const ASPECT_MODE_LABELS: Record<AspectMode, string> = {
   square: "1:1",
 };
 
+const HANDLE_CURSORS: Record<string, string> = {
+  "resize-tl": "cursor-nw-resize",
+  "resize-tr": "cursor-ne-resize",
+  "resize-bl": "cursor-sw-resize",
+  "resize-br": "cursor-se-resize",
+};
+
 export function ImageEditOverlay({
   draft,
   containerW,
@@ -98,7 +101,7 @@ export function ImageEditOverlay({
   imageAlign,
 }: ImageEditOverlayProps) {
   const [dragMode, setDragMode] = useState<DragMode>(null);
-  const [aspectMode, setAspectMode] = useState<AspectMode>("free");
+  const [aspectMode, setAspectMode] = useState<AspectMode>("original");
   const dragRef = useRef<{
     startX: number;
     startY: number;
@@ -140,47 +143,76 @@ export function ImageEditOverlay({
 
       const deltaX = (e.clientX - dragRef.current.startX) / imgW;
       const deltaY = (e.clientY - dragRef.current.startY) / imgH;
+      const s = dragRef.current;
 
       if (dragMode === "move") {
-        const newX = Math.max(
-          0,
-          Math.min(1 - dragRef.current.startCropW, dragRef.current.startCropX + deltaX),
-        );
-        const newY = Math.max(
-          0,
-          Math.min(1 - dragRef.current.startCropH, dragRef.current.startCropY + deltaY),
-        );
+        const newX = Math.max(0, Math.min(1 - s.startCropW, s.startCropX + deltaX));
+        const newY = Math.max(0, Math.min(1 - s.startCropH, s.startCropY + deltaY));
         onUpdate({ cropX: newX, cropY: newY });
-      } else if (dragMode === "resize-br") {
-        const targetAR = getAspectRatio(aspectMode, imageAspectRatio);
+        return;
+      }
 
-        if (targetAR === null) {
-          // Free mode: resize independently
-          const newW = Math.max(
-            CROP_MIN_SIZE,
-            Math.min(1 - dragRef.current.startCropX, dragRef.current.startCropW + deltaX),
-          );
-          const newH = Math.max(
-            CROP_MIN_SIZE,
-            Math.min(1 - dragRef.current.startCropY, dragRef.current.startCropH + deltaY),
-          );
-          onUpdate({ cropW: newW, cropH: newH });
-        } else {
-          // Constrained: use diagonal movement to determine size
-          const cropAR = targetAR / imageAspectRatio;
-          const diag = deltaX + deltaY * cropAR;
-          let newW = Math.max(CROP_MIN_SIZE, dragRef.current.startCropW + diag / 2);
-          let newH = newW / cropAR;
-          newW = Math.max(CROP_MIN_SIZE, Math.min(1 - dragRef.current.startCropX, newW));
-          newH = Math.max(CROP_MIN_SIZE, Math.min(1 - dragRef.current.startCropY, newH));
-          // Re-enforce ratio after clamping
-          if (newW / newH > cropAR) {
-            newW = newH * cropAR;
-          } else {
-            newH = newW / cropAR;
-          }
-          onUpdate({ cropW: newW, cropH: newH });
+      // Resize from a corner
+      const targetAR = getAspectRatio(aspectMode, imageAspectRatio);
+
+      // Determine which edges move based on the corner
+      const moveLeft = dragMode === "resize-tl" || dragMode === "resize-bl";
+      const moveTop = dragMode === "resize-tl" || dragMode === "resize-tr";
+      const dx = moveLeft ? -deltaX : deltaX;
+      const dy = moveTop ? -deltaY : deltaY;
+
+      if (targetAR === null) {
+        // Free mode
+        let newW = Math.max(CROP_MIN_SIZE, s.startCropW + dx);
+        let newH = Math.max(CROP_MIN_SIZE, s.startCropH + dy);
+        let newX = moveLeft ? s.startCropX + s.startCropW - newW : s.startCropX;
+        let newY = moveTop ? s.startCropY + s.startCropH - newH : s.startCropY;
+        // Clamp within image bounds
+        if (newX < 0) {
+          newW += newX;
+          newX = 0;
         }
+        if (newY < 0) {
+          newH += newY;
+          newY = 0;
+        }
+        if (newX + newW > 1) newW = 1 - newX;
+        if (newY + newH > 1) newH = 1 - newY;
+        newW = Math.max(CROP_MIN_SIZE, newW);
+        newH = Math.max(CROP_MIN_SIZE, newH);
+        onUpdate({ cropX: newX, cropY: newY, cropW: newW, cropH: newH });
+      } else {
+        // Constrained mode
+        const cropAR = targetAR / imageAspectRatio;
+        const diag = dx + dy * cropAR;
+        let newW = Math.max(CROP_MIN_SIZE, s.startCropW + diag / 2);
+        let newH = newW / cropAR;
+        newW = Math.max(CROP_MIN_SIZE, Math.min(1, newW));
+        newH = Math.max(CROP_MIN_SIZE, Math.min(1, newH));
+        if (newW / newH > cropAR) newW = newH * cropAR;
+        else newH = newW / cropAR;
+
+        let newX = moveLeft ? s.startCropX + s.startCropW - newW : s.startCropX;
+        let newY = moveTop ? s.startCropY + s.startCropH - newH : s.startCropY;
+        if (newX < 0) {
+          newX = 0;
+          newW = Math.min(1, s.startCropX + s.startCropW);
+          newH = newW / cropAR;
+        }
+        if (newY < 0) {
+          newY = 0;
+          newH = Math.min(1, s.startCropY + s.startCropH);
+          newW = newH * cropAR;
+        }
+        if (newX + newW > 1) {
+          newW = 1 - newX;
+          newH = newW / cropAR;
+        }
+        if (newY + newH > 1) {
+          newH = 1 - newY;
+          newW = newH * cropAR;
+        }
+        onUpdate({ cropX: newX, cropY: newY, cropW: newW, cropH: newH });
       }
     },
     [dragMode, imgW, imgH, aspectMode, imageAspectRatio, onUpdate],
@@ -201,6 +233,15 @@ export function ImageEditOverlay({
     },
     [draft, imageAspectRatio, onUpdate],
   );
+
+  const handleClass = "absolute z-30 h-5 w-5 rounded-full bg-white shadow-md md:h-3.5 md:w-3.5";
+
+  const corners: { mode: ResizeCorner; posClass: string }[] = [
+    { mode: "resize-tl", posClass: "-left-2.5 -top-2.5 md:-left-1.5 md:-top-1.5" },
+    { mode: "resize-tr", posClass: "-right-2.5 -top-2.5 md:-right-1.5 md:-top-1.5" },
+    { mode: "resize-bl", posClass: "-left-2.5 -bottom-2.5 md:-left-1.5 md:-bottom-1.5" },
+    { mode: "resize-br", posClass: "-right-2.5 -bottom-2.5 md:-right-1.5 md:-bottom-1.5" },
+  ];
 
   return (
     <div
@@ -261,15 +302,18 @@ export function ImageEditOverlay({
           <div className="absolute top-0 bottom-0 left-2/3 w-px bg-white/30" />
         </div>
 
-        {/* Resize handle (bottom-right corner) */}
-        <div
-          data-testid="crop-resize-handle"
-          className="absolute -right-3 -bottom-3 h-6 w-6 cursor-se-resize rounded-full bg-white shadow md:-right-2 md:-bottom-2 md:h-4 md:w-4"
-          onPointerDown={(e) => handlePointerDown(e, "resize-br")}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-        />
+        {/* Four corner resize handles */}
+        {corners.map(({ mode, posClass }) => (
+          <div
+            key={mode}
+            data-testid={`crop-${mode}`}
+            className={`${handleClass} ${posClass} ${HANDLE_CURSORS[mode]}`}
+            onPointerDown={(e) => handlePointerDown(e, mode)}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+          />
+        ))}
       </div>
 
       {/* Bottom toolbar */}

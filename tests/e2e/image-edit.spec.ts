@@ -121,10 +121,13 @@ test.describe("Image editing", () => {
     await expect(page.getByTestId("crop-frame").first()).toBeVisible();
   });
 
-  test("crop frame has resize handle", async ({ page }) => {
+  test("crop frame has four resize handles", async ({ page }) => {
     await uploadTestImage(page);
     await openImageEditMode(page);
-    await expect(page.getByTestId("crop-resize-handle").first()).toBeVisible();
+    await expect(page.getByTestId("crop-resize-tl").first()).toBeVisible();
+    await expect(page.getByTestId("crop-resize-tr").first()).toBeVisible();
+    await expect(page.getByTestId("crop-resize-bl").first()).toBeVisible();
+    await expect(page.getByTestId("crop-resize-br").first()).toBeVisible();
   });
 
   test("editing one month does not affect another month's image", async ({ page }) => {

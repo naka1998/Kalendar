@@ -1,19 +1,13 @@
 import { useCallback, useState } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { DEFAULT_IMAGE_CROP_SETTINGS } from "@/lib/constants";
-import { calcInitialCropRect } from "@/lib/cropUtils";
 import type { ContentAlign, ImageCropSettings } from "@/stores/types";
 
 interface UseImageEditDraftResult {
   isEditing: boolean;
   editingMonthKey: string | null;
   draft: ImageCropSettings | null;
-  startEdit: (
-    monthKey: string,
-    imageAlign: ContentAlign,
-    containerAR: number,
-    imageAspectRatio: number,
-  ) => void;
+  startEdit: (monthKey: string) => void;
   updateDraft: (partial: Partial<ImageCropSettings>) => void;
   saveDraft: () => void;
   cancelEdit: () => void;
@@ -28,21 +22,13 @@ export function useImageEditDraft(): UseImageEditDraftResult {
   const setImageCropSettings = useCalendarStore((s) => s.setImageCropSettings);
 
   const startEdit = useCallback(
-    (
-      monthKey: string,
-      _imageAlign: ContentAlign,
-      containerAR: number,
-      imageAspectRatio: number,
-    ) => {
+    (monthKey: string) => {
       const existing = imageCropSettings[monthKey];
       if (existing) {
         setDraft({ ...existing });
       } else {
-        const rect = calcInitialCropRect(containerAR, imageAspectRatio);
-        setDraft({
-          ...DEFAULT_IMAGE_CROP_SETTINGS,
-          ...rect,
-        });
+        // Start with the full image — no-op save won't change appearance
+        setDraft({ ...DEFAULT_IMAGE_CROP_SETTINGS });
       }
       setEditingMonthKey(monthKey);
     },
@@ -67,9 +53,7 @@ export function useImageEditDraft(): UseImageEditDraftResult {
   }, []);
 
   const resetDraft = useCallback((_imageAlign: ContentAlign) => {
-    setDraft({
-      ...DEFAULT_IMAGE_CROP_SETTINGS,
-    });
+    setDraft({ ...DEFAULT_IMAGE_CROP_SETTINGS });
   }, []);
 
   return {
