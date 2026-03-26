@@ -177,14 +177,16 @@ export function CalendarPage({
   // Determine effective crop settings: editing draft takes priority, then committed, then none
   // During editing, we show the full image (for frame placement), not the cropped result
   const committedCrop = imageCropSettings;
-  const hasCrop = !!committedCrop && !isImageEditing;
+  const hasCrop = !!committedCrop && !isImageEditing && !!imageAspectRatio;
 
   // Calculate container size for edit overlay
   const containerW = horizontal ? (pageWidth * placeholderImagePercent) / 100 : pageWidth;
   const containerH = horizontal ? pageHeight : (pageHeight * placeholderImagePercent) / 100;
 
   // Compute crop render properties for committed (non-editing) display
-  const cropRender = hasCrop ? calcCropRender(committedCrop) : null;
+  const cropRender = hasCrop
+    ? calcCropRender(committedCrop, containerW, containerH, imageAspectRatio, imageFitMode)
+    : null;
 
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -218,19 +220,19 @@ export function CalendarPage({
               style={{ objectFit: "contain", objectPosition: "center" }}
             />
           ) : cropRender ? (
-            /* Cropped display: scale and position image to show only the crop region */
+            /* Cropped display: absolute positioning to show only the crop region */
             <img
               ref={imageRef}
               data-testid="cropped-image"
               src={imageBase64}
               alt=""
               onLoad={handleImageLoad}
-              className="h-full w-full"
               style={{
-                objectFit: imageFitMode,
-                objectPosition: `${cropRender.objectPositionX}% ${cropRender.objectPositionY}%`,
-                transform: `scale(${cropRender.scaleX}, ${cropRender.scaleY})`,
-                transformOrigin: `${cropRender.objectPositionX}% ${cropRender.objectPositionY}%`,
+                position: "absolute",
+                left: `${cropRender.imgLeft}px`,
+                top: `${cropRender.imgTop}px`,
+                width: `${cropRender.imgWidth}px`,
+                height: `${cropRender.imgHeight}px`,
               }}
             />
           ) : (

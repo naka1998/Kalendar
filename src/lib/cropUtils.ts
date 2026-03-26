@@ -1,41 +1,73 @@
 import type { ImageCropSettings } from "@/stores/types";
+import type { FitMode } from "@/stores/types";
 import { CROP_MIN_SIZE } from "./constants";
 
 export interface CropRenderResult {
-  // CSS object-position values as percentages
-  objectPositionX: number; // %
-  objectPositionY: number; // %
-  // CSS object-fit scale factor (how much to enlarge to show only the cropped region)
-  scaleX: number;
-  scaleY: number;
+  // Image element dimensions in px (relative to container)
+  imgWidth: number;
+  imgHeight: number;
+  // Image element position offset in px (relative to container center)
+  imgLeft: number;
+  imgTop: number;
 }
 
 /**
- * Calculate CSS rendering properties for a cropped image.
+ * Calculate the absolute position and size of an image element to display
+ * only the cropped region within a container, respecting fitMode.
  *
- * The crop rect (cropX, cropY, cropW, cropH) defines a sub-region of the
- * original image in normalized coordinates (0-1). To display only that region
- * in a container, we:
- * 1. Scale the image up so the crop region fills the container
- * 2. Position the image so the crop region is centered in the container
+ * The approach: enlarge the full image so that the crop region exactly fills
+ * (or fits within) the container, then offset it so the crop region is centered.
  */
-export function calcCropRender(crop: ImageCropSettings): CropRenderResult {
-  const scaleX = 1 / crop.cropW;
-  const scaleY = 1 / crop.cropH;
+export function calcCropRender(
+  crop: ImageCropSettings,
+  containerW: number,
+  containerH: number,
+  imageAspectRatio: number,
+  fitMode: FitMode,
+): CropRenderResult {
+  // The crop region's real-world aspect ratio
+  const cropRealAR = (crop.cropW * imageAspectRatio) / crop.cropH;
+  const containerAR = containerW / containerH;
 
-  // object-position: the center of the crop rect, in percentage of the image
-  const centerX = crop.cropX + crop.cropW / 2;
-  const centerY = crop.cropY + crop.cropH / 2;
+  // Determine how the crop region fits into the container
+  let displayCropW: number, displayCropH: number;
+  if (fitMode === "cover") {
+    // Crop region fills the container (may overflow)
+    if (cropRealAR > containerAR) {
+      displayCropH = containerH;
+      displayCropW = containerH * cropRealAR;
+    } else {
+      displayCropW = containerW;
+      displayCropH = containerW / cropRealAR;
+    }
+  } else {
+    // Crop region fits within the container (may have margins)
+    if (cropRealAR > containerAR) {
+      displayCropW = containerW;
+      displayCropH = containerW / cropRealAR;
+    } else {
+      displayCropH = containerH;
+      displayCropW = containerH * cropRealAR;
+    }
+  }
 
-  // Convert center to object-position percentage
-  // object-position 0% = left edge aligned, 100% = right edge aligned
-  // For the cropped region center to align with the container center:
-  const objectPositionX =
-    crop.cropW < 1 ? ((centerX - crop.cropW / 2) / (1 - crop.cropW)) * 100 : 50;
-  const objectPositionY =
-    crop.cropH < 1 ? ((centerY - crop.cropH / 2) / (1 - crop.cropH)) * 100 : 50;
+  // Scale factor: how much to enlarge the full image
+  // so that the crop region becomes displayCropW x displayCropH
+  const scaleX = displayCropW / crop.cropW;
+  const scaleY = displayCropH / crop.cropH;
+  // Use uniform scale (they should be equal if crop is proportional to image)
+  const imgWidth = scaleX; // full image width = scaleX * 1 (normalized)
+  const imgHeight = scaleY; // full image height = scaleY * 1 (normalized)
 
-  return { objectPositionX, objectPositionY, scaleX, scaleY };
+  // Position: center the crop region in the container
+  // The crop region starts at (cropX * imgWidth, cropY * imgHeight) within the full image
+  // We want the crop region center to be at the container center
+  const cropCenterInImgX = (crop.cropX + crop.cropW / 2) * imgWidth;
+  const cropCenterInImgY = (crop.cropY + crop.cropH / 2) * imgHeight;
+  const imgLeft = containerW / 2 - cropCenterInImgX;
+  const imgTop = containerH / 2 - cropCenterInImgY;
+
+  return { imgWidth, imgHeight, imgLeft, imgTop };
 }
 
 /**
@@ -62,24 +94,17 @@ export function calcInitialCropRect(
   containerAR: number,
   imageAspectRatio: number,
 ): { cropX: number; cropY: number; cropW: number; cropH: number } {
-  // The crop rect aspect ratio should match the container
-  // cropW / cropH (in image-relative coords) * imageAspectRatio = containerAR
-  // So: cropW / cropH = containerAR / imageAspectRatio
-
   const cropAR = containerAR / imageAspectRatio;
 
   let cropW: number, cropH: number;
   if (cropAR >= 1) {
-    // Crop is wider than tall (in image coords) — use full width
     cropW = 1;
     cropH = Math.min(1, 1 / cropAR);
   } else {
-    // Crop is taller than wide — use full height
     cropH = 1;
     cropW = Math.min(1, cropAR);
   }
 
-  // Center the crop rect
   const cropX = (1 - cropW) / 2;
   const cropY = (1 - cropH) / 2;
 

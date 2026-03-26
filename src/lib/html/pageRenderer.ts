@@ -10,18 +10,30 @@ function objectPositionValue(align: string | undefined): string {
   return "center";
 }
 
+// Page dimensions in mm for export rendering
+const PAGE_W_MM = { portrait: 210, landscape: 297 };
+const PAGE_H_MM = { portrait: 297, landscape: 210 };
+
 function renderImageHtml(
   page: PageData,
   sizeProperty: string,
   sizeValue: string,
-  imageAlign?: string,
+  imageAlign: string | undefined,
+  containerWMm: number,
+  containerHMm: number,
 ): string {
   const crop = page.imageCropSettings;
+  const aspectRatio = page.imageAspectRatio;
 
-  if (crop) {
-    const r = calcCropRender(crop);
+  if (crop && aspectRatio) {
     const fitMode = page.imageFitMode ?? "cover";
-    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${r.objectPositionX.toFixed(4)}% ${r.objectPositionY.toFixed(4)}%;transform:scale(${r.scaleX.toFixed(4)}, ${r.scaleY.toFixed(4)});transform-origin:${r.objectPositionX.toFixed(4)}% ${r.objectPositionY.toFixed(4)}%" /></div>`;
+    const r = calcCropRender(crop, containerWMm, containerHMm, aspectRatio, fitMode);
+    // Use percentage-based sizing relative to container
+    const leftPct = (r.imgLeft / containerWMm) * 100;
+    const topPct = (r.imgTop / containerHMm) * 100;
+    const widthPct = (r.imgWidth / containerWMm) * 100;
+    const heightPct = (r.imgHeight / containerHMm) * 100;
+    return `<div style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${leftPct.toFixed(4)}%;top:${topPct.toFixed(4)}%;width:${widthPct.toFixed(4)}%;height:${heightPct.toFixed(4)}%" /></div>`;
   }
 
   const op = objectPositionValue(imageAlign);
@@ -64,11 +76,25 @@ export function renderPage(
     ? `padding-top:${calendarStyle.pageMarginTop}px;`
     : "";
 
+  // Calculate container dimensions in mm for crop rendering
+  const orient = orientation === "landscape" ? "landscape" : "portrait";
+  const fullW = PAGE_W_MM[orient];
+  const fullH = PAGE_H_MM[orient];
+  const containerWMm = horizontal ? (fullW * imgPct) / 100 : fullW;
+  const containerHMm = horizontal ? fullH : (fullH * imgPct) / 100;
+
   let contentHtml: string;
 
   if (page.imageBase64) {
     const gridHtml = renderGridHtml(page);
-    const imageBlock = renderImageHtml(page, sizeProperty, `${imgPct}%`, calendarStyle?.imageAlign);
+    const imageBlock = renderImageHtml(
+      page,
+      sizeProperty,
+      `${imgPct}%`,
+      calendarStyle?.imageAlign,
+      containerWMm,
+      containerHMm,
+    );
     const gridBlock = renderGridContainer(
       gridHtml,
       sizeProperty,

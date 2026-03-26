@@ -55,7 +55,9 @@ test.describe("Image editing", () => {
 
     // Click original mode
     await page.evaluate(() => {
-      (document.querySelector('[data-testid="aspect-mode-original"]') as HTMLButtonElement)?.click();
+      (
+        document.querySelector('[data-testid="aspect-mode-original"]') as HTMLButtonElement
+      )?.click();
     });
     await page.waitForTimeout(300);
 
