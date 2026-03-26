@@ -220,7 +220,7 @@ export function CalendarPage({
               style={{ objectFit: "contain", objectPosition: "center" }}
             />
           ) : cropRender ? (
-            /* Cropped display: absolute positioning to show only the crop region */
+            /* Cropped display: percentage-based positioning to show only the crop region */
             <img
               ref={imageRef}
               data-testid="cropped-image"
@@ -229,10 +229,10 @@ export function CalendarPage({
               onLoad={handleImageLoad}
               style={{
                 position: "absolute",
-                left: `${cropRender.imgLeft}px`,
-                top: `${cropRender.imgTop}px`,
-                width: `${cropRender.imgWidth}px`,
-                height: `${cropRender.imgHeight}px`,
+                left: `${cropRender.imgLeftPct}%`,
+                top: `${cropRender.imgTopPct}%`,
+                width: `${cropRender.imgWidthPct}%`,
+                height: `${cropRender.imgHeightPct}%`,
               }}
             />
           ) : (

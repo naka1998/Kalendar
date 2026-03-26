@@ -28,12 +28,7 @@ function renderImageHtml(
   if (crop && aspectRatio) {
     const fitMode = page.imageFitMode ?? "cover";
     const r = calcCropRender(crop, containerWMm, containerHMm, aspectRatio, fitMode);
-    // Use percentage-based sizing relative to container
-    const leftPct = (r.imgLeft / containerWMm) * 100;
-    const topPct = (r.imgTop / containerHMm) * 100;
-    const widthPct = (r.imgWidth / containerWMm) * 100;
-    const heightPct = (r.imgHeight / containerHMm) * 100;
-    return `<div style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${leftPct.toFixed(4)}%;top:${topPct.toFixed(4)}%;width:${widthPct.toFixed(4)}%;height:${heightPct.toFixed(4)}%" /></div>`;
+    return `<div style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${r.imgLeftPct.toFixed(4)}%;top:${r.imgTopPct.toFixed(4)}%;width:${r.imgWidthPct.toFixed(4)}%;height:${r.imgHeightPct.toFixed(4)}%" /></div>`;
   }
 
   const op = objectPositionValue(imageAlign);

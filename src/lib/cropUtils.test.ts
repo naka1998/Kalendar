@@ -10,50 +10,66 @@ const fullCrop: ImageCropSettings = {
 };
 
 describe("calcCropRender", () => {
-  it("full crop in cover mode fills the container", () => {
+  it("full crop in cover mode returns 100% dimensions", () => {
     // 2:1 image in a 400x400 container, cover mode
+    // cropRealAR = 2, containerAR = 1 → crop wider: match height, overflow width
     const result = calcCropRender(fullCrop, 400, 400, 2, "cover");
-    // Cover: image wider than container, so fill height, overflow width
-    expect(result.imgHeight).toBeCloseTo(400);
-    expect(result.imgWidth).toBeCloseTo(800);
+    expect(result.imgHeightPct).toBeCloseTo(100);
+    expect(result.imgWidthPct).toBeCloseTo(200); // 2:1 image covers 1:1 container
   });
 
   it("full crop in contain mode fits within container", () => {
     // 2:1 image in a 400x400 container, contain mode
     const result = calcCropRender(fullCrop, 400, 400, 2, "contain");
-    // Contain: fit width, height is smaller
-    expect(result.imgWidth).toBeCloseTo(400);
-    expect(result.imgHeight).toBeCloseTo(200);
+    expect(result.imgWidthPct).toBeCloseTo(100);
+    expect(result.imgHeightPct).toBeCloseTo(50); // 2:1 image contained in 1:1 container
+  });
+
+  it("cover mode with matching AR gives exactly 100% x 100%", () => {
+    // 2:1 image, full crop, 2:1 container
+    const result = calcCropRender(fullCrop, 400, 200, 2, "cover");
+    expect(result.imgWidthPct).toBeCloseTo(100);
+    expect(result.imgHeightPct).toBeCloseTo(100);
+    expect(result.imgLeftPct).toBeCloseTo(0);
+    expect(result.imgTopPct).toBeCloseTo(0);
+  });
+
+  it("half-width crop in cover mode scales up to fill", () => {
+    // 2:1 image, crop left half: cropW=0.5, 2:1 container
+    // Crop real AR = (0.5 * 2) / 1 = 1.0
+    // Container AR = 2
+    // Cover: crop taller → match width, overflow height
+    // displayCropWRatio = 1, displayCropHRatio = 2/1 = 2
+    // imgWidthRatio = 1/0.5 = 2, imgHeightRatio = 2/1 = 2
+    const crop: ImageCropSettings = { cropX: 0, cropY: 0, cropW: 0.5, cropH: 1 };
+    const result = calcCropRender(crop, 400, 200, 2, "cover");
+    expect(result.imgWidthPct).toBeCloseTo(200);
+    expect(result.imgHeightPct).toBeCloseTo(200);
   });
 
   it("contain mode with tall crop shows margins", () => {
-    // 2:1 image, crop the left half (tall crop)
-    // Crop real AR = 0.5 * 2 / 1.0 = 1.0 (square crop)
-    const crop: ImageCropSettings = { cropX: 0, cropY: 0, cropW: 0.5, cropH: 1 };
-    // 400x200 container, contain mode
-    const result = calcCropRender(crop, 400, 200, 2, "contain");
-    // Crop is square (AR=1), container is 2:1
-    // Contain: fit height → displayCropH=200, displayCropW=200
-    // Full image width = 200 / 0.5 = 400, height = 200 / 1.0 = 200
-    expect(result.imgHeight).toBeCloseTo(200);
-    expect(result.imgWidth).toBeCloseTo(400);
+    // 1:1 image, vertical strip crop: cropW=0.5, cropH=1
+    // Crop real AR = (0.5*1)/1 = 0.5, container 400x400 (AR=1)
+    // Contain: crop taller → match height, displayCropHRatio=1, displayCropWRatio=0.5/1=0.5
+    const crop: ImageCropSettings = { cropX: 0.25, cropY: 0, cropW: 0.5, cropH: 1 };
+    const result = calcCropRender(crop, 400, 400, 1, "contain");
+    expect(result.imgHeightPct).toBeCloseTo(100);
+    // Image fills height but width is 50% of container → margins on sides
+    expect(result.imgWidthPct).toBeCloseTo(100); // full image width = container width
   });
 
-  it("vertical crop in contain mode leaves horizontal margins", () => {
-    // 1:1 image, crop a vertical strip (tall crop)
-    const crop: ImageCropSettings = { cropX: 0.25, cropY: 0, cropW: 0.5, cropH: 1 };
-    // 400x400 container, contain mode
-    // Crop real AR = (0.5 * 1) / 1.0 = 0.5 (tall)
-    // Contain: fit height → displayCropH=400, displayCropW=200
-    // Full img: width=200/0.5=400, height=400/1.0=400
-    const result = calcCropRender(crop, 400, 400, 1, "contain");
-    // The crop region (200px wide) should be centered in 400px container
-    // → 100px margin on each side
-    expect(result.imgWidth).toBeCloseTo(400);
-    expect(result.imgHeight).toBeCloseTo(400);
-    // crop center at X = (0.25 + 0.25) * 400 = 200
-    // imgLeft = 200 - 200 = 0
-    // So the full image starts at left=0, and the crop (from 100 to 300) is centered
+  it("crop position is centered correctly", () => {
+    // 1:1 image, bottom-right quarter crop
+    const crop: ImageCropSettings = { cropX: 0.5, cropY: 0.5, cropW: 0.5, cropH: 0.5 };
+    // 1:1 container, cover mode, crop AR = 1 = container AR
+    const result = calcCropRender(crop, 400, 400, 1, "cover");
+    // imgWidthPct = 200%, imgHeightPct = 200% (2x scale to make 50% crop fill container)
+    expect(result.imgWidthPct).toBeCloseTo(200);
+    expect(result.imgHeightPct).toBeCloseTo(200);
+    // Crop center at (0.75, 0.75) in image space
+    // imgLeft = 50 - 0.75*200 = 50 - 150 = -100%
+    expect(result.imgLeftPct).toBeCloseTo(-100);
+    expect(result.imgTopPct).toBeCloseTo(-100);
   });
 });
 
