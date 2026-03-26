@@ -30,7 +30,7 @@ jobs:
 
       - name: Lint & Type Check
         if: github.event.action != 'closed'
-        run: pnpm exec vp check --fix
+        run: pnpm exec vp check
 
       - name: Test
         if: github.event.action != 'closed'
@@ -49,6 +49,8 @@ jobs:
       - name: E2E Test
         if: github.event.action != 'closed'
         run: pnpm exec playwright test
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:5173/kalendar-preview/pr-${{ github.event.number }}/
 
       - name: Upload E2E Report
         if: always() && github.event.action != 'closed'
