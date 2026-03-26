@@ -6,15 +6,15 @@ import { BottomSheet } from "@/components/layout/BottomSheet";
 import { SaveErrorBanner } from "@/components/layout/SaveErrorBanner";
 import { useHolidays } from "@/hooks/useHolidays";
 import { useFontLoader } from "@/hooks/useFontLoader";
-import { useAutoSave, suppressNextAutoSave } from "@/hooks/useAutoSave";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { loadFromStorage } from "@/lib/storageService";
 import { FONT_PRESETS } from "@/lib/fonts";
 
-// Auto-restore saved data on startup (runs once at module load)
+// Auto-restore saved data on startup (runs once at module load).
+// This runs before useAutoSave subscribes, so no suppress flag is needed.
 const savedData = loadFromStorage();
 if (savedData) {
-  suppressNextAutoSave();
   useCalendarStore.setState((prev) => ({ ...prev, ...savedData }));
 }
 
