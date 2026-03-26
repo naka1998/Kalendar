@@ -102,6 +102,7 @@ export function CalendarPage({
     calcLayoutPercent(displayPercent, !!imageBase64);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [showImageButtons, setShowImageButtons] = useState(false);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -266,27 +267,49 @@ export function CalendarPage({
                 imageAlign={calendarStyle.imageAlign}
               />
             )}
-          {/* Hover overlay with edit/remove buttons (when not editing) */}
+          {/* Overlay with edit/remove buttons (when not editing) */}
+          {/* Desktop: hover to show. Mobile: tap image to toggle. */}
           {!isImageEditing && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity hover:bg-black/30 hover:opacity-100">
+            <div
+              className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+                showImageButtons
+                  ? "bg-black/30 opacity-100"
+                  : "bg-black/0 opacity-0 hover:bg-black/30 hover:opacity-100"
+              }`}
+              onClick={(e) => {
+                // Toggle button visibility on tap (for touch devices)
+                if (e.target === e.currentTarget) {
+                  setShowImageButtons((prev) => !prev);
+                }
+              }}
+            >
               <div className="flex gap-2">
                 {onImageEditStart && imageAspectRatio && (
                   <button
                     data-testid="image-edit-button"
-                    onClick={onImageEditStart}
+                    onClick={() => {
+                      setShowImageButtons(false);
+                      onImageEditStart();
+                    }}
                     className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface shadow-sm"
                   >
                     トリミング
                   </button>
                 )}
                 <button
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => {
+                    setShowImageButtons(false);
+                    fileInputRef.current?.click();
+                  }}
                   className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface shadow-sm"
                 >
                   変更
                 </button>
                 <button
-                  onClick={onImageRemove}
+                  onClick={() => {
+                    setShowImageButtons(false);
+                    onImageRemove?.();
+                  }}
                   className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-sunday shadow-sm"
                 >
                   削除
