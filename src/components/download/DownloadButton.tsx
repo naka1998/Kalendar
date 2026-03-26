@@ -20,8 +20,10 @@ function buildInput(store: ReturnType<typeof useCalendarStore.getState>): HtmlGe
     fontWeight: store.fontWeight,
     googleFontsUrl: font.googleFontsUrl,
     calendarStyle: {
-      contentAlign: store.calendarStyle.contentAlign,
-      imageAlign: store.calendarStyle.imageAlign,
+      contentAlignV: store.calendarStyle.contentAlignV,
+      contentAlignH: store.calendarStyle.contentAlignH,
+      imageAlignV: store.calendarStyle.imageAlignV,
+      imageAlignH: store.calendarStyle.imageAlignH,
       pageMarginTop: store.calendarStyle.pageMarginTop,
     },
   };

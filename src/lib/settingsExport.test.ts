@@ -147,19 +147,23 @@ describe("importSettings", () => {
     expect(imported.monthThemeOverrides).toEqual(original.monthThemeOverrides);
   });
 
-  it("round-trips calendarStyle including imageAlign", () => {
+  it("round-trips calendarStyle including imageAlignV/H", () => {
     const original = createMockState();
     original.calendarStyle = {
       ...DEFAULT_CALENDAR_STYLE,
-      imageAlign: "start",
-      contentAlign: "end",
+      imageAlignV: "start",
+      imageAlignH: "end",
+      contentAlignV: "end",
+      contentAlignH: "start",
       pageMarginTop: 20,
     };
     const json = exportSettings(original);
     const imported = importSettings(json);
     expect(imported.calendarStyle).toBeDefined();
-    expect(imported.calendarStyle!.imageAlign).toBe("start");
-    expect(imported.calendarStyle!.contentAlign).toBe("end");
+    expect(imported.calendarStyle!.imageAlignV).toBe("start");
+    expect(imported.calendarStyle!.imageAlignH).toBe("end");
+    expect(imported.calendarStyle!.contentAlignV).toBe("end");
+    expect(imported.calendarStyle!.contentAlignH).toBe("start");
     expect(imported.calendarStyle!.pageMarginTop).toBe(20);
   });
 });

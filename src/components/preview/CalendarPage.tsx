@@ -56,7 +56,7 @@ export interface CalendarPageProps {
   onEditUpdate?: (partial: Partial<ImageCropSettings>) => void;
   onEditSave?: () => void;
   onEditCancel?: () => void;
-  onEditReset?: (imageAlign: ContentAlign) => void;
+  onEditReset?: (alignV: ContentAlign, alignH: ContentAlign) => void;
   onImageAspectRatioLoad?: (aspectRatio: number) => void;
 }
 
@@ -159,27 +159,58 @@ export function CalendarPage({
 
   const showDivider = showImageArea && !!imageBase64 && !!dividerProps;
 
-  // Content alignment: applied inside each area as justify-content,
-  // not as align-items on the container (which would shrink children).
+  // Content alignment: vertical (justify-content) and horizontal (align-items)
   const justifyContentClass =
-    calendarStyle.contentAlign === "start"
+    calendarStyle.contentAlignV === "start"
       ? "justify-start"
-      : calendarStyle.contentAlign === "end"
+      : calendarStyle.contentAlignV === "end"
         ? "justify-end"
         : "justify-center";
 
-  const imageObjectPosition =
-    calendarStyle.imageAlign === "start"
+  const alignItemsClass =
+    calendarStyle.contentAlignH === "start"
+      ? "items-start"
+      : calendarStyle.contentAlignH === "end"
+        ? "items-end"
+        : "items-center";
+
+  const imageAlignV =
+    calendarStyle.imageAlignV === "start"
       ? "top"
-      : calendarStyle.imageAlign === "end"
+      : calendarStyle.imageAlignV === "end"
         ? "bottom"
         : "center";
+  const imageAlignH =
+    calendarStyle.imageAlignH === "start"
+      ? "left"
+      : calendarStyle.imageAlignH === "end"
+        ? "right"
+        : "center";
+  const imageObjectPosition = `${imageAlignV} ${imageAlignH}`;
+
+  // Image area container alignment (flex row: justify = horizontal, items = vertical)
+  const imageJustifyClass =
+    calendarStyle.imageAlignH === "start"
+      ? "justify-start"
+      : calendarStyle.imageAlignH === "end"
+        ? "justify-end"
+        : "justify-center";
+  const imageAlignItemsClass =
+    calendarStyle.imageAlignV === "start"
+      ? "items-start"
+      : calendarStyle.imageAlignV === "end"
+        ? "items-end"
+        : "items-center";
 
   // Determine effective crop settings: editing draft takes priority, then committed, then none
   // During editing, we show the full image (for frame placement), not the cropped result
   const committedCrop = imageCropSettings;
   const hasCrop =
-    !!committedCrop && !isImageEditing && !!imageAspectRatio && !isFullImageCrop(committedCrop);
+    !!committedCrop &&
+    !isImageEditing &&
+    !!imageAspectRatio &&
+    !isFullImageCrop(committedCrop) &&
+    imageFitMode !== "none";
 
   // Calculate container size for edit overlay
   const containerW = horizontal ? (pageWidth * placeholderImagePercent) / 100 : pageWidth;
@@ -187,7 +218,15 @@ export function CalendarPage({
 
   // Compute crop render properties for committed (non-editing) display
   const cropRender = hasCrop
-    ? calcCropRender(committedCrop, containerW, containerH, imageAspectRatio, imageFitMode)
+    ? calcCropRender(
+        committedCrop,
+        containerW,
+        containerH,
+        imageAspectRatio,
+        imageFitMode,
+        calendarStyle.imageAlignH,
+        calendarStyle.imageAlignV,
+      )
     : null;
 
   const imageRef = useRef<HTMLImageElement>(null);
@@ -203,7 +242,7 @@ export function CalendarPage({
   const imageAreaElement = showImageArea && (
     <div
       data-testid="image-area"
-      className="relative flex items-center justify-center overflow-hidden"
+      className={`relative flex ${imageAlignItemsClass} ${imageJustifyClass} overflow-hidden`}
       style={{ [sizeProperty]: `${placeholderImagePercent}%` }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -237,8 +276,36 @@ export function CalendarPage({
                 height: `${cropRender.imgHeightPct}%`,
               }}
             />
+          ) : imageFitMode === "fit-width" ? (
+            /* fit-width: width 100%, natural height. Container flex handles alignment. */
+            <img
+              ref={imageRef}
+              src={imageBase64}
+              alt=""
+              className="w-full"
+              onLoad={handleImageLoad}
+            />
+          ) : imageFitMode === "fit-height" ? (
+            /* fit-height: height 100%, natural width. Container flex handles alignment. */
+            <img
+              ref={imageRef}
+              src={imageBase64}
+              alt=""
+              className="h-full"
+              onLoad={handleImageLoad}
+            />
+          ) : imageFitMode === "none" ? (
+            /* none: element fills container, content stays at natural size */
+            <img
+              ref={imageRef}
+              src={imageBase64}
+              alt=""
+              className="h-full w-full"
+              onLoad={handleImageLoad}
+              style={{ objectFit: "none", objectPosition: imageObjectPosition }}
+            />
           ) : (
-            /* Default display: no crop (or full image crop) */
+            /* Default display: cover or contain */
             <img
               ref={imageRef}
               src={imageBase64}
@@ -265,7 +332,8 @@ export function CalendarPage({
                 onSave={onEditSave}
                 onCancel={onEditCancel}
                 onReset={onEditReset}
-                imageAlign={calendarStyle.imageAlign}
+                imageAlignV={calendarStyle.imageAlignV}
+                imageAlignH={calendarStyle.imageAlignH}
               />
             )}
           {/* Overlay with edit/remove buttons (when not editing) */}
@@ -387,7 +455,7 @@ export function CalendarPage({
   const calendarAreaElement = (
     <div
       data-testid="calendar-area"
-      className={`flex flex-col overflow-hidden px-6 py-4 ${justifyContentClass}`}
+      className={`flex flex-col overflow-hidden px-6 py-4 ${justifyContentClass} ${alignItemsClass}`}
       style={{
         flex: 1,
         [sizeProperty]: imageBase64 ? `${placeholderGridPercent}%` : undefined,

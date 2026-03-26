@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { THEMES } from "@/lib/themes";
 import { FONT_PRESETS } from "@/lib/fonts";
-import type { ContentAlign, FontWeight } from "@/stores/types";
+import type { ContentAlign, FitMode, FontWeight } from "@/stores/types";
 
 function ThemeGrid() {
   const themeId = useCalendarStore((s) => s.themeId);
@@ -192,24 +192,12 @@ export function DesignSection() {
           <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
             画像揃え
           </Label>
-          <div className="flex rounded-lg bg-surface-container-high p-1">
-            {(["start", "center", "end"] as ContentAlign[]).map((a) => {
-              const label = a === "start" ? "上揃え" : a === "center" ? "中央" : "下揃え";
-              return (
-                <button
-                  key={a}
-                  onClick={() => setCalendarStyle({ imageAlign: a })}
-                  className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
-                    calendarStyle.imageAlign === a
-                      ? "bg-surface text-on-surface shadow-sm"
-                      : "text-on-surface-variant hover:text-on-surface"
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <AlignGrid
+            alignV={calendarStyle.imageAlignV}
+            alignH={calendarStyle.imageAlignH}
+            onChangeV={(v) => setCalendarStyle({ imageAlignV: v })}
+            onChangeH={(h) => setCalendarStyle({ imageAlignH: h })}
+          />
         </div>
       )}
 
@@ -217,27 +205,9 @@ export function DesignSection() {
       {useImages && (
         <div className="space-y-1.5">
           <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-            表示モード
+            表示方法
           </Label>
-          <div className="flex rounded-lg bg-surface-container-high p-1">
-            {(["cover", "contain"] as const).map((mode) => {
-              const label = mode === "cover" ? "短辺に合わせる" : "長辺に合わせる";
-              return (
-                <button
-                  key={mode}
-                  data-testid={`fit-mode-${mode}`}
-                  onClick={() => setImageFitMode(mode)}
-                  className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
-                    imageFitMode === mode
-                      ? "bg-surface text-on-surface shadow-sm"
-                      : "text-on-surface-variant hover:text-on-surface"
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <FitModeGrid fitMode={imageFitMode} onChange={setImageFitMode} />
         </div>
       )}
 
@@ -246,24 +216,110 @@ export function DesignSection() {
         <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
           配置揃え
         </Label>
-        <div className="flex rounded-lg bg-surface-container-high p-1">
-          {(["start", "center", "end"] as ContentAlign[]).map((a) => {
-            const label = a === "start" ? "上揃え" : a === "center" ? "中央" : "下揃え";
-            return (
-              <button
-                key={a}
-                onClick={() => setCalendarStyle({ contentAlign: a })}
-                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
-                  calendarStyle.contentAlign === a
-                    ? "bg-surface text-on-surface shadow-sm"
-                    : "text-on-surface-variant hover:text-on-surface"
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
+        <AlignGrid
+          alignV={calendarStyle.contentAlignV}
+          alignH={calendarStyle.contentAlignH}
+          onChangeV={(v) => setCalendarStyle({ contentAlignV: v })}
+          onChangeH={(h) => setCalendarStyle({ contentAlignH: h })}
+        />
+      </div>
+    </div>
+  );
+}
+
+const ALIGN_BTN = "flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all";
+const ALIGN_ACTIVE = "bg-surface text-on-surface shadow-sm";
+const ALIGN_INACTIVE = "text-on-surface-variant hover:text-on-surface";
+
+function AlignGrid({
+  alignV,
+  alignH,
+  onChangeV,
+  onChangeH,
+}: {
+  alignV: ContentAlign;
+  alignH: ContentAlign;
+  onChangeV: (v: ContentAlign) => void;
+  onChangeH: (h: ContentAlign) => void;
+}) {
+  return (
+    <div className="space-y-1 rounded-lg bg-surface-container-high p-1">
+      {/* Vertical row */}
+      <div className="flex">
+        {(["start", "center", "end"] as ContentAlign[]).map((a) => {
+          const label = a === "start" ? "上揃え" : a === "center" ? "中央" : "下揃え";
+          return (
+            <button
+              key={`v-${a}`}
+              onClick={() => onChangeV(a)}
+              className={`${ALIGN_BTN} ${alignV === a ? ALIGN_ACTIVE : ALIGN_INACTIVE}`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+      {/* Horizontal row */}
+      <div className="flex">
+        {(["start", "center", "end"] as ContentAlign[]).map((a) => {
+          const label = a === "start" ? "左揃え" : a === "center" ? "中央" : "右揃え";
+          return (
+            <button
+              key={`h-${a}`}
+              onClick={() => onChangeH(a)}
+              className={`${ALIGN_BTN} ${alignH === a ? ALIGN_ACTIVE : ALIGN_INACTIVE}`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const FIT_MODES: { mode: FitMode; label: string }[] = [
+  { mode: "contain", label: "全体を表示" },
+  { mode: "cover", label: "枠いっぱいに表示" },
+  { mode: "none", label: "等倍" },
+  { mode: "fit-width", label: "横幅に合わせる" },
+  { mode: "fit-height", label: "高さに合わせる" },
+];
+
+function FitModeGrid({
+  fitMode,
+  onChange,
+}: {
+  fitMode: FitMode;
+  onChange: (mode: FitMode) => void;
+}) {
+  return (
+    <div className="space-y-1 rounded-lg bg-surface-container-high p-1">
+      {/* Top row: contain, cover */}
+      <div className="flex">
+        {FIT_MODES.slice(0, 2).map(({ mode, label }) => (
+          <button
+            key={mode}
+            data-testid={`fit-mode-${mode}`}
+            onClick={() => onChange(mode)}
+            className={`${ALIGN_BTN} ${fitMode === mode ? ALIGN_ACTIVE : ALIGN_INACTIVE}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {/* Bottom row: none, fit-width, fit-height */}
+      <div className="flex">
+        {FIT_MODES.slice(2).map(({ mode, label }) => (
+          <button
+            key={mode}
+            data-testid={`fit-mode-${mode}`}
+            onClick={() => onChange(mode)}
+            className={`${ALIGN_BTN} ${fitMode === mode ? ALIGN_ACTIVE : ALIGN_INACTIVE}`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
     </div>
   );

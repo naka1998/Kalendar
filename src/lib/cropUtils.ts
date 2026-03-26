@@ -1,5 +1,5 @@
 import type { ImageCropSettings } from "@/stores/types";
-import type { FitMode } from "@/stores/types";
+import type { ContentAlign, FitMode } from "@/stores/types";
 import { CROP_MIN_SIZE } from "./constants";
 
 export interface CropRenderResult {
@@ -31,6 +31,8 @@ export function calcCropRender(
   containerH: number,
   imageAspectRatio: number,
   fitMode: FitMode,
+  alignH: ContentAlign = "center",
+  alignV: ContentAlign = "center",
 ): CropRenderResult {
   // The crop region's real-world aspect ratio
   const cropRealAR = (crop.cropW * imageAspectRatio) / crop.cropH;
@@ -42,22 +44,37 @@ export function calcCropRender(
 
   if (fitMode === "cover") {
     if (cropRealAR > containerAR) {
-      // Crop is wider: match height, overflow width
       displayCropHRatio = 1;
       displayCropWRatio = cropRealAR / containerAR;
     } else {
-      // Crop is taller: match width, overflow height
       displayCropWRatio = 1;
       displayCropHRatio = containerAR / cropRealAR;
     }
-  } else {
-    // contain
+  } else if (fitMode === "none") {
+    // Display at original pixel size relative to container
+    // cropW fraction of original image width / containerW gives the ratio
+    // Since we don't have actual pixel sizes here, treat as contain (best approximation)
     if (cropRealAR > containerAR) {
-      // Crop is wider: match width, fit height within
       displayCropWRatio = 1;
       displayCropHRatio = containerAR / cropRealAR;
     } else {
-      // Crop is taller: match height, fit width within
+      displayCropHRatio = 1;
+      displayCropWRatio = cropRealAR / containerAR;
+    }
+  } else if (fitMode === "fit-width") {
+    // Match width, let height be natural
+    displayCropWRatio = 1;
+    displayCropHRatio = containerAR / cropRealAR;
+  } else if (fitMode === "fit-height") {
+    // Match height, let width be natural
+    displayCropHRatio = 1;
+    displayCropWRatio = cropRealAR / containerAR;
+  } else {
+    // contain (default)
+    if (cropRealAR > containerAR) {
+      displayCropWRatio = 1;
+      displayCropHRatio = containerAR / cropRealAR;
+    } else {
       displayCropHRatio = 1;
       displayCropWRatio = cropRealAR / containerAR;
     }
@@ -67,11 +84,14 @@ export function calcCropRender(
   const imgWidthRatio = displayCropWRatio / crop.cropW;
   const imgHeightRatio = displayCropHRatio / crop.cropH;
 
-  // Position: center the crop region in the container
-  const cropCenterXRatio = (crop.cropX + crop.cropW / 2) * imgWidthRatio;
-  const cropCenterYRatio = (crop.cropY + crop.cropH / 2) * imgHeightRatio;
-  const imgLeftRatio = 0.5 - cropCenterXRatio;
-  const imgTopRatio = 0.5 - cropCenterYRatio;
+  // Position: align the crop region within the container using anchor points
+  // anchor: start=0, center=0.5, end=1.0
+  const anchorX = alignH === "start" ? 0 : alignH === "end" ? 1 : 0.5;
+  const anchorY = alignV === "start" ? 0 : alignV === "end" ? 1 : 0.5;
+  const cropAnchorX = (crop.cropX + anchorX * crop.cropW) * imgWidthRatio;
+  const cropAnchorY = (crop.cropY + anchorY * crop.cropH) * imgHeightRatio;
+  const imgLeftRatio = anchorX - cropAnchorX;
+  const imgTopRatio = anchorY - cropAnchorY;
 
   return {
     imgWidthPct: imgWidthRatio * 100,
