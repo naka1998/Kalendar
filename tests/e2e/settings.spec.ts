@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures/global-setup";
 
 test.describe("Settings", () => {
   test.beforeEach(async ({ page }) => {

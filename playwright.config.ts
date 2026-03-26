@@ -14,10 +14,11 @@ export default defineConfig({
             }
           ).env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
         : undefined,
+      args: ["--no-sandbox"],
     },
   },
   webServer: {
-    command: "pnpm exec vp dev",
+    command: "pnpm exec vp preview --port 5173",
     url: "http://localhost:5173",
     reuseExistingServer: true,
     timeout: 60000,
