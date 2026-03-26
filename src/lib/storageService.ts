@@ -2,6 +2,7 @@ import { STORAGE_KEYS } from "./constants";
 import type {
   CalendarState,
   CalendarStyle,
+  ImageCropSettings,
   MonthImage,
   PersistedCalendarSettings,
 } from "@/stores/types";
@@ -10,6 +11,7 @@ interface SavedState extends PersistedCalendarSettings {
   useImages: boolean;
   images: Record<string, MonthImage>;
   calendarStyle: CalendarStyle;
+  imageCropSettings?: Record<string, ImageCropSettings>;
 }
 
 interface SavedData {
@@ -40,8 +42,10 @@ export function saveToStorage(state: CalendarState): { success: boolean; error?:
       images: state.images,
       imagePercent: state.imagePercent,
       imagePosition: state.imagePosition,
+      imageFitMode: state.imageFitMode,
       monthThemeOverrides: state.monthThemeOverrides,
       calendarStyle: state.calendarStyle,
+      imageCropSettings: state.imageCropSettings,
     },
   };
 

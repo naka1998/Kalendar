@@ -26,6 +26,8 @@ describe("calendarStore", () => {
       images: {},
       imagePercent: DEFAULTS.IMAGE_PERCENT,
       imagePosition: DEFAULTS.IMAGE_POSITION,
+      imageFitMode: DEFAULTS.IMAGE_FIT_MODE,
+      imageCropSettings: {},
       monthThemeOverrides: {},
       calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
     });
@@ -303,6 +305,101 @@ describe("calendarStore", () => {
       const state = useCalendarStore.getState();
       expect(state.lastAutoSavedAt).toBeNull();
       expect(state.saveError).toBeNull();
+    });
+  });
+
+  describe("imageCropSettings actions", () => {
+    it("setImageCropSettings stores crop settings for a month", () => {
+      const crop = { cropX: 0.1, cropY: 0.2, cropW: 0.8, cropH: 0.6 };
+      useCalendarStore.getState().setImageCropSettings("2026-04", crop);
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toEqual(crop);
+    });
+
+    it("removeImageCropSettings removes crop settings for a month", () => {
+      const crop = { cropX: 0, cropY: 0, cropW: 1, cropH: 1 };
+      useCalendarStore.getState().setImageCropSettings("2026-04", crop);
+      useCalendarStore.getState().removeImageCropSettings("2026-04");
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toBeUndefined();
+    });
+
+    it("setImage resets crop settings for that month", () => {
+      const crop = { cropX: 0.1, cropY: 0.1, cropW: 0.8, cropH: 0.8 };
+      useCalendarStore.getState().setImageCropSettings("2026-04", crop);
+      useCalendarStore.getState().setImage("2026-04", {
+        id: "new",
+        monthKey: "2026-04",
+        fileName: "new.jpg",
+        base64: "data:image/jpeg;base64,new",
+        mimeType: "image/jpeg",
+      });
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toBeUndefined();
+    });
+
+    it("removeImage also removes crop settings", () => {
+      useCalendarStore.getState().setImage("2026-04", {
+        id: "test",
+        monthKey: "2026-04",
+        fileName: "test.jpg",
+        base64: "data:image/jpeg;base64,abc",
+        mimeType: "image/jpeg",
+      });
+      useCalendarStore.getState().setImageCropSettings("2026-04", {
+        cropX: 0,
+        cropY: 0,
+        cropW: 0.5,
+        cropH: 0.5,
+      });
+      useCalendarStore.getState().removeImage("2026-04");
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toBeUndefined();
+    });
+
+    it("swapImages also swaps crop settings", () => {
+      useCalendarStore.getState().setImage("2026-04", {
+        id: "a",
+        monthKey: "2026-04",
+        fileName: "a.jpg",
+        base64: "data:image/jpeg;base64,a",
+        mimeType: "image/jpeg",
+      });
+      useCalendarStore.getState().setImage("2026-05", {
+        id: "b",
+        monthKey: "2026-05",
+        fileName: "b.jpg",
+        base64: "data:image/jpeg;base64,b",
+        mimeType: "image/jpeg",
+      });
+      const cropA = { cropX: 0.1, cropY: 0, cropW: 0.8, cropH: 1 };
+      const cropB = { cropX: 0, cropY: 0.2, cropW: 1, cropH: 0.6 };
+      useCalendarStore.getState().setImageCropSettings("2026-04", cropA);
+      useCalendarStore.getState().setImageCropSettings("2026-05", cropB);
+
+      useCalendarStore.getState().swapImages("2026-04", "2026-05");
+
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toEqual(cropB);
+      expect(useCalendarStore.getState().imageCropSettings["2026-05"]).toEqual(cropA);
+    });
+
+    it("updateImageAspectRatio updates the aspect ratio for a month's image", () => {
+      useCalendarStore.getState().setImage("2026-04", {
+        id: "test",
+        monthKey: "2026-04",
+        fileName: "test.jpg",
+        base64: "data:image/jpeg;base64,abc",
+        mimeType: "image/jpeg",
+      });
+      useCalendarStore.getState().updateImageAspectRatio("2026-04", 1.5);
+      expect(useCalendarStore.getState().images["2026-04"].aspectRatio).toBe(1.5);
+    });
+
+    it("resetCalendar clears imageCropSettings", () => {
+      useCalendarStore.getState().setImageCropSettings("2026-04", {
+        cropX: 0,
+        cropY: 0,
+        cropW: 0.5,
+        cropH: 0.5,
+      });
+      useCalendarStore.getState().resetCalendar();
+      expect(useCalendarStore.getState().imageCropSettings).toEqual({});
     });
   });
 });

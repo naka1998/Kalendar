@@ -26,6 +26,7 @@ export function exportSettings(state: CalendarState): string {
     fontWeight: state.fontWeight,
     imagePercent: state.imagePercent,
     imagePosition: state.imagePosition,
+    imageFitMode: state.imageFitMode,
     manualHolidays: state.manualHolidays,
     removedHolidays: state.removedHolidays,
     monthThemeOverrides: state.monthThemeOverrides,
@@ -33,6 +34,7 @@ export function exportSettings(state: CalendarState): string {
       Object.entries(state.images).map(([k, v]) => [k, v.fileName]),
     ),
     calendarStyle: state.calendarStyle,
+    imageCropSettings: state.imageCropSettings,
   };
   return JSON.stringify(exported, null, 2);
 }
@@ -55,9 +57,11 @@ export function importSettings(json: string): ImportedSettings {
     fontWeight: data.fontWeight,
     imagePercent: data.imagePercent,
     imagePosition: data.imagePosition,
+    imageFitMode: data.imageFitMode,
     manualHolidays: data.manualHolidays,
     removedHolidays: data.removedHolidays,
     monthThemeOverrides: data.monthThemeOverrides,
     ...(data.calendarStyle ? { calendarStyle: data.calendarStyle } : {}),
+    ...(data.imageCropSettings ? { imageCropSettings: data.imageCropSettings } : {}),
   };
 }

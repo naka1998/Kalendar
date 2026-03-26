@@ -15,6 +15,8 @@ const defaultState = {
   images: {},
   imagePercent: 50,
   imagePosition: "top" as const,
+  imageFitMode: "cover" as const,
+  imageCropSettings: {},
 };
 
 describe("buildPageData", () => {

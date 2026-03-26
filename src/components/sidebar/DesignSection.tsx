@@ -56,6 +56,8 @@ export function DesignSection() {
   const setFontWeight = useCalendarStore((s) => s.setFontWeight);
   const useImages = useCalendarStore((s) => s.useImages);
   const setUseImages = useCalendarStore((s) => s.setUseImages);
+  const imageFitMode = useCalendarStore((s) => s.imageFitMode);
+  const setImageFitMode = useCalendarStore((s) => s.setImageFitMode);
   const calendarStyle = useCalendarStore((s) => s.calendarStyle);
   const setCalendarStyle = useCalendarStore((s) => s.setCalendarStyle);
 
@@ -199,6 +201,34 @@ export function DesignSection() {
                   onClick={() => setCalendarStyle({ imageAlign: a })}
                   className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
                     calendarStyle.imageAlign === a
+                      ? "bg-surface text-on-surface shadow-sm"
+                      : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Image fit mode — only when images enabled */}
+      {useImages && (
+        <div className="space-y-1.5">
+          <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+            表示モード
+          </Label>
+          <div className="flex rounded-lg bg-surface-container-high p-1">
+            {(["cover", "contain"] as const).map((mode) => {
+              const label = mode === "cover" ? "短辺に合わせる" : "長辺に合わせる";
+              return (
+                <button
+                  key={mode}
+                  data-testid={`fit-mode-${mode}`}
+                  onClick={() => setImageFitMode(mode)}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
+                    imageFitMode === mode
                       ? "bg-surface text-on-surface shadow-sm"
                       : "text-on-surface-variant hover:text-on-surface"
                   }`}

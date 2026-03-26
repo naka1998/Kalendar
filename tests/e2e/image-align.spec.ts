@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures/global-setup";
 
 const TEST_WIDE_IMAGE = "tests/e2e/fixtures/test-wide-image.png";
 

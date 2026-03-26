@@ -2,6 +2,7 @@ import type { PageData, ImagePosition } from "@/stores/types";
 import { isHorizontalLayout } from "../layoutUtils";
 import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
+import { calcCropRender, isFullImageCrop } from "../cropUtils";
 
 function objectPositionValue(align: string | undefined): string {
   if (align === "start") return "top";
@@ -9,14 +10,30 @@ function objectPositionValue(align: string | undefined): string {
   return "center";
 }
 
+// Page dimensions in mm for export rendering
+const PAGE_W_MM = { portrait: 210, landscape: 297 };
+const PAGE_H_MM = { portrait: 297, landscape: 210 };
+
 function renderImageHtml(
   page: PageData,
   sizeProperty: string,
   sizeValue: string,
-  imageAlign?: string,
+  imageAlign: string | undefined,
+  containerWMm: number,
+  containerHMm: number,
 ): string {
+  const crop = page.imageCropSettings;
+  const aspectRatio = page.imageAspectRatio;
+
+  if (crop && aspectRatio && !isFullImageCrop(crop)) {
+    const fitMode = page.imageFitMode ?? "cover";
+    const r = calcCropRender(crop, containerWMm, containerHMm, aspectRatio, fitMode);
+    return `<div style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${r.imgLeftPct.toFixed(4)}%;top:${r.imgTopPct.toFixed(4)}%;width:${r.imgWidthPct.toFixed(4)}%;height:${r.imgHeightPct.toFixed(4)}%" /></div>`;
+  }
+
   const op = objectPositionValue(imageAlign);
-  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:contain;object-position:${op}" /></div>`;
+  const fitMode = page.imageFitMode ?? "contain";
+  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${op}" /></div>`;
 }
 
 function justifyContentValue(align: string | undefined): string {
@@ -55,11 +72,25 @@ export function renderPage(
     ? `padding-top:${calendarStyle.pageMarginTop}px;`
     : "";
 
+  // Calculate container dimensions in mm for crop rendering
+  const orient = orientation === "landscape" ? "landscape" : "portrait";
+  const fullW = PAGE_W_MM[orient];
+  const fullH = PAGE_H_MM[orient];
+  const containerWMm = horizontal ? (fullW * imgPct) / 100 : fullW;
+  const containerHMm = horizontal ? fullH : (fullH * imgPct) / 100;
+
   let contentHtml: string;
 
   if (page.imageBase64) {
     const gridHtml = renderGridHtml(page);
-    const imageBlock = renderImageHtml(page, sizeProperty, `${imgPct}%`, calendarStyle?.imageAlign);
+    const imageBlock = renderImageHtml(
+      page,
+      sizeProperty,
+      `${imgPct}%`,
+      calendarStyle?.imageAlign,
+      containerWMm,
+      containerHMm,
+    );
     const gridBlock = renderGridContainer(
       gridHtml,
       sizeProperty,

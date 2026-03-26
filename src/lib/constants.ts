@@ -26,6 +26,7 @@ export const DEFAULTS = {
   FONT_WEIGHT: 400 as const,
   IMAGE_PERCENT: 50,
   IMAGE_POSITION: "top" as const,
+  IMAGE_FIT_MODE: "cover" as const,
   PAGE_LAYOUT: "1-month" as const,
 } as const;
 
@@ -45,6 +46,15 @@ export const SAFE_MARGIN_PX = 19;
 
 export const IMAGE_PERCENT_MIN = 20;
 export const IMAGE_PERCENT_MAX = 80;
+
+export const DEFAULT_IMAGE_CROP_SETTINGS = {
+  cropX: 0,
+  cropY: 0,
+  cropW: 1,
+  cropH: 1,
+} as const;
+
+export const CROP_MIN_SIZE = 0.1; // 最小トリミング枠サイズ (画像の10%)
 
 export const IMAGE = {
   MAX_FILE_SIZE: 10 * 1024 * 1024,

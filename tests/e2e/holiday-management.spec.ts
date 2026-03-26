@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures/global-setup";
 
 test.describe("Holiday Management", () => {
   test.beforeEach(async ({ page }) => {

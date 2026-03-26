@@ -10,6 +10,15 @@ export type DownloadMode = "pdf" | "single-html" | "zip";
 export type FontWeight = 300 | 400 | 600;
 export type ContentAlign = "start" | "center" | "end";
 export type PreviewZoom = "large" | "standard" | "small";
+export type FitMode = "cover" | "contain";
+
+// Per-month image crop settings (crop-rect model)
+export interface ImageCropSettings {
+  cropX: number; // 枠の左端 (画像幅に対する割合 0.0〜1.0)
+  cropY: number; // 枠の上端 (画像高さに対する割合 0.0〜1.0)
+  cropW: number; // 枠の幅 (画像幅に対する割合 0.0〜1.0)
+  cropH: number; // 枠の高さ (画像高さに対する割合 0.0〜1.0)
+}
 
 // === Calendar Style ===
 export interface CalendarStyle {
@@ -56,6 +65,7 @@ export interface MonthImage {
   fileName: string;
   base64: string;
   mimeType: string;
+  aspectRatio?: number; // naturalWidth / naturalHeight
 }
 
 // === Holiday ===
@@ -90,9 +100,11 @@ export interface PersistedCalendarSettings {
   fontWeight: FontWeight;
   imagePercent: number;
   imagePosition: ImagePosition;
+  imageFitMode: FitMode;
   manualHolidays: ManualHoliday[];
   removedHolidays: string[];
   monthThemeOverrides: Record<string, string>;
+  imageCropSettings?: Record<string, ImageCropSettings>;
 }
 
 // === HTML Generator ===
@@ -114,6 +126,9 @@ export interface PageData {
   imageBase64: string | null;
   imagePercent: number;
   imagePosition: ImagePosition;
+  imageCropSettings?: ImageCropSettings;
+  imageFitMode?: FitMode;
+  imageAspectRatio?: number;
 }
 
 // === Zustand Store ===
@@ -141,6 +156,8 @@ export interface CalendarState {
   images: Record<string, MonthImage>;
   imagePercent: number;
   imagePosition: ImagePosition;
+  imageFitMode: FitMode;
+  imageCropSettings: Record<string, ImageCropSettings>;
 
   monthThemeOverrides: Record<string, string>;
   calendarStyle: CalendarStyle;
@@ -165,6 +182,7 @@ export interface CalendarState {
   setFontWeight: (w: FontWeight) => void;
   setImagePercent: (percent: number) => void;
   setImagePosition: (pos: ImagePosition) => void;
+  setImageFitMode: (mode: FitMode) => void;
   setUseImages: (use: boolean) => void;
   setCalendarStyle: (style: Partial<CalendarStyle>) => void;
   setShowSafeMargin: (show: boolean) => void;
@@ -181,6 +199,9 @@ export interface CalendarState {
   setImage: (monthKey: string, image: MonthImage) => void;
   removeImage: (monthKey: string) => void;
   swapImages: (fromMonth: string, toMonth: string) => void;
+  setImageCropSettings: (monthKey: string, settings: ImageCropSettings) => void;
+  removeImageCropSettings: (monthKey: string) => void;
+  updateImageAspectRatio: (monthKey: string, aspectRatio: number) => void;
 
   setMonthTheme: (monthKey: string, themeId: string) => void;
   clearMonthTheme: (monthKey: string) => void;
