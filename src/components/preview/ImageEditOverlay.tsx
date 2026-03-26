@@ -264,7 +264,7 @@ export function ImageEditOverlay({
         {/* Resize handle (bottom-right corner) */}
         <div
           data-testid="crop-resize-handle"
-          className="absolute -right-2 -bottom-2 h-4 w-4 cursor-se-resize rounded-full bg-white shadow"
+          className="absolute -right-3 -bottom-3 h-6 w-6 cursor-se-resize rounded-full bg-white shadow md:-right-2 md:-bottom-2 md:h-4 md:w-4"
           onPointerDown={(e) => handlePointerDown(e, "resize-br")}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -274,7 +274,7 @@ export function ImageEditOverlay({
 
       {/* Bottom toolbar */}
       <div
-        className="absolute right-0 bottom-0 left-0 z-20 flex items-center gap-2 bg-black/60 px-3 py-2"
+        className="absolute right-0 bottom-0 left-0 z-20 flex flex-wrap items-center gap-2 bg-black/60 px-3 py-2 md:flex-nowrap md:gap-2 md:px-3 md:py-2"
         onPointerDown={(e) => e.stopPropagation()}
       >
         {/* Aspect ratio mode buttons */}
@@ -283,7 +283,7 @@ export function ImageEditOverlay({
             key={mode}
             data-testid={`aspect-mode-${mode}`}
             onClick={() => handleAspectModeChange(mode)}
-            className={`rounded px-2 py-0.5 text-[10px] font-medium transition-all ${
+            className={`rounded px-3 py-1.5 text-xs font-medium transition-all md:px-2 md:py-0.5 md:text-[10px] ${
               aspectMode === mode
                 ? "bg-white/40 text-white"
                 : "bg-white/20 text-white hover:bg-white/30"
@@ -299,7 +299,7 @@ export function ImageEditOverlay({
         <button
           data-testid="crop-reset"
           onClick={() => onReset(imageAlign)}
-          className="rounded bg-white/20 px-2 py-0.5 text-[10px] font-medium text-white hover:bg-white/30"
+          className="rounded bg-white/20 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/30 md:px-2 md:py-0.5 md:text-[10px]"
         >
           リセット
         </button>
@@ -308,7 +308,7 @@ export function ImageEditOverlay({
         <button
           data-testid="crop-cancel"
           onClick={onCancel}
-          className="rounded bg-white/20 px-2 py-0.5 text-[10px] font-medium text-white hover:bg-white/30"
+          className="rounded bg-white/20 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/30 md:px-2 md:py-0.5 md:text-[10px]"
         >
           キャンセル
         </button>
@@ -317,7 +317,7 @@ export function ImageEditOverlay({
         <button
           data-testid="crop-save"
           onClick={onSave}
-          className="rounded bg-white/90 px-2 py-0.5 text-[10px] font-medium text-on-surface hover:bg-white"
+          className="rounded bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface hover:bg-white md:px-2 md:py-0.5 md:text-[10px]"
         >
           保存
         </button>

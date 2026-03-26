@@ -283,7 +283,7 @@ export function CalendarPage({
                 }
               }}
             >
-              <div className="flex gap-2">
+              <div className="flex gap-2 md:gap-2 gap-3">
                 {onImageEditStart && imageAspectRatio && (
                   <button
                     data-testid="image-edit-button"
@@ -291,7 +291,7 @@ export function CalendarPage({
                       setShowImageButtons(false);
                       onImageEditStart();
                     }}
-                    className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface shadow-sm"
+                    className="rounded-lg bg-white/90 px-5 py-2.5 text-sm font-medium text-on-surface shadow-sm md:px-3 md:py-1.5 md:text-xs"
                   >
                     トリミング
                   </button>
@@ -301,7 +301,7 @@ export function CalendarPage({
                     setShowImageButtons(false);
                     fileInputRef.current?.click();
                   }}
-                  className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface shadow-sm"
+                  className="rounded-lg bg-white/90 px-5 py-2.5 text-sm font-medium text-on-surface shadow-sm md:px-3 md:py-1.5 md:text-xs"
                 >
                   変更
                 </button>
@@ -310,7 +310,7 @@ export function CalendarPage({
                     setShowImageButtons(false);
                     onImageRemove?.();
                   }}
-                  className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-sunday shadow-sm"
+                  className="rounded-lg bg-white/90 px-5 py-2.5 text-sm font-medium text-sunday shadow-sm md:px-3 md:py-1.5 md:text-xs"
                 >
                   削除
                 </button>
