@@ -46,15 +46,15 @@ export const SAFE_MARGIN_PX = 19;
 export const IMAGE_PERCENT_MIN = 20;
 export const IMAGE_PERCENT_MAX = 80;
 
-export const IMAGE_SCALE_MIN = 1;
-export const IMAGE_SCALE_MAX = 3;
-
 export const DEFAULT_IMAGE_CROP_SETTINGS = {
-  scale: 1,
-  offsetX: 0,
-  offsetY: 0,
-  fitMode: "contain" as const,
+  cropX: 0,
+  cropY: 0,
+  cropW: 1,
+  cropH: 1,
+  fitMode: "cover" as const,
 } as const;
+
+export const CROP_MIN_SIZE = 0.1; // 最小トリミング枠サイズ (画像の10%)
 
 export const IMAGE = {
   MAX_FILE_SIZE: 10 * 1024 * 1024,

@@ -3,21 +3,17 @@ import { test, expect } from "./fixtures/global-setup";
 const TEST_IMAGE_PATH = "tests/e2e/fixtures/test-image.png";
 
 async function uploadTestImage(page: import("@playwright/test").Page) {
-  // Use setInputFiles directly on the hidden file input (bypasses filechooser event)
   const imageInput = page.locator('input[type=file][accept="image/jpeg,image/png"]').first();
   await imageInput.setInputFiles(TEST_IMAGE_PATH);
-  // Wait for image to load and aspect ratio to be detected
   await page.waitForTimeout(2000);
 }
 
 async function openImageEditMode(page: import("@playwright/test").Page) {
-  // Use evaluate to click the edit button directly (hover CSS may not work reliably in headless)
   await page.evaluate(() => {
     const btn = document.querySelector('[data-testid="image-edit-button"]') as HTMLButtonElement;
     if (btn) btn.click();
   });
   await page.waitForTimeout(500);
-  // Wait for overlay to appear
   await expect(page.getByTestId("image-edit-overlay").first()).toBeVisible({ timeout: 10000 });
 }
 
@@ -37,64 +33,44 @@ test.describe("Image editing", () => {
     await expect(page.getByTestId("image-edit-button").first()).toBeVisible();
   });
 
-  test("clicking edit opens the edit overlay", async ({ page }) => {
+  test("clicking edit opens the edit overlay with crop frame", async ({ page }) => {
     await uploadTestImage(page);
     await openImageEditMode(page);
-    await expect(page.getByTestId("scale-slider").first()).toBeVisible();
+    await expect(page.getByTestId("crop-frame").first()).toBeVisible();
     await expect(page.getByTestId("fit-mode-toggle").first()).toBeVisible();
     await expect(page.getByTestId("crop-save").first()).toBeVisible();
     await expect(page.getByTestId("crop-cancel").first()).toBeVisible();
     await expect(page.getByTestId("crop-reset").first()).toBeVisible();
   });
 
-  test("scale slider changes image transform", async ({ page }) => {
-    await uploadTestImage(page);
-    await openImageEditMode(page);
-
-    const slider = page.getByTestId("scale-slider").first();
-    // Set scale to 2
-    await slider.fill("2");
-    await page.waitForTimeout(500);
-
-    // Check that the cropped image has a transform applied
-    const croppedImg = page.getByTestId("cropped-image").first();
-    await expect(croppedImg).toBeVisible();
-    const style = await croppedImg.getAttribute("style");
-    expect(style).toContain("translate");
-  });
-
-  test("fit mode toggle switches between cover and contain", async ({ page }) => {
+  test("fit mode toggle shows Japanese labels", async ({ page }) => {
     await uploadTestImage(page);
     await openImageEditMode(page);
 
     const toggle = page.getByTestId("fit-mode-toggle").first();
-    // Initially contain
-    await expect(toggle).toContainText("contain");
+    // Default is cover = 短辺に合わせる
+    await expect(toggle).toContainText("短辺に合わせる");
 
-    // Toggle to cover (use evaluate to bypass pointer capture)
+    // Toggle to contain
     await page.evaluate(() => {
-      const btn = document.querySelector('[data-testid="fit-mode-toggle"]') as HTMLButtonElement;
-      if (btn) btn.click();
+      (document.querySelector('[data-testid="fit-mode-toggle"]') as HTMLButtonElement)?.click();
     });
     await page.waitForTimeout(300);
-    await expect(toggle).toContainText("cover");
+    await expect(toggle).toContainText("長辺に合わせる");
 
     // Toggle back
     await page.evaluate(() => {
-      const btn = document.querySelector('[data-testid="fit-mode-toggle"]') as HTMLButtonElement;
-      if (btn) btn.click();
+      (document.querySelector('[data-testid="fit-mode-toggle"]') as HTMLButtonElement)?.click();
     });
     await page.waitForTimeout(300);
-    await expect(toggle).toContainText("contain");
+    await expect(toggle).toContainText("短辺に合わせる");
   });
 
   test("save persists crop settings and cancel discards them", async ({ page }) => {
     await uploadTestImage(page);
 
-    // Edit and save with scale=2
+    // Edit and save
     await openImageEditMode(page);
-    const slider = page.getByTestId("scale-slider").first();
-    await slider.fill("2");
     await page.waitForTimeout(300);
     await page.evaluate(() => {
       (document.querySelector('[data-testid="crop-save"]') as HTMLButtonElement)?.click();
@@ -104,14 +80,12 @@ test.describe("Image editing", () => {
     // Overlay should close
     await expect(page.getByTestId("image-edit-overlay")).toHaveCount(0);
 
-    // Cropped image should still be visible with saved settings
+    // Cropped image should be visible with saved settings
     const croppedImg = page.getByTestId("cropped-image").first();
     await expect(croppedImg).toBeVisible();
 
     // Now edit again and cancel
     await openImageEditMode(page);
-    const slider2 = page.getByTestId("scale-slider").first();
-    await slider2.fill("3");
     await page.waitForTimeout(300);
     await page.evaluate(() => {
       (document.querySelector('[data-testid="crop-cancel"]') as HTMLButtonElement)?.click();
@@ -126,17 +100,12 @@ test.describe("Image editing", () => {
     await uploadTestImage(page);
     await openImageEditMode(page);
 
-    // Change scale
-    const slider = page.getByTestId("scale-slider").first();
-    await slider.fill("2.5");
-    await page.waitForTimeout(300);
-
-    // Toggle to cover
+    // Toggle to contain
     await page.evaluate(() => {
       (document.querySelector('[data-testid="fit-mode-toggle"]') as HTMLButtonElement)?.click();
     });
     await page.waitForTimeout(300);
-    await expect(page.getByTestId("fit-mode-toggle").first()).toContainText("cover");
+    await expect(page.getByTestId("fit-mode-toggle").first()).toContainText("長辺に合わせる");
 
     // Reset
     await page.evaluate(() => {
@@ -144,19 +113,21 @@ test.describe("Image editing", () => {
     });
     await page.waitForTimeout(300);
 
-    // Verify slider is back to 1 and fit mode is contain
-    await expect(page.getByTestId("fit-mode-toggle").first()).toContainText("contain");
-    const sliderValue = await slider.inputValue();
-    expect(parseFloat(sliderValue)).toBe(1);
+    // Should be back to cover (短辺に合わせる)
+    await expect(page.getByTestId("fit-mode-toggle").first()).toContainText("短辺に合わせる");
+  });
+
+  test("crop frame has resize handle", async ({ page }) => {
+    await uploadTestImage(page);
+    await openImageEditMode(page);
+    await expect(page.getByTestId("crop-resize-handle").first()).toBeVisible();
   });
 
   test("editing one month does not affect another month's image", async ({ page }) => {
-    // Upload to first month
     await uploadTestImage(page);
 
-    // Edit first month: change scale and save
+    // Edit first month and save
     await openImageEditMode(page);
-    await page.getByTestId("scale-slider").first().fill("2");
     await page.waitForTimeout(300);
     await page.evaluate(() => {
       (document.querySelector('[data-testid="crop-save"]') as HTMLButtonElement)?.click();
@@ -164,10 +135,9 @@ test.describe("Image editing", () => {
     await page.waitForTimeout(500);
 
     // First month should have cropped image
-    const firstCropped = page.getByTestId("cropped-image").first();
-    await expect(firstCropped).toBeVisible();
+    await expect(page.getByTestId("cropped-image").first()).toBeVisible();
 
-    // Second month's image area should NOT have a cropped image
+    // Second month should NOT have a cropped image
     const secondPage = page.locator("[data-month]").nth(1);
     const secondCropped = secondPage.locator("[data-testid='cropped-image']");
     await expect(secondCropped).toHaveCount(0);

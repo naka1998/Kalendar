@@ -12,12 +12,13 @@ export type ContentAlign = "start" | "center" | "end";
 export type PreviewZoom = "large" | "standard" | "small";
 export type FitMode = "cover" | "contain";
 
-// Per-month image crop/zoom settings
+// Per-month image crop settings (crop-rect model)
 export interface ImageCropSettings {
-  scale: number; // 1.0〜3.0
-  offsetX: number; // -1.0〜1.0 (可動範囲比)
-  offsetY: number; // -1.0〜1.0 (可動範囲比)
-  fitMode: FitMode;
+  cropX: number; // 枠の左端 (画像幅に対する割合 0.0〜1.0)
+  cropY: number; // 枠の上端 (画像高さに対する割合 0.0〜1.0)
+  cropW: number; // 枠の幅 (画像幅に対する割合 0.0〜1.0)
+  cropH: number; // 枠の高さ (画像高さに対する割合 0.0〜1.0)
+  fitMode: FitMode; // 枠内での表示方法
 }
 
 // === Calendar Style ===

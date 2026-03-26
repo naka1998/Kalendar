@@ -1,89 +1,109 @@
 import { describe, it, expect } from "vitest";
-import { calcImageTransform, clampOffset, imageAlignToOffset } from "./cropUtils";
+import { calcCropRender, clampCropRect, calcInitialCropRect } from "./cropUtils";
 import type { ImageCropSettings } from "@/stores/types";
 
-const defaultCrop: ImageCropSettings = {
-  scale: 1,
-  offsetX: 0,
-  offsetY: 0,
-  fitMode: "contain",
+const fullCrop: ImageCropSettings = {
+  cropX: 0,
+  cropY: 0,
+  cropW: 1,
+  cropH: 1,
+  fitMode: "cover",
 };
 
-describe("calcImageTransform", () => {
-  it("returns container-matching size for contain with matching aspect ratio", () => {
-    // 2:1 image in a 400x200 container (same AR) → exact fit
-    const result = calcImageTransform(defaultCrop, 400, 200, 2);
-    expect(result.displayW).toBeCloseTo(400);
-    expect(result.displayH).toBeCloseTo(200);
-    expect(result.tx).toBe(0);
-    expect(result.ty).toBe(0);
+describe("calcCropRender", () => {
+  it("returns scale 1 and center position for full image crop", () => {
+    const result = calcCropRender(fullCrop);
+    expect(result.scaleX).toBe(1);
+    expect(result.scaleY).toBe(1);
+    expect(result.objectPositionX).toBe(50);
+    expect(result.objectPositionY).toBe(50);
   });
 
-  it("contain: wide image in tall container fills width", () => {
-    // 2:1 image in 400x600 container → baseW=400, baseH=200
-    const result = calcImageTransform(defaultCrop, 400, 600, 2);
-    expect(result.displayW).toBeCloseTo(400);
-    expect(result.displayH).toBeCloseTo(200);
-    expect(result.tx).toBe(0);
-    expect(result.ty).toBe(0);
+  it("scales up when crop is a sub-region", () => {
+    const crop: ImageCropSettings = {
+      cropX: 0.25,
+      cropY: 0.25,
+      cropW: 0.5,
+      cropH: 0.5,
+      fitMode: "cover",
+    };
+    const result = calcCropRender(crop);
+    expect(result.scaleX).toBe(2);
+    expect(result.scaleY).toBe(2);
   });
 
-  it("cover: wide image in tall container fills height", () => {
-    const crop = { ...defaultCrop, fitMode: "cover" as const };
-    // 2:1 image in 400x600 container → baseW=1200, baseH=600
-    const result = calcImageTransform(crop, 400, 600, 2);
-    expect(result.displayW).toBeCloseTo(1200);
-    expect(result.displayH).toBeCloseTo(600);
+  it("positions correctly for top-left crop", () => {
+    const crop: ImageCropSettings = {
+      cropX: 0,
+      cropY: 0,
+      cropW: 0.5,
+      cropH: 0.5,
+      fitMode: "cover",
+    };
+    const result = calcCropRender(crop);
+    expect(result.objectPositionX).toBe(0);
+    expect(result.objectPositionY).toBe(0);
   });
 
-  it("offset moves image within movable range", () => {
-    // contain: 2:1 image in 400x600 → baseW=400, baseH=200
-    // maxTy = |200-600|/2 = 200
-    const crop = { ...defaultCrop, offsetY: -1 };
-    const result = calcImageTransform(crop, 400, 600, 2);
-    expect(result.ty).toBeCloseTo(-200);
-  });
-
-  it("offset +1 moves to other end", () => {
-    const crop = { ...defaultCrop, offsetY: 1 };
-    const result = calcImageTransform(crop, 400, 600, 2);
-    expect(result.ty).toBeCloseTo(200);
-  });
-
-  it("scale increases display size proportionally", () => {
-    const crop = { ...defaultCrop, scale: 2 };
-    const result = calcImageTransform(crop, 400, 600, 2);
-    // baseW=400, baseH=200, scaled: 800, 400
-    expect(result.displayW).toBeCloseTo(800);
-    expect(result.displayH).toBeCloseTo(400);
-  });
-
-  it("cover with scale=1 and offset=-1 shows top edge", () => {
-    // 1:2 image (tall) in 400x400 container
-    // cover: baseW=400, baseH=800. maxTy = |800-400|/2 = 200
-    const crop = { ...defaultCrop, fitMode: "cover" as const, offsetY: -1 };
-    const result = calcImageTransform(crop, 400, 400, 0.5);
-    expect(result.ty).toBeCloseTo(-200);
+  it("positions correctly for bottom-right crop", () => {
+    const crop: ImageCropSettings = {
+      cropX: 0.5,
+      cropY: 0.5,
+      cropW: 0.5,
+      cropH: 0.5,
+      fitMode: "cover",
+    };
+    const result = calcCropRender(crop);
+    expect(result.objectPositionX).toBe(100);
+    expect(result.objectPositionY).toBe(100);
   });
 });
 
-describe("clampOffset", () => {
-  it("clamps within -1 to 1", () => {
-    expect(clampOffset(0)).toBe(0);
-    expect(clampOffset(-2)).toBe(-1);
-    expect(clampOffset(2)).toBe(1);
-    expect(clampOffset(0.5)).toBe(0.5);
+describe("clampCropRect", () => {
+  it("clamps within bounds", () => {
+    const result = clampCropRect(-0.1, -0.1, 0.5, 0.5);
+    expect(result.cropX).toBe(0);
+    expect(result.cropY).toBe(0);
+  });
+
+  it("clamps so rect stays inside image", () => {
+    const result = clampCropRect(0.8, 0.8, 0.5, 0.5);
+    expect(result.cropX).toBe(0.5);
+    expect(result.cropY).toBe(0.5);
+  });
+
+  it("enforces minimum size", () => {
+    const result = clampCropRect(0, 0, 0.01, 0.01);
+    expect(result.cropW).toBe(0.1);
+    expect(result.cropH).toBe(0.1);
   });
 });
 
-describe("imageAlignToOffset", () => {
-  it("maps start to -1", () => {
-    expect(imageAlignToOffset("start")).toBe(-1);
+describe("calcInitialCropRect", () => {
+  it("returns full image for matching aspect ratios", () => {
+    // Container and image both 2:1
+    const result = calcInitialCropRect(2, 2);
+    expect(result.cropW).toBe(1);
+    expect(result.cropH).toBe(1);
+    expect(result.cropX).toBe(0);
+    expect(result.cropY).toBe(0);
   });
-  it("maps center to 0", () => {
-    expect(imageAlignToOffset("center")).toBe(0);
+
+  it("crops vertically for a wider container with tall image", () => {
+    // Container 2:1, image 1:2 (tall)
+    // cropAR = 2 / 0.5 = 4 → cropW=1, cropH=0.25, centered
+    const result = calcInitialCropRect(2, 0.5);
+    expect(result.cropW).toBe(1);
+    expect(result.cropH).toBeCloseTo(0.25);
+    expect(result.cropY).toBeCloseTo(0.375);
   });
-  it("maps end to 1", () => {
-    expect(imageAlignToOffset("end")).toBe(1);
+
+  it("crops horizontally for a taller container with wide image", () => {
+    // Container 1:2, image 2:1
+    // cropAR = 0.5 / 2 = 0.25 → cropH=1, cropW=0.25, centered
+    const result = calcInitialCropRect(0.5, 2);
+    expect(result.cropH).toBe(1);
+    expect(result.cropW).toBeCloseTo(0.25);
+    expect(result.cropX).toBeCloseTo(0.375);
   });
 });

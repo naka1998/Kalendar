@@ -309,20 +309,20 @@ describe("calendarStore", () => {
 
   describe("imageCropSettings actions", () => {
     it("setImageCropSettings stores crop settings for a month", () => {
-      const crop = { scale: 1.5, offsetX: 0.3, offsetY: -0.2, fitMode: "cover" as const };
+      const crop = { cropX: 0.1, cropY: 0.2, cropW: 0.8, cropH: 0.6, fitMode: "cover" as const };
       useCalendarStore.getState().setImageCropSettings("2026-04", crop);
       expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toEqual(crop);
     });
 
     it("removeImageCropSettings removes crop settings for a month", () => {
-      const crop = { scale: 1.5, offsetX: 0, offsetY: 0, fitMode: "contain" as const };
+      const crop = { cropX: 0, cropY: 0, cropW: 1, cropH: 1, fitMode: "contain" as const };
       useCalendarStore.getState().setImageCropSettings("2026-04", crop);
       useCalendarStore.getState().removeImageCropSettings("2026-04");
       expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toBeUndefined();
     });
 
     it("setImage resets crop settings for that month", () => {
-      const crop = { scale: 2, offsetX: 0, offsetY: 0, fitMode: "cover" as const };
+      const crop = { cropX: 0.1, cropY: 0.1, cropW: 0.8, cropH: 0.8, fitMode: "cover" as const };
       useCalendarStore.getState().setImageCropSettings("2026-04", crop);
       useCalendarStore.getState().setImage("2026-04", {
         id: "new",
@@ -343,9 +343,10 @@ describe("calendarStore", () => {
         mimeType: "image/jpeg",
       });
       useCalendarStore.getState().setImageCropSettings("2026-04", {
-        scale: 1.5,
-        offsetX: 0,
-        offsetY: 0,
+        cropX: 0,
+        cropY: 0,
+        cropW: 0.5,
+        cropH: 0.5,
         fitMode: "contain",
       });
       useCalendarStore.getState().removeImage("2026-04");
@@ -367,8 +368,8 @@ describe("calendarStore", () => {
         base64: "data:image/jpeg;base64,b",
         mimeType: "image/jpeg",
       });
-      const cropA = { scale: 2, offsetX: 0.5, offsetY: 0, fitMode: "cover" as const };
-      const cropB = { scale: 1.2, offsetX: 0, offsetY: -0.5, fitMode: "contain" as const };
+      const cropA = { cropX: 0.1, cropY: 0, cropW: 0.8, cropH: 1, fitMode: "cover" as const };
+      const cropB = { cropX: 0, cropY: 0.2, cropW: 1, cropH: 0.6, fitMode: "contain" as const };
       useCalendarStore.getState().setImageCropSettings("2026-04", cropA);
       useCalendarStore.getState().setImageCropSettings("2026-05", cropB);
 
@@ -392,9 +393,10 @@ describe("calendarStore", () => {
 
     it("resetCalendar clears imageCropSettings", () => {
       useCalendarStore.getState().setImageCropSettings("2026-04", {
-        scale: 2,
-        offsetX: 0,
-        offsetY: 0,
+        cropX: 0,
+        cropY: 0,
+        cropW: 0.5,
+        cropH: 0.5,
         fitMode: "cover",
       });
       useCalendarStore.getState().resetCalendar();

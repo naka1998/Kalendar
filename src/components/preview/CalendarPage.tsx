@@ -15,7 +15,7 @@ import { DividerHandle } from "./DividerHandle";
 import { ImageEditOverlay } from "./ImageEditOverlay";
 import { SafeMarginOverlay } from "./SafeMarginOverlay";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
-import { calcImageTransform } from "@/lib/cropUtils";
+import { calcCropRender } from "@/lib/cropUtils";
 import { A4 } from "@/lib/constants";
 
 const POSITION_CYCLE: ImagePosition[] = ["top", "right", "bottom", "left"];
@@ -172,17 +172,16 @@ export function CalendarPage({
         : "center";
 
   // Determine effective crop settings: editing draft takes priority, then committed, then none
-  const activeCrop = isImageEditing && editDraft ? editDraft : imageCropSettings;
-  const hasCrop = !!activeCrop && !!imageAspectRatio;
+  // During editing, we show the full image (for frame placement), not the cropped result
+  const committedCrop = imageCropSettings;
+  const hasCrop = !!committedCrop && !isImageEditing;
 
-  // Calculate container size for crop transform
+  // Calculate container size for edit overlay
   const containerW = horizontal ? (pageWidth * placeholderImagePercent) / 100 : pageWidth;
   const containerH = horizontal ? pageHeight : (pageHeight * placeholderImagePercent) / 100;
 
-  // Compute crop transform if applicable
-  const cropTransform = hasCrop
-    ? calcImageTransform(activeCrop, containerW, containerH, imageAspectRatio)
-    : null;
+  // Compute crop render properties for committed (non-editing) display
+  const cropRender = hasCrop ? calcCropRender(committedCrop) : null;
 
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -205,23 +204,34 @@ export function CalendarPage({
     >
       {imageBase64 ? (
         <>
-          {cropTransform ? (
+          {isImageEditing ? (
+            /* During editing: show full image with contain fit for crop frame placement */
+            <img
+              ref={imageRef}
+              src={imageBase64}
+              alt=""
+              className="h-full w-full"
+              onLoad={handleImageLoad}
+              style={{ objectFit: "contain", objectPosition: "center" }}
+            />
+          ) : cropRender ? (
+            /* Cropped display: scale and position image to show only the crop region */
             <img
               ref={imageRef}
               data-testid="cropped-image"
               src={imageBase64}
               alt=""
               onLoad={handleImageLoad}
+              className="h-full w-full"
               style={{
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                width: `${cropTransform.displayW}px`,
-                height: `${cropTransform.displayH}px`,
-                transform: `translate(calc(-50% + ${cropTransform.tx}px), calc(-50% + ${cropTransform.ty}px))`,
+                objectFit: committedCrop!.fitMode,
+                objectPosition: `${cropRender.objectPositionX}% ${cropRender.objectPositionY}%`,
+                transform: `scale(${cropRender.scaleX}, ${cropRender.scaleY})`,
+                transformOrigin: `${cropRender.objectPositionX}% ${cropRender.objectPositionY}%`,
               }}
             />
           ) : (
+            /* Default display: no crop */
             <img
               ref={imageRef}
               src={imageBase64}

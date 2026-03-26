@@ -112,8 +112,22 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   }, [monthKey, removeImage]);
 
   const handleImageEditStart = useCallback(() => {
-    startEdit(monthKey, calendarStyle.imageAlign);
-  }, [monthKey, startEdit, calendarStyle.imageAlign]);
+    const horizontal = imagePosition === "left" || imagePosition === "right";
+    const containerW = horizontal ? (pageWidth * imagePercent) / 100 : pageWidth;
+    const containerH = horizontal ? pageHeight : (pageHeight * imagePercent) / 100;
+    const containerAR = containerW / containerH;
+    const ar = images[monthKey]?.aspectRatio ?? 1;
+    startEdit(monthKey, calendarStyle.imageAlign, containerAR, ar);
+  }, [
+    monthKey,
+    startEdit,
+    calendarStyle.imageAlign,
+    imagePosition,
+    pageWidth,
+    pageHeight,
+    imagePercent,
+    images,
+  ]);
 
   const handleAspectRatioLoad = useCallback(
     (aspectRatio: number) => {
