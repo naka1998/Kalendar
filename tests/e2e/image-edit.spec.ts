@@ -25,45 +25,54 @@ test.describe("Image editing", () => {
     await page.waitForTimeout(3000);
   });
 
-  test("edit button appears on image hover", async ({ page }) => {
+  test("trimming button appears on image hover", async ({ page }) => {
     await uploadTestImage(page);
     const imageArea = page.getByTestId("image-area").first();
     await imageArea.hover();
     await page.waitForTimeout(500);
-    await expect(page.getByTestId("image-edit-button").first()).toBeVisible();
+    const editButton = page.getByTestId("image-edit-button").first();
+    await expect(editButton).toBeVisible();
+    await expect(editButton).toContainText("トリミング");
   });
 
-  test("clicking edit opens the edit overlay with crop frame", async ({ page }) => {
+  test("clicking trimming opens overlay with crop frame and aspect mode buttons", async ({
+    page,
+  }) => {
     await uploadTestImage(page);
     await openImageEditMode(page);
     await expect(page.getByTestId("crop-frame").first()).toBeVisible();
-    await expect(page.getByTestId("fit-mode-toggle").first()).toBeVisible();
+    await expect(page.getByTestId("aspect-mode-free").first()).toBeVisible();
+    await expect(page.getByTestId("aspect-mode-original").first()).toBeVisible();
+    await expect(page.getByTestId("aspect-mode-square").first()).toBeVisible();
     await expect(page.getByTestId("crop-save").first()).toBeVisible();
     await expect(page.getByTestId("crop-cancel").first()).toBeVisible();
     await expect(page.getByTestId("crop-reset").first()).toBeVisible();
   });
 
-  test("fit mode toggle shows Japanese labels", async ({ page }) => {
+  test("aspect mode buttons switch between free, original, and square", async ({ page }) => {
     await uploadTestImage(page);
     await openImageEditMode(page);
 
-    const toggle = page.getByTestId("fit-mode-toggle").first();
-    // Default is cover = 短辺に合わせる
-    await expect(toggle).toContainText("短辺に合わせる");
-
-    // Toggle to contain
+    // Click original mode
     await page.evaluate(() => {
-      (document.querySelector('[data-testid="fit-mode-toggle"]') as HTMLButtonElement)?.click();
+      (document.querySelector('[data-testid="aspect-mode-original"]') as HTMLButtonElement)?.click();
     });
     await page.waitForTimeout(300);
-    await expect(toggle).toContainText("長辺に合わせる");
 
-    // Toggle back
+    // Click square mode
     await page.evaluate(() => {
-      (document.querySelector('[data-testid="fit-mode-toggle"]') as HTMLButtonElement)?.click();
+      (document.querySelector('[data-testid="aspect-mode-square"]') as HTMLButtonElement)?.click();
     });
     await page.waitForTimeout(300);
-    await expect(toggle).toContainText("短辺に合わせる");
+
+    // Click free mode
+    await page.evaluate(() => {
+      (document.querySelector('[data-testid="aspect-mode-free"]') as HTMLButtonElement)?.click();
+    });
+    await page.waitForTimeout(300);
+
+    // All buttons should remain visible (no crash)
+    await expect(page.getByTestId("aspect-mode-free").first()).toBeVisible();
   });
 
   test("save persists crop settings and cancel discards them", async ({ page }) => {
@@ -80,11 +89,11 @@ test.describe("Image editing", () => {
     // Overlay should close
     await expect(page.getByTestId("image-edit-overlay")).toHaveCount(0);
 
-    // Cropped image should be visible with saved settings
+    // Cropped image should be visible
     const croppedImg = page.getByTestId("cropped-image").first();
     await expect(croppedImg).toBeVisible();
 
-    // Now edit again and cancel
+    // Edit again and cancel
     await openImageEditMode(page);
     await page.waitForTimeout(300);
     await page.evaluate(() => {
@@ -92,7 +101,7 @@ test.describe("Image editing", () => {
     });
     await page.waitForTimeout(500);
 
-    // Should revert to saved settings (cropped image still visible)
+    // Should revert to saved settings
     await expect(page.getByTestId("cropped-image").first()).toBeVisible();
   });
 
@@ -100,21 +109,14 @@ test.describe("Image editing", () => {
     await uploadTestImage(page);
     await openImageEditMode(page);
 
-    // Toggle to contain
-    await page.evaluate(() => {
-      (document.querySelector('[data-testid="fit-mode-toggle"]') as HTMLButtonElement)?.click();
-    });
-    await page.waitForTimeout(300);
-    await expect(page.getByTestId("fit-mode-toggle").first()).toContainText("長辺に合わせる");
-
     // Reset
     await page.evaluate(() => {
       (document.querySelector('[data-testid="crop-reset"]') as HTMLButtonElement)?.click();
     });
     await page.waitForTimeout(300);
 
-    // Should be back to cover (短辺に合わせる)
-    await expect(page.getByTestId("fit-mode-toggle").first()).toContainText("短辺に合わせる");
+    // Crop frame should still be visible
+    await expect(page.getByTestId("crop-frame").first()).toBeVisible();
   });
 
   test("crop frame has resize handle", async ({ page }) => {
@@ -134,7 +136,6 @@ test.describe("Image editing", () => {
     });
     await page.waitForTimeout(500);
 
-    // First month should have cropped image
     await expect(page.getByTestId("cropped-image").first()).toBeVisible();
 
     // Second month should NOT have a cropped image

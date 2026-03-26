@@ -1,4 +1,4 @@
-import type { ContentAlign, ImageCropSettings } from "@/stores/types";
+import type { ImageCropSettings } from "@/stores/types";
 import { CROP_MIN_SIZE } from "./constants";
 
 export interface CropRenderResult {
@@ -52,17 +52,6 @@ export function clampCropRect(
   const x = Math.max(0, Math.min(1 - w, cropX));
   const y = Math.max(0, Math.min(1 - h, cropY));
   return { cropX: x, cropY: y, cropW: w, cropH: h };
-}
-
-/**
- * Calculate initial crop rect that matches imageAlign behavior.
- * For "cover" mode with full image, imageAlign determines which part is shown.
- */
-export function imageAlignToOffset(_align: ContentAlign): number {
-  // With crop-rect model, imageAlign is handled differently:
-  // the crop rect itself determines position, so this is no longer needed
-  // for the initial crop. Keep for backward compatibility.
-  return 0;
 }
 
 /**

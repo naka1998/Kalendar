@@ -42,6 +42,7 @@ export function saveToStorage(state: CalendarState): { success: boolean; error?:
       images: state.images,
       imagePercent: state.imagePercent,
       imagePosition: state.imagePosition,
+      imageFitMode: state.imageFitMode,
       monthThemeOverrides: state.monthThemeOverrides,
       calendarStyle: state.calendarStyle,
       imageCropSettings: state.imageCropSettings,

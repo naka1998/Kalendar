@@ -1,6 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import { CROP_MIN_SIZE } from "@/lib/constants";
-import type { ContentAlign, FitMode, ImageCropSettings } from "@/stores/types";
+import type { ContentAlign, ImageCropSettings } from "@/stores/types";
+
+type AspectMode = "free" | "original" | "square";
 
 interface ImageEditOverlayProps {
   draft: ImageCropSettings;
@@ -16,11 +18,6 @@ interface ImageEditOverlayProps {
 
 type DragMode = "move" | "resize-br" | null;
 
-/**
- * Calculate how the image fits in the container for the edit preview.
- * During editing, the full image is shown (contain mode) so the user can see
- * the entire image and place the crop frame on it.
- */
 function calcImageFit(containerW: number, containerH: number, imageAspectRatio: number) {
   const containerAR = containerW / containerH;
   let imgW: number, imgH: number;
@@ -36,9 +33,57 @@ function calcImageFit(containerW: number, containerH: number, imageAspectRatio: 
   return { imgW, imgH, imgX, imgY };
 }
 
-const FIT_MODE_LABELS: Record<FitMode, string> = {
-  cover: "短辺に合わせる",
-  contain: "長辺に合わせる",
+function getAspectRatio(mode: AspectMode, imageAspectRatio: number): number | null {
+  if (mode === "free") return null;
+  if (mode === "original") return imageAspectRatio;
+  return 1; // square
+}
+
+function adjustCropToAspect(
+  crop: ImageCropSettings,
+  targetAR: number | null,
+  imageAspectRatio: number,
+): Partial<ImageCropSettings> {
+  if (targetAR === null) return {};
+  // targetAR is in real-world coords; in image-relative coords:
+  // cropW_real / cropH_real = targetAR
+  // cropW_real = cropW * imgW, cropH_real = cropH * imgH
+  // (cropW * imgW) / (cropH * imgH) = targetAR
+  // cropW / cropH = targetAR / imageAspectRatio
+  const cropAR = targetAR / imageAspectRatio;
+  const centerX = crop.cropX + crop.cropW / 2;
+  const centerY = crop.cropY + crop.cropH / 2;
+
+  let newW: number, newH: number;
+  if (cropAR >= 1) {
+    newW = Math.min(1, crop.cropW);
+    newH = newW / cropAR;
+    if (newH > 1) {
+      newH = 1;
+      newW = newH * cropAR;
+    }
+  } else {
+    newH = Math.min(1, crop.cropH);
+    newW = newH * cropAR;
+    if (newW > 1) {
+      newW = 1;
+      newH = newW / cropAR;
+    }
+  }
+
+  newW = Math.max(CROP_MIN_SIZE, newW);
+  newH = Math.max(CROP_MIN_SIZE, newH);
+
+  const newX = Math.max(0, Math.min(1 - newW, centerX - newW / 2));
+  const newY = Math.max(0, Math.min(1 - newH, centerY - newH / 2));
+
+  return { cropX: newX, cropY: newY, cropW: newW, cropH: newH };
+}
+
+const ASPECT_MODE_LABELS: Record<AspectMode, string> = {
+  free: "フリー",
+  original: "オリジナル",
+  square: "1:1",
 };
 
 export function ImageEditOverlay({
@@ -53,6 +98,7 @@ export function ImageEditOverlay({
   imageAlign,
 }: ImageEditOverlayProps) {
   const [dragMode, setDragMode] = useState<DragMode>(null);
+  const [aspectMode, setAspectMode] = useState<AspectMode>("free");
   const dragRef = useRef<{
     startX: number;
     startY: number;
@@ -64,7 +110,6 @@ export function ImageEditOverlay({
 
   const { imgW, imgH, imgX, imgY } = calcImageFit(containerW, containerH, imageAspectRatio);
 
-  // Crop frame in pixel coordinates (relative to the container)
   const frameX = imgX + draft.cropX * imgW;
   const frameY = imgY + draft.cropY * imgH;
   const frameW = draft.cropW * imgW;
@@ -107,31 +152,38 @@ export function ImageEditOverlay({
         );
         onUpdate({ cropX: newX, cropY: newY });
       } else if (dragMode === "resize-br") {
-        // Resize from bottom-right corner, maintaining aspect ratio
-        const containerAR = containerW / containerH;
-        const cropAR = containerAR / imageAspectRatio;
+        const targetAR = getAspectRatio(aspectMode, imageAspectRatio);
 
-        // Use the larger delta to determine new size
-        const rawW = dragRef.current.startCropW + deltaX;
-        const rawH = dragRef.current.startCropH + deltaY;
-        // Pick the dimension that changed more (in aspect-ratio-corrected terms)
-        const useWidth = Math.abs(deltaX / cropAR) > Math.abs(deltaY);
-        let newW: number, newH: number;
-        if (useWidth) {
-          newW = Math.max(CROP_MIN_SIZE, Math.min(1 - dragRef.current.startCropX, rawW));
-          newH = newW / cropAR;
+        if (targetAR === null) {
+          // Free mode: resize independently
+          const newW = Math.max(
+            CROP_MIN_SIZE,
+            Math.min(1 - dragRef.current.startCropX, dragRef.current.startCropW + deltaX),
+          );
+          const newH = Math.max(
+            CROP_MIN_SIZE,
+            Math.min(1 - dragRef.current.startCropY, dragRef.current.startCropH + deltaY),
+          );
+          onUpdate({ cropW: newW, cropH: newH });
         } else {
-          newH = Math.max(CROP_MIN_SIZE, Math.min(1 - dragRef.current.startCropY, rawH));
-          newW = newH * cropAR;
+          // Constrained: use diagonal movement to determine size
+          const cropAR = targetAR / imageAspectRatio;
+          const diag = deltaX + deltaY * cropAR;
+          let newW = Math.max(CROP_MIN_SIZE, dragRef.current.startCropW + diag / 2);
+          let newH = newW / cropAR;
+          newW = Math.max(CROP_MIN_SIZE, Math.min(1 - dragRef.current.startCropX, newW));
+          newH = Math.max(CROP_MIN_SIZE, Math.min(1 - dragRef.current.startCropY, newH));
+          // Re-enforce ratio after clamping
+          if (newW / newH > cropAR) {
+            newW = newH * cropAR;
+          } else {
+            newH = newW / cropAR;
+          }
+          onUpdate({ cropW: newW, cropH: newH });
         }
-        // Clamp
-        newW = Math.max(CROP_MIN_SIZE, Math.min(1 - dragRef.current.startCropX, newW));
-        newH = Math.max(CROP_MIN_SIZE, Math.min(1 - dragRef.current.startCropY, newH));
-
-        onUpdate({ cropW: newW, cropH: newH });
       }
     },
-    [dragMode, imgW, imgH, containerW, containerH, imageAspectRatio, onUpdate],
+    [dragMode, imgW, imgH, aspectMode, imageAspectRatio, onUpdate],
   );
 
   const handlePointerUp = useCallback(() => {
@@ -139,10 +191,16 @@ export function ImageEditOverlay({
     dragRef.current = null;
   }, []);
 
-  const handleFitModeToggle = useCallback(() => {
-    const newFitMode: FitMode = draft.fitMode === "cover" ? "contain" : "cover";
-    onUpdate({ fitMode: newFitMode });
-  }, [draft.fitMode, onUpdate]);
+  const handleAspectModeChange = useCallback(
+    (mode: AspectMode) => {
+      setAspectMode(mode);
+      const ar = getAspectRatio(mode, imageAspectRatio);
+      if (ar !== null) {
+        onUpdate(adjustCropToAspect(draft, ar, imageAspectRatio));
+      }
+    },
+    [draft, imageAspectRatio, onUpdate],
+  );
 
   return (
     <div
@@ -151,12 +209,10 @@ export function ImageEditOverlay({
       style={{ touchAction: "none" }}
     >
       {/* Dark overlay with crop frame cutout */}
-      {/* Top */}
       <div
         className="absolute bg-black/50"
         style={{ left: 0, top: 0, width: containerW, height: frameY }}
       />
-      {/* Bottom */}
       <div
         className="absolute bg-black/50"
         style={{
@@ -166,12 +222,10 @@ export function ImageEditOverlay({
           height: containerH - frameY - frameH,
         }}
       />
-      {/* Left */}
       <div
         className="absolute bg-black/50"
         style={{ left: 0, top: frameY, width: frameX, height: frameH }}
       />
-      {/* Right */}
       <div
         className="absolute bg-black/50"
         style={{
@@ -200,11 +254,11 @@ export function ImageEditOverlay({
         onPointerCancel={handlePointerUp}
       >
         {/* Grid lines (rule of thirds) */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-0 right-0 h-px bg-white/30" />
-          <div className="absolute top-2/3 left-0 right-0 h-px bg-white/30" />
-          <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/30" />
-          <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/30" />
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute top-1/3 right-0 left-0 h-px bg-white/30" />
+          <div className="absolute top-2/3 right-0 left-0 h-px bg-white/30" />
+          <div className="absolute top-0 bottom-0 left-1/3 w-px bg-white/30" />
+          <div className="absolute top-0 bottom-0 left-2/3 w-px bg-white/30" />
         </div>
 
         {/* Resize handle (bottom-right corner) */}
@@ -223,14 +277,21 @@ export function ImageEditOverlay({
         className="absolute right-0 bottom-0 left-0 z-20 flex items-center gap-2 bg-black/60 px-3 py-2"
         onPointerDown={(e) => e.stopPropagation()}
       >
-        {/* Fit mode toggle */}
-        <button
-          data-testid="fit-mode-toggle"
-          onClick={handleFitModeToggle}
-          className="rounded bg-white/20 px-2 py-0.5 text-[10px] font-medium text-white hover:bg-white/30"
-        >
-          {FIT_MODE_LABELS[draft.fitMode]}
-        </button>
+        {/* Aspect ratio mode buttons */}
+        {(["free", "original", "square"] as AspectMode[]).map((mode) => (
+          <button
+            key={mode}
+            data-testid={`aspect-mode-${mode}`}
+            onClick={() => handleAspectModeChange(mode)}
+            className={`rounded px-2 py-0.5 text-[10px] font-medium transition-all ${
+              aspectMode === mode
+                ? "bg-white/40 text-white"
+                : "bg-white/20 text-white hover:bg-white/30"
+            }`}
+          >
+            {ASPECT_MODE_LABELS[mode]}
+          </button>
+        ))}
 
         <div className="flex-1" />
 

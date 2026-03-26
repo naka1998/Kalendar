@@ -4,6 +4,7 @@ import type {
   ColorTheme,
   ContentAlign,
   DayCell,
+  FitMode,
   FontWeight,
   HolidayMarkStyle,
   ImageCropSettings,
@@ -46,6 +47,7 @@ export interface CalendarPageProps {
   showSafeMargin?: boolean;
   // Image crop settings
   imageCropSettings?: ImageCropSettings;
+  imageFitMode?: FitMode;
   imageAspectRatio?: number;
   // Image edit mode
   isImageEditing?: boolean;
@@ -79,6 +81,7 @@ export function CalendarPage({
   onPositionChange,
   showSafeMargin,
   imageCropSettings,
+  imageFitMode = "cover",
   imageAspectRatio,
   isImageEditing = false,
   editDraft,
@@ -224,7 +227,7 @@ export function CalendarPage({
               onLoad={handleImageLoad}
               className="h-full w-full"
               style={{
-                objectFit: committedCrop!.fitMode,
+                objectFit: imageFitMode,
                 objectPosition: `${cropRender.objectPositionX}% ${cropRender.objectPositionY}%`,
                 transform: `scale(${cropRender.scaleX}, ${cropRender.scaleY})`,
                 transformOrigin: `${cropRender.objectPositionX}% ${cropRender.objectPositionY}%`,
@@ -271,7 +274,7 @@ export function CalendarPage({
                     onClick={onImageEditStart}
                     className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface shadow-sm"
                   >
-                    編集
+                    トリミング
                   </button>
                 )}
                 <button

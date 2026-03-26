@@ -32,6 +32,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const removeImage = useCalendarStore((s) => s.removeImage);
   const showSafeMargin = useCalendarStore((s) => s.showSafeMargin);
   const imageCropSettings = useCalendarStore((s) => s.imageCropSettings);
+  const imageFitMode = useCalendarStore((s) => s.imageFitMode);
   const updateImageAspectRatio = useCalendarStore((s) => s.updateImageAspectRatio);
 
   const { uploadImage } = useImageUpload();
@@ -77,6 +78,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
         images,
         imagePercent,
         imagePosition,
+        imageFitMode,
         imageCropSettings,
       }),
     [
@@ -94,6 +96,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       images,
       imagePercent,
       imagePosition,
+      imageFitMode,
       imageCropSettings,
     ],
   );
@@ -162,6 +165,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       onPositionChange={setImagePosition}
       showSafeMargin={showSafeMargin}
       imageCropSettings={pageData.imageCropSettings}
+      imageFitMode={imageFitMode}
       imageAspectRatio={pageData.imageAspectRatio}
       isImageEditing={isEditingThisMonth}
       editDraft={isEditingThisMonth ? draft : null}

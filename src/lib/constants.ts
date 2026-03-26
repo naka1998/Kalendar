@@ -26,6 +26,7 @@ export const DEFAULTS = {
   FONT_WEIGHT: 400 as const,
   IMAGE_PERCENT: 50,
   IMAGE_POSITION: "top" as const,
+  IMAGE_FIT_MODE: "cover" as const,
   PAGE_LAYOUT: "1-month" as const,
 } as const;
 
@@ -51,7 +52,6 @@ export const DEFAULT_IMAGE_CROP_SETTINGS = {
   cropY: 0,
   cropW: 1,
   cropH: 1,
-  fitMode: "cover" as const,
 } as const;
 
 export const CROP_MIN_SIZE = 0.1; // 最小トリミング枠サイズ (画像の10%)

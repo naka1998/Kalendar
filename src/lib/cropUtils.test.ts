@@ -7,7 +7,6 @@ const fullCrop: ImageCropSettings = {
   cropY: 0,
   cropW: 1,
   cropH: 1,
-  fitMode: "cover",
 };
 
 describe("calcCropRender", () => {
@@ -25,7 +24,6 @@ describe("calcCropRender", () => {
       cropY: 0.25,
       cropW: 0.5,
       cropH: 0.5,
-      fitMode: "cover",
     };
     const result = calcCropRender(crop);
     expect(result.scaleX).toBe(2);
@@ -38,7 +36,6 @@ describe("calcCropRender", () => {
       cropY: 0,
       cropW: 0.5,
       cropH: 0.5,
-      fitMode: "cover",
     };
     const result = calcCropRender(crop);
     expect(result.objectPositionX).toBe(0);
@@ -51,7 +48,6 @@ describe("calcCropRender", () => {
       cropY: 0.5,
       cropW: 0.5,
       cropH: 0.5,
-      fitMode: "cover",
     };
     const result = calcCropRender(crop);
     expect(result.objectPositionX).toBe(100);

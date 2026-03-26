@@ -18,7 +18,6 @@ export interface ImageCropSettings {
   cropY: number; // 枠の上端 (画像高さに対する割合 0.0〜1.0)
   cropW: number; // 枠の幅 (画像幅に対する割合 0.0〜1.0)
   cropH: number; // 枠の高さ (画像高さに対する割合 0.0〜1.0)
-  fitMode: FitMode; // 枠内での表示方法
 }
 
 // === Calendar Style ===
@@ -101,6 +100,7 @@ export interface PersistedCalendarSettings {
   fontWeight: FontWeight;
   imagePercent: number;
   imagePosition: ImagePosition;
+  imageFitMode: FitMode;
   manualHolidays: ManualHoliday[];
   removedHolidays: string[];
   monthThemeOverrides: Record<string, string>;
@@ -127,6 +127,7 @@ export interface PageData {
   imagePercent: number;
   imagePosition: ImagePosition;
   imageCropSettings?: ImageCropSettings;
+  imageFitMode?: FitMode;
   imageAspectRatio?: number;
 }
 
@@ -155,6 +156,7 @@ export interface CalendarState {
   images: Record<string, MonthImage>;
   imagePercent: number;
   imagePosition: ImagePosition;
+  imageFitMode: FitMode;
   imageCropSettings: Record<string, ImageCropSettings>;
 
   monthThemeOverrides: Record<string, string>;
@@ -180,6 +182,7 @@ export interface CalendarState {
   setFontWeight: (w: FontWeight) => void;
   setImagePercent: (percent: number) => void;
   setImagePosition: (pos: ImagePosition) => void;
+  setImageFitMode: (mode: FitMode) => void;
   setUseImages: (use: boolean) => void;
   setCalendarStyle: (style: Partial<CalendarStyle>) => void;
   setShowSafeMargin: (show: boolean) => void;

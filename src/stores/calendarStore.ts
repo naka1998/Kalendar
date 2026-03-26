@@ -35,6 +35,7 @@ const initialState = {
   images: {} as Record<string, CalendarState["images"][string]>,
   imagePercent: DEFAULTS.IMAGE_PERCENT,
   imagePosition: DEFAULTS.IMAGE_POSITION,
+  imageFitMode: DEFAULTS.IMAGE_FIT_MODE,
   imageCropSettings: {} as Record<string, CalendarState["imageCropSettings"][string]>,
 
   // Month theme overrides
@@ -68,6 +69,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
       imagePercent: Math.round(Math.max(IMAGE_PERCENT_MIN, Math.min(IMAGE_PERCENT_MAX, percent))),
     }),
   setImagePosition: (pos) => set({ imagePosition: pos }),
+  setImageFitMode: (mode) => set({ imageFitMode: mode }),
   setUseImages: (use) => set({ useImages: use }),
   setCalendarStyle: (style) => set((s) => ({ calendarStyle: { ...s.calendarStyle, ...style } })),
   setShowSafeMargin: (show) => set({ showSafeMargin: show }),

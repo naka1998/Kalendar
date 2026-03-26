@@ -20,7 +20,8 @@ function renderImageHtml(
 
   if (crop) {
     const r = calcCropRender(crop);
-    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${crop.fitMode};object-position:${r.objectPositionX.toFixed(4)}% ${r.objectPositionY.toFixed(4)}%;transform:scale(${r.scaleX.toFixed(4)}, ${r.scaleY.toFixed(4)});transform-origin:${r.objectPositionX.toFixed(4)}% ${r.objectPositionY.toFixed(4)}%" /></div>`;
+    const fitMode = page.imageFitMode ?? "cover";
+    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${r.objectPositionX.toFixed(4)}% ${r.objectPositionY.toFixed(4)}%;transform:scale(${r.scaleX.toFixed(4)}, ${r.scaleY.toFixed(4)});transform-origin:${r.objectPositionX.toFixed(4)}% ${r.objectPositionY.toFixed(4)}%" /></div>`;
   }
 
   const op = objectPositionValue(imageAlign);
