@@ -11,7 +11,7 @@ interface UseImageEditDraftResult {
   updateDraft: (partial: Partial<ImageCropSettings>) => void;
   saveDraft: () => void;
   cancelEdit: () => void;
-  resetDraft: (imageAlign: ContentAlign) => void;
+  resetDraft: (alignV: ContentAlign, alignH: ContentAlign) => void;
 }
 
 export function useImageEditDraft(): UseImageEditDraftResult {
@@ -52,7 +52,7 @@ export function useImageEditDraft(): UseImageEditDraftResult {
     setDraft(null);
   }, []);
 
-  const resetDraft = useCallback((_imageAlign: ContentAlign) => {
+  const resetDraft = useCallback((_alignV: ContentAlign, _alignH: ContentAlign) => {
     setDraft({ ...DEFAULT_IMAGE_CROP_SETTINGS });
   }, []);
 

@@ -36,8 +36,9 @@ function renderImageHtml(
   const crop = page.imageCropSettings;
   const aspectRatio = page.imageAspectRatio;
 
-  if (crop && aspectRatio && !isFullImageCrop(crop)) {
-    const fitMode = page.imageFitMode ?? "cover";
+  const userFitMode = page.imageFitMode;
+  if (crop && aspectRatio && !isFullImageCrop(crop) && userFitMode !== "none") {
+    const fitMode = userFitMode ?? "cover";
     const aH = (imageAlignH as ContentAlign) ?? "center";
     const aV = (imageAlignV as ContentAlign) ?? "center";
     const r = calcCropRender(crop, containerWMm, containerHMm, aspectRatio, fitMode, aH, aV);
@@ -45,7 +46,7 @@ function renderImageHtml(
   }
 
   const op = objectPositionValue(imageAlignV, imageAlignH);
-  const fitMode = page.imageFitMode ?? "contain";
+  const fitMode = userFitMode ?? "contain";
   // Container alignment: align-items = vertical, justify-content = horizontal (flex row)
   const containerAlign = `align-items:${alignItemsValue(imageAlignV)};justify-content:${justifyContentValue(imageAlignH)}`;
 

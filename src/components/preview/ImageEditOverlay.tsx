@@ -12,8 +12,9 @@ interface ImageEditOverlayProps {
   onUpdate: (partial: Partial<ImageCropSettings>) => void;
   onSave: () => void;
   onCancel: () => void;
-  onReset: (imageAlign: ContentAlign) => void;
-  imageAlign: ContentAlign;
+  onReset: (alignV: ContentAlign, alignH: ContentAlign) => void;
+  imageAlignV: ContentAlign;
+  imageAlignH: ContentAlign;
 }
 
 type ResizeCorner = "resize-tl" | "resize-tr" | "resize-bl" | "resize-br";
@@ -98,7 +99,8 @@ export function ImageEditOverlay({
   onSave,
   onCancel,
   onReset,
-  imageAlign,
+  imageAlignV,
+  imageAlignH,
 }: ImageEditOverlayProps) {
   const [dragMode, setDragMode] = useState<DragMode>(null);
   const [aspectMode, setAspectMode] = useState<AspectMode>("original");
@@ -342,7 +344,7 @@ export function ImageEditOverlay({
         {/* Reset */}
         <button
           data-testid="crop-reset"
-          onClick={() => onReset(imageAlign)}
+          onClick={() => onReset(imageAlignV, imageAlignH)}
           className="rounded bg-white/20 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/30 md:px-2 md:py-0.5 md:text-[10px]"
         >
           リセット

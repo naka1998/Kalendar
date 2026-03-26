@@ -56,7 +56,7 @@ export interface CalendarPageProps {
   onEditUpdate?: (partial: Partial<ImageCropSettings>) => void;
   onEditSave?: () => void;
   onEditCancel?: () => void;
-  onEditReset?: (imageAlign: ContentAlign) => void;
+  onEditReset?: (alignV: ContentAlign, alignH: ContentAlign) => void;
   onImageAspectRatioLoad?: (aspectRatio: number) => void;
 }
 
@@ -206,7 +206,11 @@ export function CalendarPage({
   // During editing, we show the full image (for frame placement), not the cropped result
   const committedCrop = imageCropSettings;
   const hasCrop =
-    !!committedCrop && !isImageEditing && !!imageAspectRatio && !isFullImageCrop(committedCrop);
+    !!committedCrop &&
+    !isImageEditing &&
+    !!imageAspectRatio &&
+    !isFullImageCrop(committedCrop) &&
+    imageFitMode !== "none";
 
   // Calculate container size for edit overlay
   const containerW = horizontal ? (pageWidth * placeholderImagePercent) / 100 : pageWidth;
@@ -328,7 +332,8 @@ export function CalendarPage({
                 onSave={onEditSave}
                 onCancel={onEditCancel}
                 onReset={onEditReset}
-                imageAlign={calendarStyle.imageAlignV}
+                imageAlignV={calendarStyle.imageAlignV}
+                imageAlignH={calendarStyle.imageAlignH}
               />
             )}
           {/* Overlay with edit/remove buttons (when not editing) */}
