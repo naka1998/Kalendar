@@ -26,6 +26,7 @@ describe("calendarStore", () => {
       images: {},
       imagePercent: DEFAULTS.IMAGE_PERCENT,
       imagePosition: DEFAULTS.IMAGE_POSITION,
+      imageCropSettings: {},
       monthThemeOverrides: {},
       calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
     });
@@ -303,6 +304,101 @@ describe("calendarStore", () => {
       const state = useCalendarStore.getState();
       expect(state.lastAutoSavedAt).toBeNull();
       expect(state.saveError).toBeNull();
+    });
+  });
+
+  describe("imageCropSettings actions", () => {
+    it("setImageCropSettings stores crop settings for a month", () => {
+      const crop = { scale: 1.5, offsetX: 0.3, offsetY: -0.2, fitMode: "cover" as const };
+      useCalendarStore.getState().setImageCropSettings("2026-04", crop);
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toEqual(crop);
+    });
+
+    it("removeImageCropSettings removes crop settings for a month", () => {
+      const crop = { scale: 1.5, offsetX: 0, offsetY: 0, fitMode: "contain" as const };
+      useCalendarStore.getState().setImageCropSettings("2026-04", crop);
+      useCalendarStore.getState().removeImageCropSettings("2026-04");
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toBeUndefined();
+    });
+
+    it("setImage resets crop settings for that month", () => {
+      const crop = { scale: 2, offsetX: 0, offsetY: 0, fitMode: "cover" as const };
+      useCalendarStore.getState().setImageCropSettings("2026-04", crop);
+      useCalendarStore.getState().setImage("2026-04", {
+        id: "new",
+        monthKey: "2026-04",
+        fileName: "new.jpg",
+        base64: "data:image/jpeg;base64,new",
+        mimeType: "image/jpeg",
+      });
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toBeUndefined();
+    });
+
+    it("removeImage also removes crop settings", () => {
+      useCalendarStore.getState().setImage("2026-04", {
+        id: "test",
+        monthKey: "2026-04",
+        fileName: "test.jpg",
+        base64: "data:image/jpeg;base64,abc",
+        mimeType: "image/jpeg",
+      });
+      useCalendarStore.getState().setImageCropSettings("2026-04", {
+        scale: 1.5,
+        offsetX: 0,
+        offsetY: 0,
+        fitMode: "contain",
+      });
+      useCalendarStore.getState().removeImage("2026-04");
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toBeUndefined();
+    });
+
+    it("swapImages also swaps crop settings", () => {
+      useCalendarStore.getState().setImage("2026-04", {
+        id: "a",
+        monthKey: "2026-04",
+        fileName: "a.jpg",
+        base64: "data:image/jpeg;base64,a",
+        mimeType: "image/jpeg",
+      });
+      useCalendarStore.getState().setImage("2026-05", {
+        id: "b",
+        monthKey: "2026-05",
+        fileName: "b.jpg",
+        base64: "data:image/jpeg;base64,b",
+        mimeType: "image/jpeg",
+      });
+      const cropA = { scale: 2, offsetX: 0.5, offsetY: 0, fitMode: "cover" as const };
+      const cropB = { scale: 1.2, offsetX: 0, offsetY: -0.5, fitMode: "contain" as const };
+      useCalendarStore.getState().setImageCropSettings("2026-04", cropA);
+      useCalendarStore.getState().setImageCropSettings("2026-05", cropB);
+
+      useCalendarStore.getState().swapImages("2026-04", "2026-05");
+
+      expect(useCalendarStore.getState().imageCropSettings["2026-04"]).toEqual(cropB);
+      expect(useCalendarStore.getState().imageCropSettings["2026-05"]).toEqual(cropA);
+    });
+
+    it("updateImageAspectRatio updates the aspect ratio for a month's image", () => {
+      useCalendarStore.getState().setImage("2026-04", {
+        id: "test",
+        monthKey: "2026-04",
+        fileName: "test.jpg",
+        base64: "data:image/jpeg;base64,abc",
+        mimeType: "image/jpeg",
+      });
+      useCalendarStore.getState().updateImageAspectRatio("2026-04", 1.5);
+      expect(useCalendarStore.getState().images["2026-04"].aspectRatio).toBe(1.5);
+    });
+
+    it("resetCalendar clears imageCropSettings", () => {
+      useCalendarStore.getState().setImageCropSettings("2026-04", {
+        scale: 2,
+        offsetX: 0,
+        offsetY: 0,
+        fitMode: "cover",
+      });
+      useCalendarStore.getState().resetCalendar();
+      expect(useCalendarStore.getState().imageCropSettings).toEqual({});
     });
   });
 });

@@ -35,6 +35,7 @@ const initialState = {
   images: {} as Record<string, CalendarState["images"][string]>,
   imagePercent: DEFAULTS.IMAGE_PERCENT,
   imagePosition: DEFAULTS.IMAGE_POSITION,
+  imageCropSettings: {} as Record<string, CalendarState["imageCropSettings"][string]>,
 
   // Month theme overrides
   monthThemeOverrides: {} as Record<string, string>,
@@ -86,11 +87,16 @@ export const useCalendarStore = create<CalendarState>((set) => ({
     set((s) => ({ removedHolidays: s.removedHolidays.filter((d) => d !== date) })),
 
   // Image actions
-  setImage: (monthKey, image) => set((s) => ({ images: { ...s.images, [monthKey]: image } })),
+  setImage: (monthKey, image) =>
+    set((s) => {
+      const { [monthKey]: _, ...restCrop } = s.imageCropSettings;
+      return { images: { ...s.images, [monthKey]: image }, imageCropSettings: restCrop };
+    }),
   removeImage: (monthKey) =>
     set((s) => {
-      const { [monthKey]: _, ...rest } = s.images;
-      return { images: rest };
+      const { [monthKey]: _, ...restImages } = s.images;
+      const { [monthKey]: __, ...restCrop } = s.imageCropSettings;
+      return { images: restImages, imageCropSettings: restCrop };
     }),
   swapImages: (fromMonth, toMonth) =>
     set((s) => {
@@ -103,7 +109,29 @@ export const useCalendarStore = create<CalendarState>((set) => ({
       if (toImage) {
         newImages[fromMonth] = { ...toImage, monthKey: fromMonth };
       }
-      return { images: newImages };
+
+      const newCrop = { ...s.imageCropSettings };
+      const fromCrop = newCrop[fromMonth];
+      const toCrop = newCrop[toMonth];
+      delete newCrop[fromMonth];
+      delete newCrop[toMonth];
+      if (fromCrop) newCrop[toMonth] = fromCrop;
+      if (toCrop) newCrop[fromMonth] = toCrop;
+
+      return { images: newImages, imageCropSettings: newCrop };
+    }),
+  setImageCropSettings: (monthKey, settings) =>
+    set((s) => ({ imageCropSettings: { ...s.imageCropSettings, [monthKey]: settings } })),
+  removeImageCropSettings: (monthKey) =>
+    set((s) => {
+      const { [monthKey]: _, ...rest } = s.imageCropSettings;
+      return { imageCropSettings: rest };
+    }),
+  updateImageAspectRatio: (monthKey, aspectRatio) =>
+    set((s) => {
+      const image = s.images[monthKey];
+      if (!image) return s;
+      return { images: { ...s.images, [monthKey]: { ...image, aspectRatio } } };
     }),
 
   // Month theme actions

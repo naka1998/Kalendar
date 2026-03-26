@@ -12,13 +12,14 @@ export function useImageUpload(processor: ImageProcessor = createImageProcessor(
       setError(null);
       setUploading(true);
       try {
-        const { base64, mimeType } = await processor.resizeImage(file);
+        const { base64, mimeType, aspectRatio } = await processor.resizeImage(file);
         setImage(monthKey, {
           id: `${monthKey}-${Date.now()}`,
           monthKey,
           fileName: file.name,
           base64,
           mimeType,
+          aspectRatio,
         });
       } catch (e) {
         setError(e instanceof Error ? e.message : "Upload failed");

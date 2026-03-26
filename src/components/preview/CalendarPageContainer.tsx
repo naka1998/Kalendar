@@ -5,6 +5,7 @@ import { FONT_PRESETS } from "@/lib/fonts";
 import { A4 } from "@/lib/constants";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { useDividerDrag } from "@/hooks/useDividerDrag";
+import { useImageEditDraft } from "@/hooks/useImageEditDraft";
 import { useScale } from "./ScaledPage";
 import { CalendarPage } from "./CalendarPage";
 
@@ -30,9 +31,23 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const images = useCalendarStore((s) => s.images);
   const removeImage = useCalendarStore((s) => s.removeImage);
   const showSafeMargin = useCalendarStore((s) => s.showSafeMargin);
+  const imageCropSettings = useCalendarStore((s) => s.imageCropSettings);
+  const updateImageAspectRatio = useCalendarStore((s) => s.updateImageAspectRatio);
 
   const { uploadImage } = useImageUpload();
   const scale = useScale();
+  const {
+    isEditing,
+    editingMonthKey,
+    draft,
+    startEdit,
+    updateDraft,
+    saveDraft,
+    cancelEdit,
+    resetDraft,
+  } = useImageEditDraft();
+
+  const isEditingThisMonth = isEditing && editingMonthKey === monthKey;
 
   const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
   const pageHeight = orientation === "portrait" ? A4.PORTRAIT_HEIGHT_PX : A4.LANDSCAPE_HEIGHT_PX;
@@ -62,6 +77,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
         images,
         imagePercent,
         imagePosition,
+        imageCropSettings,
       }),
     [
       monthKey,
@@ -78,6 +94,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       images,
       imagePercent,
       imagePosition,
+      imageCropSettings,
     ],
   );
 
@@ -93,6 +110,20 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const handleImageRemove = useCallback(() => {
     removeImage(monthKey);
   }, [monthKey, removeImage]);
+
+  const handleImageEditStart = useCallback(() => {
+    startEdit(monthKey, calendarStyle.imageAlign);
+  }, [monthKey, startEdit, calendarStyle.imageAlign]);
+
+  const handleAspectRatioLoad = useCallback(
+    (aspectRatio: number) => {
+      const current = images[monthKey]?.aspectRatio;
+      if (current === undefined || current === null) {
+        updateImageAspectRatio(monthKey, aspectRatio);
+      }
+    },
+    [monthKey, images, updateImageAspectRatio],
+  );
 
   return (
     <CalendarPage
@@ -116,6 +147,16 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       livePercent={livePercent}
       onPositionChange={setImagePosition}
       showSafeMargin={showSafeMargin}
+      imageCropSettings={pageData.imageCropSettings}
+      imageAspectRatio={pageData.imageAspectRatio}
+      isImageEditing={isEditingThisMonth}
+      editDraft={isEditingThisMonth ? draft : null}
+      onImageEditStart={useImages ? handleImageEditStart : undefined}
+      onEditUpdate={isEditingThisMonth ? updateDraft : undefined}
+      onEditSave={isEditingThisMonth ? saveDraft : undefined}
+      onEditCancel={isEditingThisMonth ? cancelEdit : undefined}
+      onEditReset={isEditingThisMonth ? resetDraft : undefined}
+      onImageAspectRatioLoad={handleAspectRatioLoad}
     />
   );
 }

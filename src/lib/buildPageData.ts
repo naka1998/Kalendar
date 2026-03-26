@@ -19,6 +19,7 @@ type PageDataDeps = Pick<
   | "images"
   | "imagePercent"
   | "imagePosition"
+  | "imageCropSettings"
 >;
 
 export function buildPageData(monthKey: string, state: PageDataDeps): PageData {
@@ -36,5 +37,7 @@ export function buildPageData(monthKey: string, state: PageDataDeps): PageData {
     imageBase64: state.useImages ? (state.images[monthKey]?.base64 ?? null) : null,
     imagePercent: state.imagePercent,
     imagePosition: state.imagePosition,
+    imageCropSettings: state.imageCropSettings[monthKey],
+    imageAspectRatio: state.images[monthKey]?.aspectRatio,
   };
 }

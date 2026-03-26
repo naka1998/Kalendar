@@ -39,6 +39,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
     },
     imagePercent: 50,
     imagePosition: "top",
+    imageCropSettings: {},
     monthThemeOverrides: { "2026-04": "ocean" },
     calendarStyle: {
       monthFontSize: 48,
@@ -82,6 +83,9 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
     setImage: () => {},
     removeImage: () => {},
     swapImages: () => {},
+    setImageCropSettings: () => {},
+    removeImageCropSettings: () => {},
+    updateImageAspectRatio: () => {},
     setMonthTheme: () => {},
     clearMonthTheme: () => {},
     resetCalendar: () => {},

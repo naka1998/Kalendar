@@ -2,16 +2,20 @@ import { useCallback, useRef, useState } from "react";
 import type {
   CalendarStyle,
   ColorTheme,
+  ContentAlign,
   DayCell,
   FontWeight,
   HolidayMarkStyle,
+  ImageCropSettings,
   ImagePosition,
   Orientation,
 } from "@/stores/types";
 import { CalendarGrid } from "./CalendarGrid";
 import { DividerHandle } from "./DividerHandle";
+import { ImageEditOverlay } from "./ImageEditOverlay";
 import { SafeMarginOverlay } from "./SafeMarginOverlay";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
+import { calcImageTransform } from "@/lib/cropUtils";
 import { A4 } from "@/lib/constants";
 
 const POSITION_CYCLE: ImagePosition[] = ["top", "right", "bottom", "left"];
@@ -40,6 +44,18 @@ export interface CalendarPageProps {
   onPositionChange?: (pos: ImagePosition) => void;
   // Print safety guide
   showSafeMargin?: boolean;
+  // Image crop settings
+  imageCropSettings?: ImageCropSettings;
+  imageAspectRatio?: number;
+  // Image edit mode
+  isImageEditing?: boolean;
+  editDraft?: ImageCropSettings | null;
+  onImageEditStart?: () => void;
+  onEditUpdate?: (partial: Partial<ImageCropSettings>) => void;
+  onEditSave?: () => void;
+  onEditCancel?: () => void;
+  onEditReset?: (imageAlign: ContentAlign) => void;
+  onImageAspectRatioLoad?: (aspectRatio: number) => void;
 }
 
 export function CalendarPage({
@@ -62,6 +78,16 @@ export function CalendarPage({
   livePercent,
   onPositionChange,
   showSafeMargin,
+  imageCropSettings,
+  imageAspectRatio,
+  isImageEditing = false,
+  editDraft,
+  onImageEditStart,
+  onEditUpdate,
+  onEditSave,
+  onEditCancel,
+  onEditReset,
+  onImageAspectRatioLoad,
 }: CalendarPageProps) {
   const { colors } = theme;
   const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
@@ -145,6 +171,29 @@ export function CalendarPage({
         ? "bottom"
         : "center";
 
+  // Determine effective crop settings: editing draft takes priority, then committed, then none
+  const activeCrop = isImageEditing && editDraft ? editDraft : imageCropSettings;
+  const hasCrop = !!activeCrop && !!imageAspectRatio;
+
+  // Calculate container size for crop transform
+  const containerW = horizontal ? (pageWidth * placeholderImagePercent) / 100 : pageWidth;
+  const containerH = horizontal ? pageHeight : (pageHeight * placeholderImagePercent) / 100;
+
+  // Compute crop transform if applicable
+  const cropTransform = hasCrop
+    ? calcImageTransform(activeCrop, containerW, containerH, imageAspectRatio)
+    : null;
+
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  const handleImageLoad = useCallback(() => {
+    if (!imageRef.current || !onImageAspectRatioLoad) return;
+    const { naturalWidth, naturalHeight } = imageRef.current;
+    if (naturalWidth > 0 && naturalHeight > 0) {
+      onImageAspectRatioLoad(naturalWidth / naturalHeight);
+    }
+  }, [onImageAspectRatioLoad]);
+
   const imageAreaElement = showImageArea && (
     <div
       data-testid="image-area"
@@ -156,29 +205,80 @@ export function CalendarPage({
     >
       {imageBase64 ? (
         <>
-          <img
-            src={imageBase64}
-            alt=""
-            className="h-full w-full"
-            style={{ objectFit: "contain", objectPosition: imageObjectPosition }}
-          />
-          {/* Hover overlay with remove button */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity hover:bg-black/30 hover:opacity-100">
-            <div className="flex gap-2">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface shadow-sm"
-              >
-                変更
-              </button>
-              <button
-                onClick={onImageRemove}
-                className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-sunday shadow-sm"
-              >
-                削除
-              </button>
+          {cropTransform ? (
+            <img
+              ref={imageRef}
+              data-testid="cropped-image"
+              src={imageBase64}
+              alt=""
+              onLoad={handleImageLoad}
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                width: `${cropTransform.displayW}px`,
+                height: `${cropTransform.displayH}px`,
+                transform: `translate(calc(-50% + ${cropTransform.tx}px), calc(-50% + ${cropTransform.ty}px))`,
+              }}
+            />
+          ) : (
+            <img
+              ref={imageRef}
+              src={imageBase64}
+              alt=""
+              className="h-full w-full"
+              onLoad={handleImageLoad}
+              style={{ objectFit: "contain", objectPosition: imageObjectPosition }}
+            />
+          )}
+          {/* Edit overlay (when editing) */}
+          {isImageEditing &&
+            editDraft &&
+            imageAspectRatio &&
+            onEditUpdate &&
+            onEditSave &&
+            onEditCancel &&
+            onEditReset && (
+              <ImageEditOverlay
+                draft={editDraft}
+                containerW={containerW}
+                containerH={containerH}
+                imageAspectRatio={imageAspectRatio}
+                onUpdate={onEditUpdate}
+                onSave={onEditSave}
+                onCancel={onEditCancel}
+                onReset={onEditReset}
+                imageAlign={calendarStyle.imageAlign}
+              />
+            )}
+          {/* Hover overlay with edit/remove buttons (when not editing) */}
+          {!isImageEditing && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity hover:bg-black/30 hover:opacity-100">
+              <div className="flex gap-2">
+                {onImageEditStart && imageAspectRatio && (
+                  <button
+                    data-testid="image-edit-button"
+                    onClick={onImageEditStart}
+                    className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface shadow-sm"
+                  >
+                    編集
+                  </button>
+                )}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-on-surface shadow-sm"
+                >
+                  変更
+                </button>
+                <button
+                  onClick={onImageRemove}
+                  className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-sunday shadow-sm"
+                >
+                  削除
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </>
       ) : (
         /* Placeholder / drop zone */

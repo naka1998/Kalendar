@@ -10,6 +10,15 @@ export type DownloadMode = "pdf" | "single-html" | "zip";
 export type FontWeight = 300 | 400 | 600;
 export type ContentAlign = "start" | "center" | "end";
 export type PreviewZoom = "large" | "standard" | "small";
+export type FitMode = "cover" | "contain";
+
+// Per-month image crop/zoom settings
+export interface ImageCropSettings {
+  scale: number; // 1.0〜3.0
+  offsetX: number; // -1.0〜1.0 (可動範囲比)
+  offsetY: number; // -1.0〜1.0 (可動範囲比)
+  fitMode: FitMode;
+}
 
 // === Calendar Style ===
 export interface CalendarStyle {
@@ -56,6 +65,7 @@ export interface MonthImage {
   fileName: string;
   base64: string;
   mimeType: string;
+  aspectRatio?: number; // naturalWidth / naturalHeight
 }
 
 // === Holiday ===
@@ -93,6 +103,7 @@ export interface PersistedCalendarSettings {
   manualHolidays: ManualHoliday[];
   removedHolidays: string[];
   monthThemeOverrides: Record<string, string>;
+  imageCropSettings?: Record<string, ImageCropSettings>;
 }
 
 // === HTML Generator ===
@@ -114,6 +125,8 @@ export interface PageData {
   imageBase64: string | null;
   imagePercent: number;
   imagePosition: ImagePosition;
+  imageCropSettings?: ImageCropSettings;
+  imageAspectRatio?: number;
 }
 
 // === Zustand Store ===
@@ -141,6 +154,7 @@ export interface CalendarState {
   images: Record<string, MonthImage>;
   imagePercent: number;
   imagePosition: ImagePosition;
+  imageCropSettings: Record<string, ImageCropSettings>;
 
   monthThemeOverrides: Record<string, string>;
   calendarStyle: CalendarStyle;
@@ -181,6 +195,9 @@ export interface CalendarState {
   setImage: (monthKey: string, image: MonthImage) => void;
   removeImage: (monthKey: string) => void;
   swapImages: (fromMonth: string, toMonth: string) => void;
+  setImageCropSettings: (monthKey: string, settings: ImageCropSettings) => void;
+  removeImageCropSettings: (monthKey: string) => void;
+  updateImageAspectRatio: (monthKey: string, aspectRatio: number) => void;
 
   setMonthTheme: (monthKey: string, themeId: string) => void;
   clearMonthTheme: (monthKey: string) => void;

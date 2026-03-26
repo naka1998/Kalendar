@@ -52,6 +52,7 @@ const defaultResizer: ImageResizer = {
 export interface ResizeResult {
   base64: string;
   mimeType: string;
+  aspectRatio: number;
 }
 
 export function calcResizeDimensions(
@@ -101,9 +102,11 @@ export function createImageProcessor(resizer: ImageResizer = defaultResizer): Im
       // Calculate resize dimensions
       const resized = calcResizeDimensions(width, height, IMAGE.MAX_DIMENSION);
 
+      const aspectRatio = width / height;
+
       // If no resize needed, return original
       if (resized.width === width && resized.height === height) {
-        return { base64: dataUrl, mimeType: file.type };
+        return { base64: dataUrl, mimeType: file.type, aspectRatio };
       }
 
       // Resize
@@ -115,7 +118,7 @@ export function createImageProcessor(resizer: ImageResizer = defaultResizer): Im
         IMAGE.JPEG_QUALITY,
       );
 
-      return { base64, mimeType: file.type };
+      return { base64, mimeType: file.type, aspectRatio };
     },
   };
 }
