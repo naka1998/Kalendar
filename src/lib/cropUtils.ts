@@ -1,5 +1,5 @@
 import type { ImageCropSettings } from "@/stores/types";
-import type { FitMode } from "@/stores/types";
+import type { ContentAlign, FitMode } from "@/stores/types";
 import { CROP_MIN_SIZE } from "./constants";
 
 export interface CropRenderResult {
@@ -31,6 +31,8 @@ export function calcCropRender(
   containerH: number,
   imageAspectRatio: number,
   fitMode: FitMode,
+  alignH: ContentAlign = "center",
+  alignV: ContentAlign = "center",
 ): CropRenderResult {
   // The crop region's real-world aspect ratio
   const cropRealAR = (crop.cropW * imageAspectRatio) / crop.cropH;
@@ -82,11 +84,14 @@ export function calcCropRender(
   const imgWidthRatio = displayCropWRatio / crop.cropW;
   const imgHeightRatio = displayCropHRatio / crop.cropH;
 
-  // Position: center the crop region in the container
-  const cropCenterXRatio = (crop.cropX + crop.cropW / 2) * imgWidthRatio;
-  const cropCenterYRatio = (crop.cropY + crop.cropH / 2) * imgHeightRatio;
-  const imgLeftRatio = 0.5 - cropCenterXRatio;
-  const imgTopRatio = 0.5 - cropCenterYRatio;
+  // Position: align the crop region within the container using anchor points
+  // anchor: start=0, center=0.5, end=1.0
+  const anchorX = alignH === "start" ? 0 : alignH === "end" ? 1 : 0.5;
+  const anchorY = alignV === "start" ? 0 : alignV === "end" ? 1 : 0.5;
+  const cropAnchorX = (crop.cropX + anchorX * crop.cropW) * imgWidthRatio;
+  const cropAnchorY = (crop.cropY + anchorY * crop.cropH) * imgHeightRatio;
+  const imgLeftRatio = anchorX - cropAnchorX;
+  const imgTopRatio = anchorY - cropAnchorY;
 
   return {
     imgWidthPct: imgWidthRatio * 100,

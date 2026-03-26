@@ -214,7 +214,15 @@ export function CalendarPage({
 
   // Compute crop render properties for committed (non-editing) display
   const cropRender = hasCrop
-    ? calcCropRender(committedCrop, containerW, containerH, imageAspectRatio, imageFitMode)
+    ? calcCropRender(
+        committedCrop,
+        containerW,
+        containerH,
+        imageAspectRatio,
+        imageFitMode,
+        calendarStyle.imageAlignH,
+        calendarStyle.imageAlignV,
+      )
     : null;
 
   const imageRef = useRef<HTMLImageElement>(null);

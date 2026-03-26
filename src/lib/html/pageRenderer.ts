@@ -1,4 +1,4 @@
-import type { PageData, ImagePosition } from "@/stores/types";
+import type { ContentAlign, PageData, ImagePosition } from "@/stores/types";
 import { isHorizontalLayout } from "../layoutUtils";
 import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
@@ -38,7 +38,9 @@ function renderImageHtml(
 
   if (crop && aspectRatio && !isFullImageCrop(crop)) {
     const fitMode = page.imageFitMode ?? "cover";
-    const r = calcCropRender(crop, containerWMm, containerHMm, aspectRatio, fitMode);
+    const aH = (imageAlignH as ContentAlign) ?? "center";
+    const aV = (imageAlignV as ContentAlign) ?? "center";
+    const r = calcCropRender(crop, containerWMm, containerHMm, aspectRatio, fitMode, aH, aV);
     return `<div style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${r.imgLeftPct.toFixed(4)}%;top:${r.imgTopPct.toFixed(4)}%;width:${r.imgWidthPct.toFixed(4)}%;height:${r.imgHeightPct.toFixed(4)}%" /></div>`;
   }
 
