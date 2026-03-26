@@ -44,18 +44,24 @@ function renderImageHtml(
 
   const op = objectPositionValue(imageAlignV, imageAlignH);
   const fitMode = page.imageFitMode ?? "contain";
+  // Container alignment: align-items = vertical, justify-content = horizontal (flex row)
+  const containerAlign = `align-items:${alignItemsValue(imageAlignV)};justify-content:${justifyContentValue(imageAlignH)}`;
 
   if (fitMode === "fit-width") {
-    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;object-position:${op}" /></div>`;
+    // Width fills container, container flex handles vertical alignment
+    return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%" /></div>`;
   }
   if (fitMode === "fit-height") {
-    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="height:100%;object-position:${op}" /></div>`;
+    // Height fills container, container flex handles horizontal alignment
+    return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="height:100%" /></div>`;
   }
   if (fitMode === "none") {
-    return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="object-fit:none;object-position:${op}" /></div>`;
+    // Element fills container, content at natural size, object-position controls alignment
+    return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:none;object-position:${op}" /></div>`;
   }
 
-  return `<div style="${sizeProperty}:${sizeValue};display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${op}" /></div>`;
+  // cover/contain: element fills container, object-fit + object-position handle alignment
+  return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${op}" /></div>`;
 }
 
 function justifyContentValue(align: string | undefined): string {

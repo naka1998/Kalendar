@@ -188,6 +188,20 @@ export function CalendarPage({
         : "center";
   const imageObjectPosition = `${imageAlignV} ${imageAlignH}`;
 
+  // Image area container alignment (flex row: justify = horizontal, items = vertical)
+  const imageJustifyClass =
+    calendarStyle.imageAlignH === "start"
+      ? "justify-start"
+      : calendarStyle.imageAlignH === "end"
+        ? "justify-end"
+        : "justify-center";
+  const imageAlignItemsClass =
+    calendarStyle.imageAlignV === "start"
+      ? "items-start"
+      : calendarStyle.imageAlignV === "end"
+        ? "items-end"
+        : "items-center";
+
   // Determine effective crop settings: editing draft takes priority, then committed, then none
   // During editing, we show the full image (for frame placement), not the cropped result
   const committedCrop = imageCropSettings;
@@ -216,7 +230,7 @@ export function CalendarPage({
   const imageAreaElement = showImageArea && (
     <div
       data-testid="image-area"
-      className="relative flex items-center justify-center overflow-hidden"
+      className={`relative flex ${imageAlignItemsClass} ${imageJustifyClass} overflow-hidden`}
       style={{ [sizeProperty]: `${placeholderImagePercent}%` }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -251,31 +265,30 @@ export function CalendarPage({
               }}
             />
           ) : imageFitMode === "fit-width" ? (
-            /* fit-width: width 100%, natural height */
+            /* fit-width: width 100%, natural height. Container flex handles alignment. */
             <img
               ref={imageRef}
               src={imageBase64}
               alt=""
               className="w-full"
               onLoad={handleImageLoad}
-              style={{ objectPosition: imageObjectPosition }}
             />
           ) : imageFitMode === "fit-height" ? (
-            /* fit-height: height 100%, natural width */
+            /* fit-height: height 100%, natural width. Container flex handles alignment. */
             <img
               ref={imageRef}
               src={imageBase64}
               alt=""
               className="h-full"
               onLoad={handleImageLoad}
-              style={{ objectPosition: imageObjectPosition }}
             />
           ) : imageFitMode === "none" ? (
-            /* none: original size */
+            /* none: element fills container, content stays at natural size */
             <img
               ref={imageRef}
               src={imageBase64}
               alt=""
+              className="h-full w-full"
               onLoad={handleImageLoad}
               style={{ objectFit: "none", objectPosition: imageObjectPosition }}
             />
