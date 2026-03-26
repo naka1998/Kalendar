@@ -9,9 +9,13 @@ export default defineConfig({
     },
   },
   snapshotPathTemplate: "{testDir}/__screenshots__/{testFilePath}/{arg}{ext}",
-  updateSnapshots: "missing",
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL:
+      (
+        (globalThis as Record<string, unknown>).process as
+          | { env: Record<string, string | undefined> }
+          | undefined
+      )?.env.PLAYWRIGHT_BASE_URL || "http://localhost:5173",
     headless: true,
     launchOptions: {
       executablePath: (globalThis as Record<string, unknown>).process

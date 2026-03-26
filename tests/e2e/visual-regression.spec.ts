@@ -56,8 +56,7 @@ test.describe("Visual Regression - Desktop", () => {
   });
 
   test("sidebar expanded state", async ({ page }) => {
-    // Expand all sections
-    await page.getByText("基本設定").click();
+    // Basic section is open by default — capture the sidebar as-is
     await page.waitForTimeout(300);
 
     const sidebar = page.locator("aside").first();
@@ -93,9 +92,7 @@ test.describe("Visual Regression - Desktop", () => {
   });
 
   test("landscape orientation", async ({ page }) => {
-    await page.getByText("基本設定").click();
-    await page.waitForTimeout(300);
-
+    // Basic section is open by default — just click the landscape button
     const landscapeButton = page.getByRole("button", { name: "横" });
     await landscapeButton.click();
     await page.waitForTimeout(500);
