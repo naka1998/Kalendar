@@ -18,6 +18,12 @@ import { SafeMarginOverlay } from "./SafeMarginOverlay";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
 import { calcCropRender, isFullImageCrop } from "@/lib/cropUtils";
 import { A4 } from "@/lib/constants";
+import {
+  alignToPositionV,
+  alignToPositionH,
+  justifyContentClass,
+  alignItemsClass,
+} from "@/lib/alignmentUtils";
 
 const POSITION_CYCLE: ImagePosition[] = ["top", "right", "bottom", "left"];
 
@@ -160,47 +166,14 @@ export function CalendarPage({
   const showDivider = showImageArea && !!imageBase64 && !!dividerProps;
 
   // Content alignment: vertical (justify-content) and horizontal (align-items)
-  const justifyContentClass =
-    calendarStyle.contentAlignV === "start"
-      ? "justify-start"
-      : calendarStyle.contentAlignV === "end"
-        ? "justify-end"
-        : "justify-center";
+  const contentJustifyClass = justifyContentClass(calendarStyle.contentAlignV);
+  const contentAlignItemsClass = alignItemsClass(calendarStyle.contentAlignH);
 
-  const alignItemsClass =
-    calendarStyle.contentAlignH === "start"
-      ? "items-start"
-      : calendarStyle.contentAlignH === "end"
-        ? "items-end"
-        : "items-center";
-
-  const imageAlignV =
-    calendarStyle.imageAlignV === "start"
-      ? "top"
-      : calendarStyle.imageAlignV === "end"
-        ? "bottom"
-        : "center";
-  const imageAlignH =
-    calendarStyle.imageAlignH === "start"
-      ? "left"
-      : calendarStyle.imageAlignH === "end"
-        ? "right"
-        : "center";
-  const imageObjectPosition = `${imageAlignV} ${imageAlignH}`;
+  const imageObjectPosition = `${alignToPositionV(calendarStyle.imageAlignV)} ${alignToPositionH(calendarStyle.imageAlignH)}`;
 
   // Image area container alignment (flex row: justify = horizontal, items = vertical)
-  const imageJustifyClass =
-    calendarStyle.imageAlignH === "start"
-      ? "justify-start"
-      : calendarStyle.imageAlignH === "end"
-        ? "justify-end"
-        : "justify-center";
-  const imageAlignItemsClass =
-    calendarStyle.imageAlignV === "start"
-      ? "items-start"
-      : calendarStyle.imageAlignV === "end"
-        ? "items-end"
-        : "items-center";
+  const imageJustifyClass = justifyContentClass(calendarStyle.imageAlignH);
+  const imageAlignItemsClass = alignItemsClass(calendarStyle.imageAlignV);
 
   // Determine effective crop settings: editing draft takes priority, then committed, then none
   // During editing, we show the full image (for frame placement), not the cropped result
@@ -455,7 +428,7 @@ export function CalendarPage({
   const calendarAreaElement = (
     <div
       data-testid="calendar-area"
-      className={`flex flex-col overflow-hidden px-6 py-4 ${justifyContentClass} ${alignItemsClass}`}
+      className={`flex flex-col overflow-hidden px-6 py-4 ${contentJustifyClass} ${contentAlignItemsClass}`}
       style={{
         flex: 1,
         [sizeProperty]: imageBase64 ? `${placeholderGridPercent}%` : undefined,

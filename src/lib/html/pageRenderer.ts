@@ -3,22 +3,7 @@ import { isHorizontalLayout } from "../layoutUtils";
 import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
 import { calcCropRender, isFullImageCrop } from "../cropUtils";
-
-function alignToPositionV(align: string | undefined): string {
-  if (align === "start") return "top";
-  if (align === "end") return "bottom";
-  return "center";
-}
-
-function alignToPositionH(align: string | undefined): string {
-  if (align === "start") return "left";
-  if (align === "end") return "right";
-  return "center";
-}
-
-function objectPositionValue(alignV: string | undefined, alignH: string | undefined): string {
-  return `${alignToPositionV(alignV)} ${alignToPositionH(alignH)}`;
-}
+import { objectPositionValue, justifyContentValue, alignItemsValue } from "../alignmentUtils";
 
 // Page dimensions in mm for export rendering
 const PAGE_W_MM = { portrait: 210, landscape: 297 };
@@ -65,18 +50,6 @@ function renderImageHtml(
 
   // cover/contain: element fills container, object-fit + object-position handle alignment
   return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${op}" /></div>`;
-}
-
-function justifyContentValue(align: string | undefined): string {
-  if (align === "start") return "flex-start";
-  if (align === "end") return "flex-end";
-  return "center";
-}
-
-function alignItemsValue(align: string | undefined): string {
-  if (align === "start") return "flex-start";
-  if (align === "end") return "flex-end";
-  return "center";
 }
 
 function renderGridContainer(

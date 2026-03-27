@@ -174,7 +174,10 @@ export function ImageSection() {
               // selectedMonth is derived, no setter needed for now
             }}
           >
-            <SelectTrigger className="border-none bg-surface-container-high text-sm focus:bg-surface">
+            <SelectTrigger
+              aria-label="月選択"
+              className="border-none bg-surface-container-high text-sm focus:bg-surface"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

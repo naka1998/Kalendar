@@ -77,11 +77,12 @@ test.describe("Design Customization", () => {
   });
 
   test("content alignment buttons work", async ({ page }) => {
-    const centerButton = page.getByRole("button", { name: "中央" });
+    // "中央" appears in both image align and content align sections; use last() for content align
+    const centerButton = page.getByRole("button", { name: "中央" }).last();
     await centerButton.click();
     await expect(centerButton).toBeVisible();
 
-    const bottomButton = page.getByRole("button", { name: "下揃え" });
+    const bottomButton = page.getByRole("button", { name: "下揃え" }).last();
     await bottomButton.click();
     await expect(bottomButton).toBeVisible();
   });
