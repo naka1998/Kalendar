@@ -40,7 +40,10 @@ function MonthSelect({
       </Label>
       <div className="flex gap-2">
         <Select value={String(year)} onValueChange={handleYearChange}>
-          <SelectTrigger className="flex-1 border-none bg-surface-container-high text-sm focus:bg-surface">
+          <SelectTrigger
+            aria-label={`${label} 年`}
+            className="flex-1 border-none bg-surface-container-high text-sm focus:bg-surface"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -52,7 +55,10 @@ function MonthSelect({
           </SelectContent>
         </Select>
         <Select value={String(month)} onValueChange={handleMonthChange}>
-          <SelectTrigger className="w-20 border-none bg-surface-container-high text-sm focus:bg-surface">
+          <SelectTrigger
+            aria-label={`${label} 月`}
+            className="w-20 border-none bg-surface-container-high text-sm focus:bg-surface"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -142,7 +148,10 @@ export function BasicSection() {
             if (v) store.setWeekdayFormat(v as WeekdayFormat);
           }}
         >
-          <SelectTrigger className="border-none bg-surface-container-high text-sm focus:bg-surface">
+          <SelectTrigger
+            aria-label="曜日表記"
+            className="border-none bg-surface-container-high text-sm focus:bg-surface"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -163,7 +172,10 @@ export function BasicSection() {
             if (v) store.setMonthLabelFormat(v as MonthLabelFormat);
           }}
         >
-          <SelectTrigger className="border-none bg-surface-container-high text-sm focus:bg-surface">
+          <SelectTrigger
+            aria-label="月表記"
+            className="border-none bg-surface-container-high text-sm focus:bg-surface"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

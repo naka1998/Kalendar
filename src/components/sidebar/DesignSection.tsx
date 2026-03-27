@@ -76,7 +76,10 @@ export function DesignSection() {
             if (v) setFontId(v);
           }}
         >
-          <SelectTrigger className="border-none bg-surface-container-high text-sm focus:bg-surface">
+          <SelectTrigger
+            aria-label="フォント"
+            className="border-none bg-surface-container-high text-sm focus:bg-surface"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -120,6 +123,7 @@ export function DesignSection() {
           画像を使用
         </Label>
         <button
+          aria-label="画像を使用"
           onClick={() => setUseImages(!useImages)}
           className={`relative h-5 w-9 rounded-full transition-colors ${
             useImages ? "bg-primary" : "bg-surface-container-highest"
