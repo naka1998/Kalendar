@@ -34,7 +34,7 @@ test.describe("Accessibility - Desktop", () => {
   });
 
   test("sidebar design section expanded has no violations", async ({ page }) => {
-    await page.getByText("デザイン").click();
+    await page.getByText("見た目").click();
     await page.waitForTimeout(300);
 
     const results = await scanPage(page);

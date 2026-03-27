@@ -18,7 +18,7 @@ test.describe("Settings", () => {
   test("can toggle paper orientation", async ({ page }) => {
     // Basic Settings is open by default
     await page.getByText("開始月").waitFor();
-    const landscapeButton = page.getByRole("button", { name: "横" });
+    const landscapeButton = page.getByRole("button", { name: "横", exact: true });
     await landscapeButton.click();
     await expect(landscapeButton).toBeVisible();
   });
@@ -31,15 +31,17 @@ test.describe("Settings", () => {
   });
 
   test("accordion sections can be expanded", async ({ page }) => {
-    await page.getByText("祝日").click();
+    await page.getByText("データ").click();
     await expect(page.getByText("取得状態")).toBeVisible();
 
-    await page.getByText("デザイン").click();
+    await page.getByText("見た目").click();
     await expect(page.getByText("テーマ")).toBeVisible();
   });
 
   test("action buttons are visible in sidebar", async ({ page }) => {
     const sidebar = page.getByRole("complementary");
+    // Data section must be expanded first (exclusive accordion)
+    await sidebar.getByText("データ").click();
     await expect(sidebar.getByRole("button", { name: "HTMLから読込" })).toBeVisible();
     await expect(sidebar.getByRole("button", { name: "カレンダーをリセット" })).toBeVisible();
   });

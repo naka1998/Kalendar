@@ -26,8 +26,8 @@ test.describe("Visual Regression - Desktop", () => {
   });
 
   test("theme switch - dark theme", async ({ page }) => {
-    // Open design section and switch to dark theme
-    await page.getByText("デザイン").click();
+    // Open appearance section and switch to dark theme
+    await page.getByText("見た目").click();
     await page.getByText("テーマ").waitFor();
 
     // Click the dark theme (index 2)
@@ -42,7 +42,7 @@ test.describe("Visual Regression - Desktop", () => {
   });
 
   test("theme switch - cream theme", async ({ page }) => {
-    await page.getByText("デザイン").click();
+    await page.getByText("見た目").click();
     await page.getByText("テーマ").waitFor();
 
     const themeButtons = page.locator(".grid-cols-3 button");
@@ -65,8 +65,8 @@ test.describe("Visual Regression - Desktop", () => {
     });
   });
 
-  test("design section expanded", async ({ page }) => {
-    await page.getByText("デザイン").click();
+  test("appearance section expanded", async ({ page }) => {
+    await page.getByText("見た目").click();
     await page.waitForTimeout(300);
 
     const sidebar = page.locator("aside").first();
@@ -76,10 +76,7 @@ test.describe("Visual Regression - Desktop", () => {
   });
 
   test("image disabled layout", async ({ page }) => {
-    // Disable images
-    await page.getByText("デザイン").click();
-    await page.getByText("テーマ").waitFor();
-
+    // Disable images — toggle is now in 基本設定 (open by default)
     const toggleContainer = page.getByText("画像を使用").locator("..");
     const toggle = toggleContainer.locator("button");
     await toggle.click();
@@ -93,7 +90,7 @@ test.describe("Visual Regression - Desktop", () => {
 
   test("landscape orientation", async ({ page }) => {
     // Basic section is open by default — just click the landscape button
-    const landscapeButton = page.getByRole("button", { name: "横" });
+    const landscapeButton = page.getByRole("button", { name: "横", exact: true });
     await landscapeButton.click();
     await page.waitForTimeout(500);
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { AppearanceSection } from "./AppearanceSection";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { DEFAULTS, DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
@@ -13,7 +13,7 @@ beforeEach(() => {
   });
 });
 
-describe("AppearanceSection (formerly DesignSection)", () => {
+describe("AppearanceSection", () => {
   it("renders theme label", () => {
     render(<AppearanceSection />);
     expect(screen.getByText("テーマ")).toBeDefined();
@@ -39,12 +39,6 @@ describe("AppearanceSection (formerly DesignSection)", () => {
     expect(screen.getByText("セル余白")).toBeDefined();
     expect(screen.getByText("ヘッダー間隔")).toBeDefined();
     expect(screen.getByText("上余白")).toBeDefined();
-  });
-
-  it("changes font weight on click", () => {
-    render(<AppearanceSection />);
-    fireEvent.click(screen.getByText("太字"));
-    expect(useCalendarStore.getState().fontWeight).toBe(600);
   });
 
   it("shows warning color when font size is at warning threshold", () => {

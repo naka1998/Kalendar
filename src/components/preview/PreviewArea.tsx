@@ -3,6 +3,7 @@ import { useCalendarStore } from "@/stores/calendarStore";
 import { generateMonthRange, formatMonthLabel } from "@/lib/dateUtils";
 import { CalendarPageContainer } from "./CalendarPageContainer";
 import { ScaledPage } from "./ScaledPage";
+import { ImageControlBox } from "./ImageControlBox";
 import type { PreviewZoom } from "@/stores/types";
 
 const ZOOM_OPTIONS: { value: PreviewZoom; label: string }[] = [
@@ -153,26 +154,29 @@ export function PreviewArea() {
       </div>
 
       {/* Scrollable preview */}
-      <div
-        ref={scrollContainerRef}
-        className={`flex-1 overflow-y-auto ${previewZoom === "large" ? "p-2" : "p-4 md:p-8"}`}
-      >
+      <div className="relative flex-1 overflow-hidden">
+        <ImageControlBox />
         <div
-          className={`mx-auto ${
-            previewZoom === "small"
-              ? "grid max-w-5xl grid-cols-2 gap-4"
-              : previewZoom === "large"
-                ? "flex flex-col gap-8"
-                : "flex max-w-5xl flex-col gap-8"
-          }`}
+          ref={scrollContainerRef}
+          className={`h-full overflow-y-auto ${previewZoom === "large" ? "p-2" : "p-4 md:p-8"}`}
         >
-          {months.map((monthKey) => (
-            <div key={monthKey} ref={setPageRef(monthKey)} data-month={monthKey}>
-              <ScaledPage scrollViewportHeight={scrollViewportHeight} previewZoom={previewZoom}>
-                <CalendarPageContainer monthKey={monthKey} />
-              </ScaledPage>
-            </div>
-          ))}
+          <div
+            className={`mx-auto ${
+              previewZoom === "small"
+                ? "grid max-w-5xl grid-cols-2 gap-4"
+                : previewZoom === "large"
+                  ? "flex flex-col gap-8"
+                  : "flex max-w-5xl flex-col gap-8"
+            }`}
+          >
+            {months.map((monthKey) => (
+              <div key={monthKey} ref={setPageRef(monthKey)} data-month={monthKey}>
+                <ScaledPage scrollViewportHeight={scrollViewportHeight} previewZoom={previewZoom}>
+                  <CalendarPageContainer monthKey={monthKey} />
+                </ScaledPage>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </main>

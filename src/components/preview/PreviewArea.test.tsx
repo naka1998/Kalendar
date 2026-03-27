@@ -29,6 +29,21 @@ globalThis.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserv
 globalThis.IntersectionObserver =
   MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
+// Mock matchMedia for ImageControlBox
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: query === "(min-width: 768px)",
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 beforeEach(() => {
   useCalendarStore.setState({
     startMonth: "2026-04",

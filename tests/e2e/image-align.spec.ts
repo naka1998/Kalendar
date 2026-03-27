@@ -3,7 +3,7 @@ import { test, expect } from "./fixtures/global-setup";
 const TEST_WIDE_IMAGE = "tests/e2e/fixtures/test-wide-image.png";
 
 test.describe("Image alignment", () => {
-  // Image upload + accordion interaction need more time on slow browsers
+  // Image upload + interaction need more time on slow browsers
   test.setTimeout(120_000);
 
   test.beforeEach(async ({ page }) => {
@@ -13,14 +13,8 @@ test.describe("Image alignment", () => {
     const imageInput = page.locator('input[type=file][accept="image/jpeg,image/png"]').first();
     await imageInput.setInputFiles(TEST_WIDE_IMAGE);
     await page.waitForTimeout(3000);
-    // Open design accordion
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll("button")).find(
-        (b) => b.textContent?.trim() === "デザイン",
-      );
-      if (btn) btn.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-    });
-    await page.waitForTimeout(2000);
+    // The floating image control box should be visible on desktop by default
+    await page.waitForTimeout(1000);
   });
 
   test("image align top sets object-position to top", async ({ page }) => {
@@ -51,11 +45,11 @@ test.describe("Image alignment", () => {
 });
 
 async function clickAlignButton(page: import("@playwright/test").Page, label: string) {
-  // Find the button inside the 画像揃え section and simulate click
+  // Find the button inside the 画像配置 section in the floating control box
   await page.evaluate((targetLabel) => {
-    // Find 画像揃え label, then the buttons within its parent
+    // Find 画像配置 label in the floating control box, then the buttons within its parent
     const labels = Array.from(document.querySelectorAll("label"));
-    const sectionLabel = labels.find((l) => l.textContent?.includes("画像揃え"));
+    const sectionLabel = labels.find((l) => l.textContent?.includes("画像配置"));
     if (!sectionLabel) return;
     const section = sectionLabel.closest(".space-y-1\\.5") ?? sectionLabel.parentElement;
     if (!section) return;
