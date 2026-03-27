@@ -3,17 +3,18 @@ import { test, expect } from "./fixtures/global-setup";
 test.describe("Holiday Management", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    // Expand holiday section
-    await page.getByText("祝日").click();
-    await page.getByText("取得状態").waitFor();
   });
 
   test("shows holiday fetch status", async ({ page }) => {
+    // Expand data section (formerly "祝日")
+    await page.getByText("データ").click();
+    await page.getByText("取得状態").waitFor();
     const status = page.locator("text=取得済み").or(page.locator("text=取得中..."));
     await expect(status.first()).toBeVisible();
   });
 
   test("holiday mark style options are visible", async ({ page }) => {
+    // Holiday mark style is now in 基本設定 (open by default)
     await expect(page.getByRole("button", { name: "ドット" })).toBeVisible();
     await expect(page.getByRole("button", { name: "丸囲み" })).toBeVisible();
     await expect(page.getByRole("button", { name: "下線" })).toBeVisible();
@@ -21,6 +22,7 @@ test.describe("Holiday Management", () => {
   });
 
   test("can switch holiday mark style", async ({ page }) => {
+    // Holiday mark style is now in 基本設定 (open by default)
     // Click "丸囲み" and verify it gets the selected style
     const circleButton = page.getByRole("button", { name: "丸囲み" });
     await circleButton.click();
@@ -39,17 +41,24 @@ test.describe("Holiday Management", () => {
   });
 
   test("add holiday form is visible", async ({ page }) => {
+    // Expand data section
+    await page.getByText("データ").click();
+    await page.getByText("取得状態").waitFor();
     const sidebar = page.getByRole("complementary");
     await expect(sidebar.getByText("祝日を追加")).toBeVisible();
     await expect(sidebar.getByRole("button", { name: "追加", exact: true })).toBeVisible();
   });
 
   test("add button is disabled when fields are empty", async ({ page }) => {
+    await page.getByText("データ").click();
+    await page.getByText("取得状態").waitFor();
     const sidebar = page.getByRole("complementary");
     await expect(sidebar.getByRole("button", { name: "追加", exact: true })).toBeDisabled();
   });
 
   test("can add a manual holiday", async ({ page }) => {
+    await page.getByText("データ").click();
+    await page.getByText("取得状態").waitFor();
     const sidebar = page.getByRole("complementary");
     const dateInput = sidebar.locator('input[type="date"]');
     const nameInput = sidebar.getByPlaceholder("名称");
@@ -63,6 +72,8 @@ test.describe("Holiday Management", () => {
   });
 
   test("can remove a manually added holiday", async ({ page }) => {
+    await page.getByText("データ").click();
+    await page.getByText("取得状態").waitFor();
     const sidebar = page.getByRole("complementary");
 
     // First add a holiday

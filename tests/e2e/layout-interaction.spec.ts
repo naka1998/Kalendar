@@ -117,7 +117,7 @@ test.describe("Layout interaction", () => {
   });
 
   test("top margin slider exists in design section", async ({ page }) => {
-    await page.getByText("デザイン").click();
+    await page.getByText("見た目").click();
     await expect(page.getByText("上余白")).toBeVisible();
   });
 
@@ -216,7 +216,7 @@ test.describe("Layout interaction", () => {
 
   test("image ratio preset buttons are removed from sidebar", async ({ page }) => {
     // Expand design section
-    await page.getByText("デザイン").click();
+    await page.getByText("見た目").click();
 
     // The old preset buttons (60:40, 50:50, 70:30) should not exist
     await expect(page.getByRole("button", { name: "60:40" })).toHaveCount(0);

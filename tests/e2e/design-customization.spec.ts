@@ -3,8 +3,8 @@ import { test, expect } from "./fixtures/global-setup";
 test.describe("Design Customization", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    // Expand design section
-    await page.getByText("デザイン").click();
+    // Expand appearance section (formerly "デザイン")
+    await page.getByText("見た目").click();
     await page.getByText("テーマ").waitFor();
   });
 
@@ -51,6 +51,10 @@ test.describe("Design Customization", () => {
   });
 
   test("image toggle can be clicked", async ({ page }) => {
+    // Image toggle is now in 基本設定 section
+    await page.getByText("基本設定").click();
+    await page.getByText("開始月").waitFor();
+
     const toggleLabel = page.getByText("画像を使用");
     await expect(toggleLabel).toBeVisible();
 
@@ -64,6 +68,10 @@ test.describe("Design Customization", () => {
   });
 
   test("re-enabling images shows image areas", async ({ page }) => {
+    // Image toggle is now in 基本設定 section
+    await page.getByText("基本設定").click();
+    await page.getByText("開始月").waitFor();
+
     const toggleContainer = page.getByText("画像を使用").locator("..");
     const toggle = toggleContainer.locator("button");
 
@@ -77,12 +85,16 @@ test.describe("Design Customization", () => {
   });
 
   test("content alignment buttons work", async ({ page }) => {
-    // "中央" appears in both image align and content align sections; use last() for content align
-    const centerButton = page.getByRole("button", { name: "中央" }).last();
+    // Content alignment is now in the floating image control box
+    const controlBox = page.getByTestId("image-control-box");
+    await expect(controlBox).toBeVisible();
+
+    // "中央" in the カレンダー配置 section of the floating box
+    const centerButton = controlBox.getByRole("button", { name: "中央" }).last();
     await centerButton.click();
     await expect(centerButton).toBeVisible();
 
-    const bottomButton = page.getByRole("button", { name: "下揃え" }).last();
+    const bottomButton = controlBox.getByRole("button", { name: "下揃え" }).last();
     await bottomButton.click();
     await expect(bottomButton).toBeVisible();
   });
