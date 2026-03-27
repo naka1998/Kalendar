@@ -7,7 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { MonthLabelFormat, Orientation, WeekStart, WeekdayFormat } from "@/stores/types";
+import type {
+  HolidayMarkStyle,
+  MonthLabelFormat,
+  Orientation,
+  WeekStart,
+  WeekdayFormat,
+} from "@/stores/types";
 
 function MonthSelect({
   label,
@@ -184,6 +190,39 @@ export function BasicSection() {
             <SelectItem value="ja">2026年4月</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Holiday mark style */}
+      <SegmentedControl<HolidayMarkStyle>
+        label="祝日マーク"
+        options={[
+          { value: "dot", label: "ドット" },
+          { value: "circle", label: "丸囲み" },
+          { value: "underline", label: "下線" },
+          { value: "color-only", label: "色のみ" },
+        ]}
+        value={store.holidayMarkStyle}
+        onChange={store.setHolidayMarkStyle}
+      />
+
+      {/* Image toggle */}
+      <div className="flex items-center justify-between">
+        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
+          画像を使用
+        </Label>
+        <button
+          aria-label="画像を使用"
+          onClick={() => store.setUseImages(!store.useImages)}
+          className={`relative h-5 w-9 rounded-full transition-colors ${
+            store.useImages ? "bg-primary" : "bg-surface-container-highest"
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+              store.useImages ? "translate-x-4" : "translate-x-0"
+            }`}
+          />
+        </button>
       </div>
     </div>
   );

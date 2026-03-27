@@ -5,10 +5,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { BasicSection } from "./BasicSection";
-import { HolidaySection } from "./HolidaySection";
-import { DesignSection } from "./DesignSection";
+import { AppearanceSection } from "./AppearanceSection";
 import { ImageSection } from "./ImageSection";
-import { SettingsActions } from "./SettingsActions";
+import { DataSection } from "./DataSection";
 
 export function Sidebar({ mobile }: { mobile?: boolean }) {
   const containerClass = mobile
@@ -23,7 +22,7 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
         </p>
       )}
 
-      <Accordion multiple defaultValue={["basic"]} className="space-y-2">
+      <Accordion defaultValue={["basic"]} className="space-y-2">
         <AccordionItem value="basic" className="border-none">
           <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
             基本設定
@@ -33,21 +32,12 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="holidays" className="border-none">
+        <AccordionItem value="appearance" className="border-none">
           <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
-            祝日
+            見た目
           </AccordionTrigger>
           <AccordionContent className="px-3 pt-2">
-            <HolidaySection />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="design" className="border-none">
-          <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
-            デザイン
-          </AccordionTrigger>
-          <AccordionContent className="px-3 pt-2">
-            <DesignSection />
+            <AppearanceSection />
           </AccordionContent>
         </AccordionItem>
 
@@ -59,11 +49,16 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
             <ImageSection />
           </AccordionContent>
         </AccordionItem>
-      </Accordion>
 
-      <div className="pt-4">
-        <SettingsActions />
-      </div>
+        <AccordionItem value="data" className="border-none">
+          <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
+            データ
+          </AccordionTrigger>
+          <AccordionContent className="px-3 pt-2">
+            <DataSection />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </aside>
   );
 }
