@@ -28,6 +28,7 @@ export function ImageControlBox() {
         data-testid="image-control-toggle"
         onClick={() => setVisible(true)}
         className="absolute top-4 right-4 z-20 rounded-lg border border-white/40 bg-white/80 p-2 shadow-elevated backdrop-blur-[12px]"
+        aria-label="操作パネルを表示"
         title="操作パネルを表示"
       >
         <svg
@@ -60,6 +61,7 @@ export function ImageControlBox() {
           data-testid="image-control-toggle"
           onClick={() => setVisible(false)}
           className="rounded-md p-0.5 text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+          aria-label="操作パネルを非表示"
           title="操作パネルを非表示"
         >
           <svg
