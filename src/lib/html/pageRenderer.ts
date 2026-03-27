@@ -75,6 +75,7 @@ export function renderPage(
     imageAlignV: string;
     imageAlignH: string;
     pageMarginTop: number;
+    gridWidth: number;
   }>,
 ): string {
   const { colors } = page.theme;
@@ -99,8 +100,10 @@ export function renderPage(
 
   let contentHtml: string;
 
+  const gridWidthPct = calendarStyle?.gridWidth ?? 100;
+
   if (page.imageBase64) {
-    const gridHtml = renderGridHtml(page);
+    const gridHtml = renderGridHtml(page, gridWidthPct);
     const imageBlock = renderImageHtml(
       page,
       sizeProperty,
@@ -129,7 +132,7 @@ export function renderPage(
       contentHtml = `<div style="${containerStyle}">${imageBlock}${gridBlock}</div>`;
     }
   } else {
-    const gridHtml = renderGridHtml(page);
+    const gridHtml = renderGridHtml(page, gridWidthPct);
     contentHtml = `<div style="height:100%;padding:24px;">${gridHtml}</div>`;
   }
 

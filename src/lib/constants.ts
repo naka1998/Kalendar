@@ -41,6 +41,7 @@ export const DEFAULT_CALENDAR_STYLE = {
   imageAlignV: "center" as const,
   imageAlignH: "center" as const,
   pageMarginTop: 0,
+  gridWidth: 100,
 } as const;
 
 /** Safe margin for print: 5mm at 96dpi ≈ 19px */

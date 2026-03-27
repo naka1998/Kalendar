@@ -53,6 +53,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
       imageAlignV: "center",
       imageAlignH: "center",
       pageMarginTop: 0,
+      gridWidth: 100,
     },
     lastAutoSavedAt: null,
     saveError: null,
@@ -232,6 +233,7 @@ describe("round-trip", () => {
         imageAlignV: "center",
         imageAlignH: "center",
         pageMarginTop: 20,
+        gridWidth: 100,
       },
     });
     saveToStorage(state);

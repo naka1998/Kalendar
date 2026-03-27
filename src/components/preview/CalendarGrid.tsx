@@ -49,7 +49,7 @@ export function CalendarGrid({
   const { monthFontSize, dayFontSize, weekdayFontSize, cellPadding, headerGap } = calendarStyle;
 
   return (
-    <div className="w-full" style={{ fontFamily, fontWeight }}>
+    <div style={{ width: `${calendarStyle.gridWidth}%`, fontFamily, fontWeight }}>
       {/* Month label */}
       <div
         className="font-heading font-extrabold tracking-tighter"
