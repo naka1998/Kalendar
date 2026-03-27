@@ -1,4 +1,3 @@
-import { useCallback, useRef, useState } from "react";
 import type {
   CalendarStyle,
   ColorTheme,
@@ -13,17 +12,12 @@ import type {
 } from "@/stores/types";
 import { CalendarGrid } from "./CalendarGrid";
 import { DividerHandle } from "./DividerHandle";
-import { ImageEditOverlay } from "./ImageEditOverlay";
+import { ImageArea } from "./ImageArea";
 import { SafeMarginOverlay } from "./SafeMarginOverlay";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
-import { calcCropRender, isFullImageCrop } from "@/lib/cropUtils";
 import { A4 } from "@/lib/constants";
-import {
-  alignToPositionV,
-  alignToPositionH,
-  justifyContentClass,
-  alignItemsClass,
-} from "@/lib/alignmentUtils";
+import { justifyContentClass, alignItemsClass } from "@/lib/alignmentUtils";
+import { useCallback } from "react";
 
 const POSITION_CYCLE: ImagePosition[] = ["top", "right", "bottom", "left"];
 
@@ -93,23 +87,7 @@ export function CalendarPage({
   onImageAspectRatioLoad,
 }: CalendarPageProps) {
   const { theme, fontFamily, fontWeight, orientation, holidayMarkStyle, calendarStyle } = style;
-  const {
-    imageBase64,
-    imagePercent,
-    imagePosition,
-    imageFitMode = "cover",
-    imageCropSettings,
-    imageAspectRatio,
-  } = image;
-  const {
-    isImageEditing = false,
-    editDraft,
-    onImageEditStart,
-    onEditUpdate,
-    onEditSave,
-    onEditCancel,
-    onEditReset,
-  } = imageEdit;
+  const { imageBase64, imagePercent, imagePosition } = image;
 
   const { colors } = theme;
   const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
@@ -119,44 +97,6 @@ export function CalendarPage({
   const displayPercent = livePercent ?? imagePercent;
   const { imagePercent: effectiveImagePercent, gridPercent: effectiveGridPercent } =
     calcLayoutPercent(displayPercent, !!imageBase64);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [showImageButtons, setShowImageButtons] = useState(false);
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragOver(false);
-      const file = e.dataTransfer.files[0];
-      if (file && onImageUpload) onImageUpload(file);
-    },
-    [onImageUpload],
-  );
-
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file && onImageUpload) onImageUpload(file);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    },
-    [onImageUpload],
-  );
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback(() => {
-    setIsDragOver(false);
-  }, []);
-
-  const handlePositionToggle = useCallback(() => {
-    if (!onPositionChange) return;
-    const currentIndex = POSITION_CYCLE.indexOf(imagePosition);
-    const nextIndex = (currentIndex + 1) % POSITION_CYCLE.length;
-    onPositionChange(POSITION_CYCLE[nextIndex]);
-  }, [imagePosition, onPositionChange]);
 
   // Show image area only when images are enabled (onImageUpload provided)
   const imagesEnabled = !!onImageUpload;
@@ -178,287 +118,20 @@ export function CalendarPage({
 
   const showDivider = showImageArea && !!imageBase64 && !!dividerProps;
 
-  // Content alignment: vertical (justify-content) and horizontal (align-items)
+  // Content alignment
   const contentJustifyClass = justifyContentClass(calendarStyle.contentAlignV);
   const contentAlignItemsClass = alignItemsClass(calendarStyle.contentAlignH);
-
-  const imageObjectPosition = `${alignToPositionV(calendarStyle.imageAlignV)} ${alignToPositionH(calendarStyle.imageAlignH)}`;
-
-  // Image area container alignment (flex row: justify = horizontal, items = vertical)
-  const imageJustifyClass = justifyContentClass(calendarStyle.imageAlignH);
-  const imageAlignItemsClass = alignItemsClass(calendarStyle.imageAlignV);
-
-  // Determine effective crop settings: editing draft takes priority, then committed, then none
-  // During editing, we show the full image (for frame placement), not the cropped result
-  const committedCrop = imageCropSettings;
-  const hasCrop =
-    !!committedCrop &&
-    !isImageEditing &&
-    !!imageAspectRatio &&
-    !isFullImageCrop(committedCrop) &&
-    imageFitMode !== "none";
 
   // Calculate container size for edit overlay
   const containerW = horizontal ? (pageWidth * placeholderImagePercent) / 100 : pageWidth;
   const containerH = horizontal ? pageHeight : (pageHeight * placeholderImagePercent) / 100;
 
-  // Compute crop render properties for committed (non-editing) display
-  const cropRender = hasCrop
-    ? calcCropRender(
-        committedCrop,
-        containerW,
-        containerH,
-        imageAspectRatio,
-        imageFitMode,
-        calendarStyle.imageAlignH,
-        calendarStyle.imageAlignV,
-      )
-    : null;
-
-  const imageRef = useRef<HTMLImageElement>(null);
-
-  const handleImageLoad = useCallback(() => {
-    if (!imageRef.current || !onImageAspectRatioLoad) return;
-    const { naturalWidth, naturalHeight } = imageRef.current;
-    if (naturalWidth > 0 && naturalHeight > 0) {
-      onImageAspectRatioLoad(naturalWidth / naturalHeight);
-    }
-  }, [onImageAspectRatioLoad]);
-
-  const imageAreaElement = showImageArea && (
-    <div
-      data-testid="image-area"
-      className={`relative flex ${imageAlignItemsClass} ${imageJustifyClass} overflow-hidden`}
-      style={{ [sizeProperty]: `${placeholderImagePercent}%` }}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      {imageBase64 ? (
-        <>
-          {isImageEditing ? (
-            /* During editing: show full image with contain fit for crop frame placement */
-            <img
-              ref={imageRef}
-              src={imageBase64}
-              alt=""
-              className="h-full w-full"
-              onLoad={handleImageLoad}
-              style={{ objectFit: "contain", objectPosition: "center" }}
-            />
-          ) : cropRender ? (
-            /* Cropped display: percentage-based positioning to show only the crop region */
-            <img
-              ref={imageRef}
-              data-testid="cropped-image"
-              src={imageBase64}
-              alt=""
-              onLoad={handleImageLoad}
-              style={{
-                position: "absolute",
-                left: `${cropRender.imgLeftPct}%`,
-                top: `${cropRender.imgTopPct}%`,
-                width: `${cropRender.imgWidthPct}%`,
-                height: `${cropRender.imgHeightPct}%`,
-              }}
-            />
-          ) : imageFitMode === "fit-width" ? (
-            /* fit-width: width 100%, natural height. Container flex handles alignment. */
-            <img
-              ref={imageRef}
-              src={imageBase64}
-              alt=""
-              className="w-full"
-              onLoad={handleImageLoad}
-            />
-          ) : imageFitMode === "fit-height" ? (
-            /* fit-height: height 100%, natural width. Container flex handles alignment. */
-            <img
-              ref={imageRef}
-              src={imageBase64}
-              alt=""
-              className="h-full"
-              onLoad={handleImageLoad}
-            />
-          ) : imageFitMode === "none" ? (
-            /* none: element fills container, content stays at natural size */
-            <img
-              ref={imageRef}
-              src={imageBase64}
-              alt=""
-              className="h-full w-full"
-              onLoad={handleImageLoad}
-              style={{ objectFit: "none", objectPosition: imageObjectPosition }}
-            />
-          ) : (
-            /* Default display: cover or contain */
-            <img
-              ref={imageRef}
-              src={imageBase64}
-              alt=""
-              className="h-full w-full"
-              onLoad={handleImageLoad}
-              style={{ objectFit: imageFitMode, objectPosition: imageObjectPosition }}
-            />
-          )}
-          {/* Edit overlay (when editing) */}
-          {isImageEditing &&
-            editDraft &&
-            imageAspectRatio &&
-            onEditUpdate &&
-            onEditSave &&
-            onEditCancel &&
-            onEditReset && (
-              <ImageEditOverlay
-                draft={editDraft}
-                containerW={containerW}
-                containerH={containerH}
-                imageAspectRatio={imageAspectRatio}
-                onUpdate={onEditUpdate}
-                onSave={onEditSave}
-                onCancel={onEditCancel}
-                onReset={onEditReset}
-                imageAlignV={calendarStyle.imageAlignV}
-                imageAlignH={calendarStyle.imageAlignH}
-              />
-            )}
-          {/* Overlay with edit/remove buttons (when not editing) */}
-          {/* Desktop: hover to show. Mobile: tap image to toggle. */}
-          {!isImageEditing && (
-            <div
-              className={`absolute inset-0 flex items-center justify-center transition-opacity ${
-                showImageButtons
-                  ? "bg-black/30 opacity-100"
-                  : "bg-black/0 opacity-0 hover:bg-black/30 hover:opacity-100"
-              }`}
-              onClick={(e) => {
-                // Toggle button visibility on tap (for touch devices)
-                if (e.target === e.currentTarget) {
-                  setShowImageButtons((prev) => !prev);
-                }
-              }}
-            >
-              <div className="flex gap-2 md:gap-2 gap-3">
-                {onImageEditStart && imageAspectRatio && (
-                  <button
-                    data-testid="image-edit-button"
-                    onClick={() => {
-                      setShowImageButtons(false);
-                      onImageEditStart();
-                    }}
-                    className="rounded-lg bg-white/90 px-5 py-2.5 text-sm font-medium text-on-surface shadow-sm md:px-3 md:py-1.5 md:text-xs"
-                  >
-                    トリミング
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    setShowImageButtons(false);
-                    fileInputRef.current?.click();
-                  }}
-                  className="rounded-lg bg-white/90 px-5 py-2.5 text-sm font-medium text-on-surface shadow-sm md:px-3 md:py-1.5 md:text-xs"
-                >
-                  変更
-                </button>
-                <button
-                  onClick={() => {
-                    setShowImageButtons(false);
-                    onImageRemove?.();
-                  }}
-                  className="rounded-lg bg-white/90 px-5 py-2.5 text-sm font-medium text-sunday shadow-sm md:px-3 md:py-1.5 md:text-xs"
-                >
-                  削除
-                </button>
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
-        /* Placeholder / drop zone */
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          className={`flex h-full w-full flex-col items-center justify-center gap-2 transition-colors ${
-            isDragOver ? "bg-primary/10" : "hover:bg-black/5"
-          }`}
-        >
-          <span className="text-2xl" style={{ color: colors.text, opacity: 0.2 }}>
-            +
-          </span>
-          <span className="text-xs font-medium" style={{ color: colors.text, opacity: 0.3 }}>
-            クリックまたはドラッグで画像を追加
-          </span>
-        </button>
-      )}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/png"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-    </div>
-  );
-
-  const dividerElement = showDivider && (
-    <div className="relative">
-      <DividerHandle
-        direction={horizontal ? "vertical" : "horizontal"}
-        isDragging={isDividerDragging}
-        dividerProps={dividerProps}
-      />
-      {/* Ratio indicator */}
-      <span
-        data-testid="ratio-indicator"
-        className={`pointer-events-none absolute z-10 rounded bg-black/50 px-1.5 py-0.5 text-[10px] tabular-nums text-white ${
-          horizontal ? "top-1 left-1/2 -translate-x-1/2" : "top-1/2 left-1 -translate-y-1/2"
-        }`}
-      >
-        {displayPercent}:{100 - displayPercent}
-      </span>
-      {/* Position toggle button — shown on hover */}
-      {onPositionChange && (
-        <button
-          data-testid="position-toggle"
-          onClick={handlePositionToggle}
-          className="absolute top-1/2 right-1 z-20 -translate-y-1/2 rounded-full bg-surface/80 p-1 text-on-surface-variant opacity-0 shadow-sm transition-opacity hover:bg-surface hover:text-on-surface group-hover/page:opacity-100"
-          title="配置を変更"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
-          </svg>
-        </button>
-      )}
-    </div>
-  );
-
-  const calendarAreaElement = (
-    <div
-      data-testid="calendar-area"
-      className={`flex flex-col overflow-hidden px-6 py-4 ${contentJustifyClass} ${contentAlignItemsClass}`}
-      style={{
-        flex: 1,
-        [sizeProperty]: imageBase64 ? `${placeholderGridPercent}%` : undefined,
-      }}
-    >
-      <CalendarGrid
-        grid={grid}
-        weekdayHeaders={weekdayHeaders}
-        monthLabel={monthLabel}
-        theme={theme}
-        holidayMarkStyle={holidayMarkStyle}
-        fontFamily={fontFamily}
-        fontWeight={fontWeight}
-        calendarStyle={calendarStyle}
-      />
-    </div>
-  );
+  const handlePositionToggle = useCallback(() => {
+    if (!onPositionChange) return;
+    const currentIndex = POSITION_CYCLE.indexOf(imagePosition);
+    const nextIndex = (currentIndex + 1) % POSITION_CYCLE.length;
+    onPositionChange(POSITION_CYCLE[nextIndex]);
+  }, [imagePosition, onPositionChange]);
 
   return (
     <div
@@ -480,9 +153,76 @@ export function CalendarPage({
             calendarStyle.pageMarginTop > 0 ? `${calendarStyle.pageMarginTop}px` : undefined,
         }}
       >
-        {imageAreaElement}
-        {dividerElement}
-        {calendarAreaElement}
+        {showImageArea && (
+          <ImageArea
+            image={image}
+            imageEdit={imageEdit}
+            calendarStyle={calendarStyle}
+            colors={colors}
+            sizeProperty={sizeProperty}
+            placeholderImagePercent={placeholderImagePercent}
+            containerW={containerW}
+            containerH={containerH}
+            onImageUpload={onImageUpload}
+            onImageRemove={onImageRemove}
+            onImageAspectRatioLoad={onImageAspectRatioLoad}
+          />
+        )}
+        {showDivider && (
+          <div className="relative">
+            <DividerHandle
+              direction={horizontal ? "vertical" : "horizontal"}
+              isDragging={isDividerDragging}
+              dividerProps={dividerProps}
+            />
+            <span
+              data-testid="ratio-indicator"
+              className={`pointer-events-none absolute z-10 rounded bg-black/50 px-1.5 py-0.5 text-[10px] tabular-nums text-white ${
+                horizontal ? "top-1 left-1/2 -translate-x-1/2" : "top-1/2 left-1 -translate-y-1/2"
+              }`}
+            >
+              {displayPercent}:{100 - displayPercent}
+            </span>
+            {onPositionChange && (
+              <button
+                data-testid="position-toggle"
+                onClick={handlePositionToggle}
+                className="absolute top-1/2 right-1 z-20 -translate-y-1/2 rounded-full bg-surface/80 p-1 text-on-surface-variant opacity-0 shadow-sm transition-opacity hover:bg-surface hover:text-on-surface group-hover/page:opacity-100"
+                title="配置を変更"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+              </button>
+            )}
+          </div>
+        )}
+        <div
+          data-testid="calendar-area"
+          className={`flex flex-col overflow-hidden px-6 py-4 ${contentJustifyClass} ${contentAlignItemsClass}`}
+          style={{
+            flex: 1,
+            [sizeProperty]: imageBase64 ? `${placeholderGridPercent}%` : undefined,
+          }}
+        >
+          <CalendarGrid
+            grid={grid}
+            weekdayHeaders={weekdayHeaders}
+            monthLabel={monthLabel}
+            theme={theme}
+            holidayMarkStyle={holidayMarkStyle}
+            fontFamily={fontFamily}
+            fontWeight={fontWeight}
+            calendarStyle={calendarStyle}
+          />
+        </div>
       </div>
     </div>
   );
