@@ -47,7 +47,7 @@ test.describe("Download Flow", () => {
     // Wait for basic settings to be visible
     await page.getByText("開始月").waitFor();
     // Change orientation to trigger auto-save
-    const landscapeButton = page.getByRole("button", { name: "横" });
+    const landscapeButton = page.getByRole("button", { name: "横", exact: true });
     await landscapeButton.click();
     // Wait for debounce (1.5s) + margin
     await page.waitForTimeout(3000);

@@ -198,7 +198,7 @@ test.describe("Layout interaction", () => {
   test("landscape calendar is reasonably sized with standard zoom", async ({ page }) => {
     // Switch to landscape
     await page.getByText("基本設定").click();
-    await page.getByRole("button", { name: "横" }).click();
+    await page.getByRole("button", { name: "横", exact: true }).click();
     await page.waitForTimeout(300);
 
     const scrollContainer = page.locator(".overflow-y-auto").first();

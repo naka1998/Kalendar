@@ -18,7 +18,7 @@ test.describe("Settings", () => {
   test("can toggle paper orientation", async ({ page }) => {
     // Basic Settings is open by default
     await page.getByText("開始月").waitFor();
-    const landscapeButton = page.getByRole("button", { name: "横" });
+    const landscapeButton = page.getByRole("button", { name: "横", exact: true });
     await landscapeButton.click();
     await expect(landscapeButton).toBeVisible();
   });

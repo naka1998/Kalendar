@@ -90,7 +90,7 @@ test.describe("Visual Regression - Desktop", () => {
 
   test("landscape orientation", async ({ page }) => {
     // Basic section is open by default — just click the landscape button
-    const landscapeButton = page.getByRole("button", { name: "横" });
+    const landscapeButton = page.getByRole("button", { name: "横", exact: true });
     await landscapeButton.click();
     await page.waitForTimeout(500);
 
