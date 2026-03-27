@@ -25,7 +25,6 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        if: github.event.action != 'closed'
         run: pnpm install --frozen-lockfile
 
       - name: Lint & Type Check
