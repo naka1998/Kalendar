@@ -27,20 +27,42 @@ import {
 
 const POSITION_CYCLE: ImagePosition[] = ["top", "right", "bottom", "left"];
 
+export interface ImageProps {
+  imageBase64: string | null;
+  imagePercent: number;
+  imagePosition: ImagePosition;
+  imageFitMode?: FitMode;
+  imageCropSettings?: ImageCropSettings;
+  imageAspectRatio?: number;
+}
+
+export interface ImageEditProps {
+  isImageEditing?: boolean;
+  editDraft?: ImageCropSettings | null;
+  onImageEditStart?: () => void;
+  onEditUpdate?: (partial: Partial<ImageCropSettings>) => void;
+  onEditSave?: () => void;
+  onEditCancel?: () => void;
+  onEditReset?: (alignV: ContentAlign, alignH: ContentAlign) => void;
+}
+
+export interface CalendarStyleProps {
+  theme: ColorTheme;
+  fontFamily: string;
+  fontWeight: FontWeight;
+  orientation: Orientation;
+  holidayMarkStyle: HolidayMarkStyle;
+  calendarStyle: CalendarStyle;
+}
+
 export interface CalendarPageProps {
   monthKey: string;
   monthLabel: string;
   grid: DayCell[][];
   weekdayHeaders: string[];
-  theme: ColorTheme;
-  holidayMarkStyle: HolidayMarkStyle;
-  fontFamily: string;
-  fontWeight: FontWeight;
-  orientation: Orientation;
-  imageBase64: string | null;
-  imagePercent: number;
-  imagePosition: ImagePosition;
-  calendarStyle: CalendarStyle;
+  image: ImageProps;
+  imageEdit: ImageEditProps;
+  style: CalendarStyleProps;
   onImageUpload?: (file: File) => void;
   onImageRemove?: () => void;
   // Divider drag
@@ -51,18 +73,6 @@ export interface CalendarPageProps {
   onPositionChange?: (pos: ImagePosition) => void;
   // Print safety guide
   showSafeMargin?: boolean;
-  // Image crop settings
-  imageCropSettings?: ImageCropSettings;
-  imageFitMode?: FitMode;
-  imageAspectRatio?: number;
-  // Image edit mode
-  isImageEditing?: boolean;
-  editDraft?: ImageCropSettings | null;
-  onImageEditStart?: () => void;
-  onEditUpdate?: (partial: Partial<ImageCropSettings>) => void;
-  onEditSave?: () => void;
-  onEditCancel?: () => void;
-  onEditReset?: (alignV: ContentAlign, alignH: ContentAlign) => void;
   onImageAspectRatioLoad?: (aspectRatio: number) => void;
 }
 
@@ -70,15 +80,9 @@ export function CalendarPage({
   monthLabel,
   grid,
   weekdayHeaders,
-  theme,
-  holidayMarkStyle,
-  fontFamily,
-  fontWeight,
-  orientation,
-  imageBase64,
-  imagePercent,
-  imagePosition,
-  calendarStyle,
+  image,
+  imageEdit,
+  style,
   onImageUpload,
   onImageRemove,
   dividerProps,
@@ -86,18 +90,27 @@ export function CalendarPage({
   livePercent,
   onPositionChange,
   showSafeMargin,
-  imageCropSettings,
-  imageFitMode = "cover",
-  imageAspectRatio,
-  isImageEditing = false,
-  editDraft,
-  onImageEditStart,
-  onEditUpdate,
-  onEditSave,
-  onEditCancel,
-  onEditReset,
   onImageAspectRatioLoad,
 }: CalendarPageProps) {
+  const { theme, fontFamily, fontWeight, orientation, holidayMarkStyle, calendarStyle } = style;
+  const {
+    imageBase64,
+    imagePercent,
+    imagePosition,
+    imageFitMode = "cover",
+    imageCropSettings,
+    imageAspectRatio,
+  } = image;
+  const {
+    isImageEditing = false,
+    editDraft,
+    onImageEditStart,
+    onEditUpdate,
+    onEditSave,
+    onEditCancel,
+    onEditReset,
+  } = imageEdit;
+
   const { colors } = theme;
   const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
   const pageHeight = orientation === "portrait" ? A4.PORTRAIT_HEIGHT_PX : A4.LANDSCAPE_HEIGHT_PX;

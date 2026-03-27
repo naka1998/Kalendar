@@ -1,29 +1,56 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { CalendarPage, type CalendarPageProps } from "./CalendarPage";
+import {
+  CalendarPage,
+  type CalendarPageProps,
+  type ImageProps,
+  type ImageEditProps,
+  type CalendarStyleProps,
+} from "./CalendarPage";
 import { getMonthGrid, getWeekdayHeaders, enrichDayCells } from "@/lib/dateUtils";
 import { THEMES } from "@/lib/themes";
 import { DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
 
 const theme = THEMES[0];
 
-function renderPage(overrides?: Partial<CalendarPageProps>) {
+function renderPage(
+  overrides?: {
+    image?: Partial<ImageProps>;
+    imageEdit?: Partial<ImageEditProps>;
+    style?: Partial<CalendarStyleProps>;
+  } & Omit<Partial<CalendarPageProps>, "image" | "imageEdit" | "style">,
+) {
   const grid = enrichDayCells(getMonthGrid("2026-04", "sunday"), {});
+  const {
+    image: imageOverrides,
+    imageEdit: imageEditOverrides,
+    style: styleOverrides,
+    ...rest
+  } = overrides ?? {};
   const defaults: CalendarPageProps = {
     monthKey: "2026-04",
     monthLabel: "2026.04",
     grid,
     weekdayHeaders: getWeekdayHeaders("en-short", "sunday"),
-    theme,
-    holidayMarkStyle: "dot",
-    fontFamily: "Montserrat",
-    fontWeight: 400,
-    orientation: "portrait",
-    imageBase64: null,
-    imagePercent: 50,
-    imagePosition: "top",
-    calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
-    ...overrides,
+    image: {
+      imageBase64: null,
+      imagePercent: 50,
+      imagePosition: "top",
+      ...imageOverrides,
+    },
+    imageEdit: {
+      ...imageEditOverrides,
+    },
+    style: {
+      theme,
+      holidayMarkStyle: "dot",
+      fontFamily: "Montserrat",
+      fontWeight: 400,
+      orientation: "portrait",
+      calendarStyle: { ...DEFAULT_CALENDAR_STYLE },
+      ...styleOverrides,
+    },
+    ...rest,
   };
   return render(<CalendarPage {...defaults} />);
 }
@@ -51,7 +78,7 @@ describe("CalendarPage", () => {
   });
 
   it("does not show image area when onImageUpload is not provided", () => {
-    renderPage({ imageBase64: null, onImageUpload: undefined });
+    renderPage({ image: { imageBase64: null }, onImageUpload: undefined });
     expect(screen.queryByTestId("image-area")).toBeNull();
   });
 
@@ -63,7 +90,7 @@ describe("CalendarPage", () => {
 
   it("renders image when imageBase64 is provided", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc" },
       onImageUpload: vi.fn(),
     });
     const img = screen.getByTestId("image-area").querySelector("img");
@@ -73,7 +100,7 @@ describe("CalendarPage", () => {
 
   it("shows divider handle when image is present and dividerProps provided", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc" },
       onImageUpload: vi.fn(),
       dividerProps: { onPointerDown: vi.fn() },
     });
@@ -82,20 +109,18 @@ describe("CalendarPage", () => {
 
   it("shows ratio indicator with displayPercent", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc", imagePercent: 60 },
       onImageUpload: vi.fn(),
       dividerProps: { onPointerDown: vi.fn() },
-      imagePercent: 60,
     });
     expect(screen.getByTestId("ratio-indicator").textContent).toBe("60:40");
   });
 
   it("uses livePercent for ratio display during drag", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc", imagePercent: 50 },
       onImageUpload: vi.fn(),
       dividerProps: { onPointerDown: vi.fn() },
-      imagePercent: 50,
       livePercent: 70,
     });
     expect(screen.getByTestId("ratio-indicator").textContent).toBe("70:30");
@@ -103,7 +128,7 @@ describe("CalendarPage", () => {
 
   it("shows position toggle button when onPositionChange is provided", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc" },
       onImageUpload: vi.fn(),
       dividerProps: { onPointerDown: vi.fn() },
       onPositionChange: vi.fn(),
@@ -114,10 +139,9 @@ describe("CalendarPage", () => {
   it("cycles position on toggle click", () => {
     const onPositionChange = vi.fn();
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc", imagePosition: "top" },
       onImageUpload: vi.fn(),
       dividerProps: { onPointerDown: vi.fn() },
-      imagePosition: "top",
       onPositionChange,
     });
     fireEvent.click(screen.getByTestId("position-toggle"));
@@ -127,10 +151,9 @@ describe("CalendarPage", () => {
   it("wraps position cycle from left back to top", () => {
     const onPositionChange = vi.fn();
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc", imagePosition: "left" },
       onImageUpload: vi.fn(),
       dividerProps: { onPointerDown: vi.fn() },
-      imagePosition: "left",
       onPositionChange,
     });
     fireEvent.click(screen.getByTestId("position-toggle"));
@@ -140,7 +163,7 @@ describe("CalendarPage", () => {
   it("calls onImageRemove when delete button is clicked", () => {
     const onImageRemove = vi.fn();
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc" },
       onImageUpload: vi.fn(),
       onImageRemove,
     });
@@ -161,41 +184,42 @@ describe("CalendarPage", () => {
   });
 
   it("renders landscape dimensions", () => {
-    const { container } = renderPage({ orientation: "landscape" });
+    const { container } = renderPage({ style: { orientation: "landscape" } });
     const page = container.firstElementChild as HTMLElement;
     expect(page.style.width).toBe("1123px");
     expect(page.style.height).toBe("794px");
   });
 
   it("applies page margin top from calendarStyle", () => {
-    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, pageMarginTop: 40 } });
+    renderPage({ style: { calendarStyle: { ...DEFAULT_CALENDAR_STYLE, pageMarginTop: 40 } } });
     const pageContainer = screen.getByTestId("page-container");
     expect(pageContainer.style.paddingTop).toBe("40px");
   });
 
   it("applies justify-center for center content alignment", () => {
-    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "center" } });
+    renderPage({
+      style: { calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "center" } },
+    });
     const calendarArea = screen.getByTestId("calendar-area");
     expect(calendarArea.className).toContain("justify-center");
   });
 
   it("applies justify-start for start content alignment", () => {
-    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "start" } });
+    renderPage({ style: { calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "start" } } });
     const calendarArea = screen.getByTestId("calendar-area");
     expect(calendarArea.className).toContain("justify-start");
   });
 
   it("applies justify-end for end content alignment", () => {
-    renderPage({ calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "end" } });
+    renderPage({ style: { calendarStyle: { ...DEFAULT_CALENDAR_STYLE, contentAlignV: "end" } } });
     const calendarArea = screen.getByTestId("calendar-area");
     expect(calendarArea.className).toContain("justify-end");
   });
 
   it("renders column-reverse flex for bottom image position", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc", imagePosition: "bottom" },
       onImageUpload: vi.fn(),
-      imagePosition: "bottom",
     });
     const pageContainer = screen.getByTestId("page-container");
     expect(pageContainer.style.flexDirection).toBe("column-reverse");
@@ -203,9 +227,8 @@ describe("CalendarPage", () => {
 
   it("renders row flex for left image position", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc", imagePosition: "left" },
       onImageUpload: vi.fn(),
-      imagePosition: "left",
     });
     const pageContainer = screen.getByTestId("page-container");
     expect(pageContainer.style.flexDirection).toBe("row");
@@ -213,9 +236,8 @@ describe("CalendarPage", () => {
 
   it("renders row-reverse flex for right image position", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc", imagePosition: "right" },
       onImageUpload: vi.fn(),
-      imagePosition: "right",
     });
     const pageContainer = screen.getByTestId("page-container");
     expect(pageContainer.style.flexDirection).toBe("row-reverse");
@@ -223,7 +245,7 @@ describe("CalendarPage", () => {
 
   it("adds select-none class when divider is dragging", () => {
     renderPage({
-      imageBase64: "data:image/jpeg;base64,abc",
+      image: { imageBase64: "data:image/jpeg;base64,abc" },
       onImageUpload: vi.fn(),
       dividerProps: { onPointerDown: vi.fn() },
       isDividerDragging: true,

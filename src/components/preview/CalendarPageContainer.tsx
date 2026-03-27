@@ -134,15 +134,31 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       monthLabel={pageData.monthLabel}
       grid={pageData.grid}
       weekdayHeaders={pageData.weekdayHeaders}
-      theme={pageData.theme}
-      holidayMarkStyle={pageData.holidayMarkStyle}
-      fontFamily={font.family}
-      fontWeight={fontWeight}
-      orientation={orientation}
-      imageBase64={pageData.imageBase64}
-      imagePercent={pageData.imagePercent}
-      imagePosition={pageData.imagePosition}
-      calendarStyle={calendarStyle}
+      image={{
+        imageBase64: pageData.imageBase64,
+        imagePercent: pageData.imagePercent,
+        imagePosition: pageData.imagePosition,
+        imageFitMode,
+        imageCropSettings: pageData.imageCropSettings,
+        imageAspectRatio: pageData.imageAspectRatio,
+      }}
+      imageEdit={{
+        isImageEditing: isEditingThisMonth,
+        editDraft: isEditingThisMonth ? draft : null,
+        onImageEditStart: useImages ? handleImageEditStart : undefined,
+        onEditUpdate: isEditingThisMonth ? updateDraft : undefined,
+        onEditSave: isEditingThisMonth ? saveDraft : undefined,
+        onEditCancel: isEditingThisMonth ? cancelEdit : undefined,
+        onEditReset: isEditingThisMonth ? resetDraft : undefined,
+      }}
+      style={{
+        theme: pageData.theme,
+        fontFamily: font.family,
+        fontWeight,
+        orientation,
+        holidayMarkStyle: pageData.holidayMarkStyle,
+        calendarStyle,
+      }}
       onImageUpload={useImages ? handleImageUpload : undefined}
       onImageRemove={useImages ? handleImageRemove : undefined}
       dividerProps={dividerProps}
@@ -150,16 +166,6 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       livePercent={livePercent}
       onPositionChange={setImagePosition}
       showSafeMargin={showSafeMargin}
-      imageCropSettings={pageData.imageCropSettings}
-      imageFitMode={imageFitMode}
-      imageAspectRatio={pageData.imageAspectRatio}
-      isImageEditing={isEditingThisMonth}
-      editDraft={isEditingThisMonth ? draft : null}
-      onImageEditStart={useImages ? handleImageEditStart : undefined}
-      onEditUpdate={isEditingThisMonth ? updateDraft : undefined}
-      onEditSave={isEditingThisMonth ? saveDraft : undefined}
-      onEditCancel={isEditingThisMonth ? cancelEdit : undefined}
-      onEditReset={isEditingThisMonth ? resetDraft : undefined}
       onImageAspectRatioLoad={handleAspectRatioLoad}
     />
   );
