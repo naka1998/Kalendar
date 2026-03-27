@@ -23,7 +23,7 @@ describe("Sidebar", () => {
 
   it("renders settings actions", () => {
     render(<Sidebar />);
-    expect(screen.getByText("設定を保存")).toBeDefined();
-    expect(screen.getByText("設定を読込")).toBeDefined();
+    expect(screen.getByText("HTMLから読込")).toBeDefined();
+    expect(screen.getByText("カレンダーをリセット")).toBeDefined();
   });
 });

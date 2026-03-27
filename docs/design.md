@@ -100,7 +100,7 @@ interface PersistedCalendarSettings {
 }
 ```
 
-`ExportedSettings`（JSONエクスポート用）と`SavedState`（localStorage用）はこの型をextendsし、それぞれ固有のフィールドのみ追加する。
+`ExportedSettings`（設定シリアライズ用）と`SavedState`（localStorage用）はこの型をextendsし、それぞれ固有のフィールドのみ追加する。
 
 ### 2.6 HTML生成入力型
 
@@ -185,7 +185,7 @@ App.tsx
 │   ├── HolidaySection.tsx (取得状態, マーク, 手動追加/削除)
 │   ├── DesignSection.tsx (テーマ, フォント, 文字サイズ, スタイル設定)
 │   ├── ImageSection.tsx (画像一覧, D&D並べ替え)
-│   └── SettingsActions.tsx (設定保存/読込/HTMLから読込)
+│   └── SettingsActions.tsx (HTMLから読込/リセット)
 ├── PreviewArea.tsx (コンテナ: 連続スクロール + 月ジャンプ)
 │   └── CalendarPageContainer.tsx (コンテナ: ストア → props + 画像操作)
 │       └── CalendarPage.tsx (プレゼンテーショナル: 画像D&D対応)
