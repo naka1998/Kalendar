@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import type { CalendarStyle, ColorTheme } from "@/stores/types";
-import type { ImageProps, ImageEditProps } from "./CalendarPage";
+import type { ImageProps, ImageEditProps } from "./calendarPageTypes";
 import { ImageEditOverlay } from "./ImageEditOverlay";
 import { calcCropRender, isFullImageCrop } from "@/lib/cropUtils";
 import {
@@ -219,7 +219,7 @@ export function ImageArea({
                 }
               }}
             >
-              <div className="flex gap-2 md:gap-2 gap-3">
+              <div className="flex gap-3 md:gap-2">
                 {onImageEditStart && imageAspectRatio && (
                   <button
                     data-testid="image-edit-button"

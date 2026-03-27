@@ -1,15 +1,4 @@
-import type {
-  CalendarStyle,
-  ColorTheme,
-  ContentAlign,
-  DayCell,
-  FitMode,
-  FontWeight,
-  HolidayMarkStyle,
-  ImageCropSettings,
-  ImagePosition,
-  Orientation,
-} from "@/stores/types";
+import type { DayCell, ImagePosition } from "@/stores/types";
 import { CalendarGrid } from "./CalendarGrid";
 import { DividerHandle } from "./DividerHandle";
 import { ImageArea } from "./ImageArea";
@@ -18,36 +7,10 @@ import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
 import { A4 } from "@/lib/constants";
 import { justifyContentClass, alignItemsClass } from "@/lib/alignmentUtils";
 import { useCallback } from "react";
+export type { ImageProps, ImageEditProps, CalendarStyleProps } from "./calendarPageTypes";
+import type { ImageProps, ImageEditProps, CalendarStyleProps } from "./calendarPageTypes";
 
 const POSITION_CYCLE: ImagePosition[] = ["top", "right", "bottom", "left"];
-
-export interface ImageProps {
-  imageBase64: string | null;
-  imagePercent: number;
-  imagePosition: ImagePosition;
-  imageFitMode?: FitMode;
-  imageCropSettings?: ImageCropSettings;
-  imageAspectRatio?: number;
-}
-
-export interface ImageEditProps {
-  isImageEditing?: boolean;
-  editDraft?: ImageCropSettings | null;
-  onImageEditStart?: () => void;
-  onEditUpdate?: (partial: Partial<ImageCropSettings>) => void;
-  onEditSave?: () => void;
-  onEditCancel?: () => void;
-  onEditReset?: (alignV: ContentAlign, alignH: ContentAlign) => void;
-}
-
-export interface CalendarStyleProps {
-  theme: ColorTheme;
-  fontFamily: string;
-  fontWeight: FontWeight;
-  orientation: Orientation;
-  holidayMarkStyle: HolidayMarkStyle;
-  calendarStyle: CalendarStyle;
-}
 
 export interface CalendarPageProps {
   monthKey: string;
