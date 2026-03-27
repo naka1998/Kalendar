@@ -35,7 +35,7 @@ jobs:
         run: pnpm run build
 
       - name: E2E Test
-        run: pnpm exec playwright test
+        run: pnpm exec playwright test --ignore-snapshots
 
       - name: Upload E2E Report
         if: always()

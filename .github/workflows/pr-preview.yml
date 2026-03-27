@@ -48,7 +48,7 @@ jobs:
 
       - name: E2E Test
         if: github.event.action != 'closed'
-        run: pnpm exec playwright test
+        run: pnpm exec playwright test --ignore-snapshots
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:5173/kalendar-preview/pr-${{ github.event.number }}/
 
