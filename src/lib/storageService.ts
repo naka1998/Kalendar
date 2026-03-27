@@ -81,6 +81,9 @@ export function loadFromStorage(): SavedState | null {
         style.imageAlignH = "center";
         delete style.imageAlign;
       }
+      if (!("gridWidth" in style)) {
+        style.gridWidth = 100;
+      }
     }
 
     return data.state;

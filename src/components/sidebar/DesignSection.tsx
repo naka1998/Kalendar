@@ -90,6 +90,13 @@ export function DesignSection() {
           max={80}
           onChange={(v) => setCalendarStyle({ pageMarginTop: v })}
         />
+        <SliderField
+          label="グリッド幅"
+          value={calendarStyle.gridWidth}
+          min={50}
+          max={100}
+          onChange={(v) => setCalendarStyle({ gridWidth: v })}
+        />
       </div>
 
       {/* Image alignment — only when images enabled */}

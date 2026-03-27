@@ -32,6 +32,7 @@ export interface CalendarStyle {
   imageAlignV: ContentAlign;
   imageAlignH: ContentAlign;
   pageMarginTop: number;
+  gridWidth: number;
 }
 
 // === Color Theme ===
