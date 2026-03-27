@@ -38,9 +38,9 @@ test.describe("Settings", () => {
     await expect(page.getByText("テーマ")).toBeVisible();
   });
 
-  test("export and import buttons are visible in sidebar", async ({ page }) => {
+  test("action buttons are visible in sidebar", async ({ page }) => {
     const sidebar = page.getByRole("complementary");
-    await expect(sidebar.getByRole("button", { name: "設定を保存" })).toBeVisible();
-    await expect(sidebar.getByRole("button", { name: "設定を読込" })).toBeVisible();
+    await expect(sidebar.getByRole("button", { name: "HTMLから読込" })).toBeVisible();
+    await expect(sidebar.getByRole("button", { name: "カレンダーをリセット" })).toBeVisible();
   });
 });
