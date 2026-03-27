@@ -3,7 +3,7 @@ import { escapeHtml } from "../htmlUtils";
 import { renderDayCell } from "./cellRenderer";
 
 export function renderGridHtml(page: PageData): string {
-  let gridHtml = '<div style="width:fit-content">';
+  let gridHtml = '<div style="width:100%">';
   // Month label
   gridHtml += `<div style="color:${page.theme.colors.monthLabel};font-size:24px;font-weight:800;letter-spacing:-0.05em;margin-bottom:8px">${escapeHtml(page.monthLabel)}</div>`;
   // Header rule
@@ -22,6 +22,6 @@ export function renderGridHtml(page: PageData): string {
     }
   }
   gridHtml += `</div>`;
-  gridHtml += `</div>`; // close width:fit-content wrapper
+  gridHtml += `</div>`; // close grid wrapper
   return gridHtml;
 }
