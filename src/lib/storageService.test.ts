@@ -248,3 +248,31 @@ describe("round-trip", () => {
     expect(loaded.monthThemeOverrides).toEqual({ "2026-04": "ocean" });
   });
 });
+
+describe("backward compatibility", () => {
+  it("fills in gridWidth default when loading old data without it", () => {
+    const state = createMockState();
+    saveToStorage(state);
+
+    // Simulate old saved data without gridWidth
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_SETTINGS)!);
+    delete raw.state.calendarStyle.gridWidth;
+    localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(raw));
+
+    const loaded = loadFromStorage()!;
+    expect(loaded.calendarStyle.gridWidth).toBe(100);
+  });
+
+  it("preserves existing gridWidth value when present", () => {
+    const state = createMockState({
+      calendarStyle: {
+        ...createMockState().calendarStyle,
+        gridWidth: 75,
+      },
+    });
+    saveToStorage(state);
+
+    const loaded = loadFromStorage()!;
+    expect(loaded.calendarStyle.gridWidth).toBe(75);
+  });
+});
