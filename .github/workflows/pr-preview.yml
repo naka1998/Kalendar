@@ -50,6 +50,7 @@ jobs:
         if: github.event.action != 'closed'
         run: pnpm exec playwright test --ignore-snapshots
         env:
+          VITE_BASE_PATH: /kalendar-preview/pr-${{ github.event.number }}/
           PLAYWRIGHT_BASE_URL: http://localhost:5173/kalendar-preview/pr-${{ github.event.number }}/
 
       - name: Upload E2E Report
