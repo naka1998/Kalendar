@@ -125,6 +125,7 @@ export interface HtmlGeneratorInput {
       | "imageAlignV"
       | "imageAlignH"
       | "pageMarginTop"
+      | "gridWidth"
       | "monthFontSize"
       | "dayFontSize"
       | "weekdayFontSize"
