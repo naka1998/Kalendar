@@ -120,7 +120,16 @@ export interface HtmlGeneratorInput {
   calendarStyle?: Partial<
     Pick<
       CalendarStyle,
-      "contentAlignV" | "contentAlignH" | "imageAlignV" | "imageAlignH" | "pageMarginTop"
+      | "contentAlignV"
+      | "contentAlignH"
+      | "imageAlignV"
+      | "imageAlignH"
+      | "pageMarginTop"
+      | "monthFontSize"
+      | "dayFontSize"
+      | "weekdayFontSize"
+      | "cellPadding"
+      | "headerGap"
     >
   >;
 }
