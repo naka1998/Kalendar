@@ -25,6 +25,12 @@ function buildInput(store: ReturnType<typeof useCalendarStore.getState>): HtmlGe
       imageAlignV: store.calendarStyle.imageAlignV,
       imageAlignH: store.calendarStyle.imageAlignH,
       pageMarginTop: store.calendarStyle.pageMarginTop,
+      gridWidth: store.calendarStyle.gridWidth,
+      monthFontSize: store.calendarStyle.monthFontSize,
+      dayFontSize: store.calendarStyle.dayFontSize,
+      weekdayFontSize: store.calendarStyle.weekdayFontSize,
+      cellPadding: store.calendarStyle.cellPadding,
+      headerGap: store.calendarStyle.headerGap,
     },
   };
 }

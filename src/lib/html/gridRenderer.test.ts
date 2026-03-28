@@ -74,4 +74,30 @@ describe("renderGridHtml", () => {
     const html = renderGridHtml(makePage());
     expect(html).toContain(">1</span>");
   });
+
+  it("uses default monthFontSize (48px) from constants when no style override", () => {
+    const html = renderGridHtml(makePage());
+    expect(html).toContain("font-size:48px");
+  });
+
+  it("uses default weekdayFontSize (12px) from constants when no style override", () => {
+    const html = renderGridHtml(makePage());
+    // weekday header should use 12px, not hardcoded 10px
+    expect(html).not.toContain("font-size:10px");
+  });
+
+  it("applies custom monthFontSize", () => {
+    const html = renderGridHtml(makePage(), 100, { monthFontSize: 36 });
+    expect(html).toContain("font-size:36px");
+  });
+
+  it("applies custom weekdayFontSize", () => {
+    const html = renderGridHtml(makePage(), 100, { weekdayFontSize: 16 });
+    expect(html).toContain("font-size:16px");
+  });
+
+  it("applies custom headerGap", () => {
+    const html = renderGridHtml(makePage(), 100, { headerGap: 16 });
+    expect(html).toContain("margin-bottom:16px");
+  });
 });
