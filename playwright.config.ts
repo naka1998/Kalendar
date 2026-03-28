@@ -22,7 +22,9 @@ export default defineConfig({
     baseURL,
     headless: true,
     launchOptions: {
-      executablePath: getEnv("PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH"),
+      ...(getEnv("PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH")
+        ? { executablePath: getEnv("PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH") }
+        : {}),
       args: ["--no-sandbox"],
     },
   },
