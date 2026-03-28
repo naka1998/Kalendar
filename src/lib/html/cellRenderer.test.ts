@@ -157,4 +157,36 @@ describe("renderDayCell", () => {
     const html = renderDayCell(page, 0, 0, 1);
     expect(html).not.toContain("border-bottom:1px solid");
   });
+
+  it("uses default dayFontSize (14px) from constants when no style override", () => {
+    const page = makePage();
+    const html = renderDayCell(page, 0, 0, 1);
+    expect(html).toContain("font-size:14px");
+  });
+
+  it("applies custom dayFontSize", () => {
+    const page = makePage();
+    const html = renderDayCell(page, 0, 0, 1, { dayFontSize: 20 });
+    expect(html).toContain("font-size:20px");
+  });
+
+  it("calculates cell size based on dayFontSize", () => {
+    const page = makePage();
+    // cellSize = Math.max(dayFontSize + 12, 28) = Math.max(20 + 12, 28) = 32
+    const html = renderDayCell(page, 0, 0, 1, { dayFontSize: 20 });
+    expect(html).toContain("width:32px");
+    expect(html).toContain("height:32px");
+  });
+
+  it("applies custom cellPadding", () => {
+    const page = makePage();
+    const html = renderDayCell(page, 0, 0, 1, { cellPadding: 12 });
+    expect(html).toContain("padding:12px 0");
+  });
+
+  it("applies custom cellPadding for empty cells", () => {
+    const page = makePage();
+    const html = renderDayCell(page, 0, 4, 1, { cellPadding: 12 });
+    expect(html).toContain("padding:12px 0");
+  });
 });
