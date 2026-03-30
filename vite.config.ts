@@ -1,13 +1,19 @@
 import { defineConfig } from "vite-plus";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import type { PluginOption } from "vite";
 
-import { cloudflare } from "@cloudflare/vite-plugin";
+const plugins: PluginOption[] = [tailwindcss(), react()];
+
+if (process.env.CLOUDFLARE) {
+  const { cloudflare } = await import("@cloudflare/vite-plugin");
+  plugins.push(cloudflare());
+}
 
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || "/kalendar/",
   lint: { options: { typeAware: true, typeCheck: true } },
-  plugins: [tailwindcss(), react(), cloudflare()],
+  plugins,
   resolve: {
     alias: {
       "@": "/src",
