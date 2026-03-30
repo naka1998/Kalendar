@@ -11,7 +11,7 @@ if (process.env.CLOUDFLARE) {
 }
 
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH || "/kalendar/",
+  base: process.env.VITE_BASE_PATH || "/",
   lint: { options: { typeAware: true, typeCheck: true } },
   plugins,
   resolve: {
