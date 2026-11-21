@@ -14,8 +14,8 @@ export const A4 = {
 } as const;
 
 export const DEFAULTS = {
-  START_MONTH: "2026-04",
-  END_MONTH: "2027-03",
+  START_MONTH: "2027-01",
+  END_MONTH: "2027-12",
   ORIENTATION: "portrait" as const,
   WEEK_START: "sunday" as const,
   WEEKDAY_FORMAT: "en-short" as const,

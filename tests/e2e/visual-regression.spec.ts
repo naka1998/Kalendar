@@ -1,12 +1,23 @@
-import { test, expect } from "./fixtures/global-setup";
-import { mobileTest } from "./fixtures/global-setup";
+import type { Page } from "@playwright/test";
+import { mobileTest, test, expect } from "./fixtures/global-setup";
+
+async function openCalendarForSnapshots(page: Page) {
+  // Keep the reference images tied to a fixed calendar period.
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "kalendar-user-settings",
+      JSON.stringify({ version: 1, state: { startMonth: "2026-04", endMonth: "2027-03" } }),
+    );
+  });
+  await page.goto("/");
+  await expect(page.locator("[data-month]").first()).toHaveAttribute("data-month", "2026-04");
+  await page.waitForLoadState("networkidle");
+  await page.waitForTimeout(1000);
+}
 
 test.describe("Visual Regression - Desktop", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    // Wait for fonts and initial render to settle
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(1000);
+    await openCalendarForSnapshots(page);
   });
 
   test("default calendar view", async ({ page }) => {
@@ -105,9 +116,7 @@ mobileTest.describe("Visual Regression - Mobile", () => {
   mobileTest.setTimeout(120_000);
 
   mobileTest.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(1000);
+    await openCalendarForSnapshots(page);
   });
 
   mobileTest("mobile default view", async ({ page }) => {

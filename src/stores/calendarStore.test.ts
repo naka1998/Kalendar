@@ -36,8 +36,8 @@ describe("calendarStore", () => {
   describe("initial state", () => {
     it("has correct default values", () => {
       const state = useCalendarStore.getState();
-      expect(state.startMonth).toBe("2026-04");
-      expect(state.endMonth).toBe("2027-03");
+      expect(state.startMonth).toBe("2027-01");
+      expect(state.endMonth).toBe("2027-12");
       expect(state.orientation).toBe("portrait");
       expect(state.weekStart).toBe("sunday");
       expect(state.weekdayFormat).toBe("en-short");
@@ -62,8 +62,8 @@ describe("calendarStore", () => {
     });
 
     it("setEndMonth updates endMonth", () => {
-      useCalendarStore.getState().setEndMonth("2027-12");
-      expect(useCalendarStore.getState().endMonth).toBe("2027-12");
+      useCalendarStore.getState().setEndMonth("2027-06");
+      expect(useCalendarStore.getState().endMonth).toBe("2027-06");
     });
 
     it("setOrientation updates orientation", () => {

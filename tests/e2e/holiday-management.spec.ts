@@ -63,11 +63,11 @@ test.describe("Holiday Management", () => {
     const dateInput = sidebar.locator('input[type="date"]');
     const nameInput = sidebar.getByPlaceholder("名称");
 
-    await dateInput.fill("2026-12-25");
+    await dateInput.fill("2027-12-25");
     await nameInput.fill("クリスマス");
     await sidebar.getByRole("button", { name: "追加", exact: true }).click();
 
-    await expect(sidebar.getByText("2026-12-25 — クリスマス")).toBeVisible();
+    await expect(sidebar.getByText("2027-12-25 — クリスマス")).toBeVisible();
     await expect(sidebar.getByText("手動追加した祝日")).toBeVisible();
   });
 
@@ -77,13 +77,13 @@ test.describe("Holiday Management", () => {
     const sidebar = page.getByRole("complementary");
 
     // First add a holiday
-    await sidebar.locator('input[type="date"]').fill("2026-12-25");
+    await sidebar.locator('input[type="date"]').fill("2027-12-25");
     await sidebar.getByPlaceholder("名称").fill("クリスマス");
     await sidebar.getByRole("button", { name: "追加", exact: true }).click();
-    await expect(sidebar.getByText("2026-12-25 — クリスマス")).toBeVisible();
+    await expect(sidebar.getByText("2027-12-25 — クリスマス")).toBeVisible();
 
     // Remove it
     await sidebar.getByText("×").first().click();
-    await expect(sidebar.getByText("2026-12-25 — クリスマス")).not.toBeVisible();
+    await expect(sidebar.getByText("2027-12-25 — クリスマス")).not.toBeVisible();
   });
 });

@@ -69,6 +69,7 @@ export function importFromHtmlFile(file: File): Promise<Partial<CalendarState> |
 
         const raw = parseRawSettingsJson(html);
         const imageFileNames = (raw?.imageFileNames as Record<string, string>) ?? {};
+        // Keep the original month mapping for legacy exports without a date range.
         const startMonth = settings.startMonth ?? "2026-04";
         const endMonth = settings.endMonth ?? "2027-03";
 

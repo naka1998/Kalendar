@@ -9,13 +9,17 @@ test.describe("Calendar Generation", () => {
     await expect(page.getByText("Ethereal Calendar")).toBeVisible();
   });
 
-  test("displays default 12 months of calendar pages", async ({ page }) => {
+  test("displays January through December 2027 by default", async ({ page }) => {
     const pages = page.locator("[data-month]");
     await expect(pages).toHaveCount(12);
+    await expect(pages.first()).toHaveAttribute("data-month", "2027-01");
+    await expect(pages.last()).toHaveAttribute("data-month", "2027-12");
   });
 
   test("displays month label in preview", async ({ page }) => {
-    await expect(page.locator("[data-month='2026-04'] .font-heading").first()).toBeVisible();
+    await expect(page.locator("[data-month='2027-01'] .font-heading").first()).toHaveText(
+      "2027.01",
+    );
   });
 
   test("displays weekday headers", async ({ page }) => {
@@ -24,7 +28,7 @@ test.describe("Calendar Generation", () => {
   });
 
   test("month jump navigation exists", async ({ page }) => {
-    const jumpButton = page.locator("button", { hasText: "04" });
+    const jumpButton = page.getByRole("button", { name: "01", exact: true });
     await expect(jumpButton).toBeVisible();
   });
 

@@ -14,7 +14,7 @@ vi.mock("@/hooks/useImageUpload", () => ({
 
 beforeEach(() => {
   useCalendarStore.setState({
-    startMonth: DEFAULTS.START_MONTH,
+    startMonth: "2026-04",
     endMonth: "2026-06",
     monthLabelFormat: DEFAULTS.MONTH_LABEL_FORMAT,
     images: {},
