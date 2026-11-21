@@ -1,7 +1,9 @@
+import { escapeHtml } from "../htmlUtils";
 import type { PageData, HolidayMarkStyle } from "@/stores/types";
 import { DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
 
 export interface CellStyleOverrides {
+  showWeekday?: boolean;
   dayFontSize?: number;
   cellPadding?: number;
 }
@@ -26,11 +28,12 @@ export function renderDayCell(
 ): string {
   const dayFontSize = style?.dayFontSize ?? DEFAULT_CALENDAR_STYLE.dayFontSize;
   const cellPadding = style?.cellPadding ?? DEFAULT_CALENDAR_STYLE.cellPadding;
+  const isList = style?.showWeekday;
   const cellSize = Math.max(dayFontSize + 12, 28);
 
   const cell = page.grid[ri][ci];
   if (!cell.date || !cell.isCurrentMonth) {
-    return `<div style="padding:${cellPadding}px 0"></div>`;
+    return `<div class="calendar-cell" data-empty style="padding:${cellPadding}px 0"></div>`;
   }
 
   let textColor = page.theme.colors.text;
@@ -40,10 +43,9 @@ export function renderDayCell(
   const isCircle = cell.isHoliday && page.holidayMarkStyle === "circle";
   const isUnderline = cell.isHoliday && page.holidayMarkStyle === "underline";
 
-  const borderBottom =
-    ri < totalRows - 1 ? `border-bottom:1px solid ${page.theme.colors.gridRule};` : "";
+  const ruled = ri < totalRows - 1 ? " data-ruled" : "";
 
-  let spanStyle = `color:${textColor};display:flex;align-items:center;justify-content:center;width:${cellSize}px;height:${cellSize}px;font-size:${dayFontSize}px;`;
+  let spanStyle = `color:${textColor};display:flex;align-items:center;${isList ? `font-size:${Math.min(dayFontSize, 14)}px;` : `width:${cellSize}px;height:${cellSize}px;font-size:${dayFontSize}px;`}`;
   if (isCircle)
     spanStyle += `border-radius:50%;border:1.5px solid ${page.theme.colors.holidayMark};`;
   if (isUnderline) spanStyle += `border-bottom:2px solid ${page.theme.colors.holidayMark};`;
@@ -52,5 +54,8 @@ export function renderDayCell(
     ? renderHolidayMark(page.holidayMarkStyle, page.theme.colors.holidayMark)
     : "";
 
-  return `<div style="display:flex;flex-direction:column;align-items:center;padding:${cellPadding}px 0;${borderBottom}"><span style="${spanStyle}">${cell.dayOfMonth}</span>${mark}</div>`;
+  const weekday = style?.showWeekday
+    ? `<span class="calendar-list-weekday" style="color:${textColor}">${escapeHtml(page.weekdayHeaders[ci])}</span>`
+    : "";
+  return `<div class="calendar-cell"${ruled} style="padding:${isList ? 0 : cellPadding}px 0"><span class="calendar-day-number" style="${spanStyle}">${cell.dayOfMonth}</span>${weekday}${mark}</div>`;
 }

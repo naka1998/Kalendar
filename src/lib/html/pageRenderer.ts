@@ -1,4 +1,4 @@
-import type { ContentAlign, PageData, ImagePosition } from "@/stores/types";
+import type { ContentAlign, HtmlGeneratorInput, PageData, ImagePosition } from "@/stores/types";
 import { isHorizontalLayout } from "../layoutUtils";
 import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
@@ -69,19 +69,7 @@ export function renderPage(
   orientation: string,
   fontFamily: string,
   fontWeight: number,
-  calendarStyle?: Partial<{
-    contentAlignV: string;
-    contentAlignH: string;
-    imageAlignV: string;
-    imageAlignH: string;
-    pageMarginTop: number;
-    gridWidth: number;
-    monthFontSize: number;
-    dayFontSize: number;
-    weekdayFontSize: number;
-    cellPadding: number;
-    headerGap: number;
-  }>,
+  calendarStyle?: HtmlGeneratorInput["calendarStyle"],
 ): string {
   const { colors } = page.theme;
   const width = orientation === "portrait" ? "210mm" : "297mm";
@@ -106,6 +94,7 @@ export function renderPage(
 
   const gridWidthPct = calendarStyle?.gridWidth ?? 100;
   const gridStyle = {
+    layoutPreset: calendarStyle?.layoutPreset,
     monthFontSize: calendarStyle?.monthFontSize,
     dayFontSize: calendarStyle?.dayFontSize,
     weekdayFontSize: calendarStyle?.weekdayFontSize,

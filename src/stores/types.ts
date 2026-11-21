@@ -1,3 +1,5 @@
+import type { CalendarLayout } from "@/lib/calendarLayouts";
+
 // === Basic Settings ===
 export type Orientation = "portrait" | "landscape";
 export type WeekStart = "sunday" | "monday";
@@ -33,6 +35,7 @@ export interface CalendarStyle {
   imageAlignH: ContentAlign;
   pageMarginTop: number;
   gridWidth: number;
+  layoutPreset?: CalendarLayout;
 }
 
 // === Color Theme ===
@@ -126,6 +129,7 @@ export interface HtmlGeneratorInput {
       | "imageAlignH"
       | "pageMarginTop"
       | "gridWidth"
+      | "layoutPreset"
       | "monthFontSize"
       | "dayFontSize"
       | "weekdayFontSize"

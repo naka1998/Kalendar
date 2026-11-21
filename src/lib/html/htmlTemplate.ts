@@ -1,3 +1,4 @@
+import layoutStyles from "../calendarLayouts.css?raw";
 import type { HtmlGeneratorInput } from "@/stores/types";
 import { escapeHtml } from "../htmlUtils";
 import { renderPage } from "./pageRenderer";
@@ -26,6 +27,7 @@ export function generateSingleHtml(input: HtmlGeneratorInput, settingsJson?: str
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 .page:last-child { page-break-after: auto; }
+${layoutStyles}
 </style>
 </head>
 <body>

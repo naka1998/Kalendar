@@ -1,3 +1,4 @@
+import { CALENDAR_LAYOUTS, resolveCalendarLayout } from "@/lib/calendarLayouts";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { Label } from "@/components/ui/label";
 import { ThemeGrid } from "./ThemeGrid";
@@ -10,6 +11,22 @@ export function AppearanceSection() {
 
   return (
     <div className="space-y-4">
+      <section aria-label="レイアウト" className="space-y-1.5">
+        <h3 className="text-xs font-bold tracking-[0.2em] text-on-surface-variant">レイアウト</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {CALENDAR_LAYOUTS.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={resolveCalendarLayout(calendarStyle.layoutPreset) === id}
+              onClick={() => setCalendarStyle({ layoutPreset: id })}
+              className="rounded-lg border border-transparent bg-surface-container-high px-2 py-2 text-xs hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-surface"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </section>
       <ThemeGrid />
       <FontSelector />
 

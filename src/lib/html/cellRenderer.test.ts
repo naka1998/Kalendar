@@ -91,7 +91,7 @@ describe("renderDayCell", () => {
   it("renders empty div for non-current-month cell", () => {
     const page = makePage();
     const html = renderDayCell(page, 0, 4, 1);
-    expect(html).toBe('<div style="padding:8px 0"></div>');
+    expect(html).toBe('<div class="calendar-cell" data-empty style="padding:8px 0"></div>');
   });
 
   it("renders day number for current-month cell", () => {
@@ -146,16 +146,16 @@ describe("renderDayCell", () => {
     expect(html).toContain(`color:${theme.colors.sunday}`);
   });
 
-  it("adds bottom border for non-last rows", () => {
+  it("marks non-last rows for the default bottom border", () => {
     const page = makePage();
     const html = renderDayCell(page, 0, 0, 3);
-    expect(html).toContain(`border-bottom:1px solid ${theme.colors.gridRule}`);
+    expect(html).toContain("data-ruled");
   });
 
-  it("omits bottom border for last row", () => {
+  it("omits the default border marker for the last row", () => {
     const page = makePage();
     const html = renderDayCell(page, 0, 0, 1);
-    expect(html).not.toContain("border-bottom:1px solid");
+    expect(html).not.toContain("data-ruled");
   });
 
   it("uses default dayFontSize (14px) from constants when no style override", () => {

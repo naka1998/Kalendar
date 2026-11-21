@@ -65,9 +65,9 @@ describe("renderGridHtml", () => {
     expect(html).toContain(`color:${theme.colors.weekdayHeader}`);
   });
 
-  it("renders day grid with 7-column layout", () => {
+  it("renders the day grid", () => {
     const html = renderGridHtml(makePage());
-    expect(html).toContain("grid-template-columns:repeat(7,1fr)");
+    expect(html).toContain('<div class="calendar-days">');
   });
 
   it("renders day cells via renderDayCell", () => {
