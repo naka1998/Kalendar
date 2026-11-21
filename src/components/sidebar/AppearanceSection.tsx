@@ -1,9 +1,19 @@
-import { CALENDAR_LAYOUTS, resolveCalendarLayout } from "@/lib/calendarLayouts";
+import {
+  CALENDAR_LAYOUTS,
+  getLayoutStyleChange,
+  resolveCalendarLayout,
+} from "@/lib/calendarLayouts";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { Label } from "@/components/ui/label";
 import { ThemeGrid } from "./ThemeGrid";
 import { FontSelector } from "./FontSelector";
 import { SliderField, getFontWarningLevel } from "./SliderField";
+
+const DAY_ALIGNMENT_OPTIONS = [undefined, "start", "center", "end"] as const;
+const DAY_ALIGNMENT_FIELDS = [
+  { field: "dayAlignH", label: "日付の左右揃え", choices: ["自動", "左", "中央", "右"] },
+  { field: "dayAlignV", label: "日付の上下揃え", choices: ["自動", "上", "中央", "下"] },
+] as const;
 
 export function AppearanceSection() {
   const calendarStyle = useCalendarStore((s) => s.calendarStyle);
@@ -19,7 +29,7 @@ export function AppearanceSection() {
               key={id}
               type="button"
               aria-pressed={resolveCalendarLayout(calendarStyle.layoutPreset) === id}
-              onClick={() => setCalendarStyle({ layoutPreset: id })}
+              onClick={() => setCalendarStyle(getLayoutStyleChange(calendarStyle, id))}
               className="rounded-lg border border-transparent bg-surface-container-high px-2 py-2 text-xs hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-surface"
             >
               {label}
@@ -27,6 +37,24 @@ export function AppearanceSection() {
           ))}
         </div>
       </section>
+      {DAY_ALIGNMENT_FIELDS.map(({ field, label, choices }) => (
+        <section key={field} aria-label={label} className="space-y-1.5">
+          <h3 className="text-xs font-bold text-on-surface-variant">{label}</h3>
+          <div className="grid grid-cols-4 rounded-lg bg-surface-container-high p-1">
+            {DAY_ALIGNMENT_OPTIONS.map((alignment, index) => (
+              <button
+                key={choices[index]}
+                type="button"
+                aria-pressed={calendarStyle[field] === alignment}
+                onClick={() => setCalendarStyle({ [field]: alignment })}
+                className="rounded-md px-1 py-1.5 text-xs text-on-surface-variant focus-visible:ring-2 focus-visible:ring-ring aria-pressed:bg-surface aria-pressed:text-on-surface aria-pressed:shadow-sm"
+              >
+                {choices[index]}
+              </button>
+            ))}
+          </div>
+        </section>
+      ))}
       <ThemeGrid />
       <FontSelector />
 

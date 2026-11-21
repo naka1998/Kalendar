@@ -36,6 +36,8 @@ export interface CalendarStyle {
   pageMarginTop: number;
   gridWidth: number;
   layoutPreset?: CalendarLayout;
+  dayAlignH?: ContentAlign;
+  dayAlignV?: ContentAlign;
 }
 
 // === Color Theme ===
@@ -130,6 +132,8 @@ export interface HtmlGeneratorInput {
       | "pageMarginTop"
       | "gridWidth"
       | "layoutPreset"
+      | "dayAlignH"
+      | "dayAlignV"
       | "monthFontSize"
       | "dayFontSize"
       | "weekdayFontSize"

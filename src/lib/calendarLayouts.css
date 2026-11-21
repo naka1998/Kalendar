@@ -215,3 +215,53 @@
     grid-template-rows: repeat(var(--calendar-list-short-rows), minmax(0, 1fr));
   }
 }
+
+[data-day-align-h="start"] {
+  --calendar-day-align-h: flex-start;
+}
+
+[data-day-align-h="center"] {
+  --calendar-day-align-h: center;
+}
+
+[data-day-align-h="end"] {
+  --calendar-day-align-h: flex-end;
+}
+
+[data-calendar-layout][data-day-align-h]:not([data-calendar-layout="date-list"]) .calendar-cell {
+  align-items: var(--calendar-day-align-h);
+}
+
+[data-calendar-layout][data-day-align-h] .calendar-day-number {
+  justify-content: var(--calendar-day-align-h);
+}
+
+[data-day-align-v="start"] {
+  --calendar-day-align-v: start;
+}
+
+[data-day-align-v="center"] {
+  --calendar-day-align-v: center;
+}
+
+[data-day-align-v="end"] {
+  --calendar-day-align-v: end;
+}
+
+[data-calendar-layout][data-day-align-v]:not([data-calendar-layout="date-list"]) .calendar-cell {
+  justify-content: var(--calendar-day-align-v);
+}
+
+[data-calendar-layout="date-list"][data-day-align-v] .calendar-day-number {
+  align-self: var(--calendar-day-align-v);
+}
+
+[data-calendar-layout] .calendar-day-number[data-circled] {
+  justify-content: center;
+}
+
+[data-calendar-layout="date-list"] .calendar-day-number[data-circled] {
+  justify-self: var(--calendar-day-align-h, end);
+  width: 1.35em;
+  padding-inline: 0;
+}

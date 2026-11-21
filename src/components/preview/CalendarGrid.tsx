@@ -1,5 +1,10 @@
 import type { CSSProperties } from "react";
-import { getCalendarTitle, resolveCalendarLayout } from "@/lib/calendarLayouts";
+import {
+  getCalendarTitle,
+  getDayCellPadding,
+  resolveCalendarLayout,
+  resolveDayAlignment,
+} from "@/lib/calendarLayouts";
 import "@/lib/calendarLayouts.css";
 import type {
   CalendarStyle,
@@ -53,6 +58,9 @@ export function CalendarGrid({
 
   const layout = resolveCalendarLayout(calendarStyle.layoutPreset);
   const title = getCalendarTitle(layout, monthLabel);
+  const dayAlignH = resolveDayAlignment(calendarStyle.dayAlignH);
+  const dayAlignV = resolveDayAlignment(calendarStyle.dayAlignV);
+  const dayPadding = getDayCellPadding(layout === "date-list" ? 0 : cellPadding, dayAlignV);
   const dayCount = grid.flat().filter((cell) => cell.isCurrentMonth && cell.date).length;
   const gridStyle = {
     width: `${calendarStyle.gridWidth}%`,
@@ -64,7 +72,12 @@ export function CalendarGrid({
   } as CSSProperties;
 
   return (
-    <div data-calendar-layout={layout} style={gridStyle}>
+    <div
+      data-calendar-layout={layout}
+      data-day-align-h={dayAlignH}
+      data-day-align-v={dayAlignV}
+      style={gridStyle}
+    >
       {/* Month label */}
       <div
         data-testid="month-title"
@@ -142,11 +155,12 @@ export function CalendarGrid({
                 className="calendar-cell flex flex-col items-center"
                 data-ruled={ri < grid.length - 1 ? "" : undefined}
                 style={{
-                  padding: `${layout === "date-list" ? 0 : cellPadding}px 0`,
+                  padding: dayPadding,
                 }}
               >
                 <span
                   className="calendar-day-number flex items-center"
+                  data-circled={isCircle ? "" : undefined}
                   style={{
                     color: textColor,
                     fontSize: `${layout === "date-list" ? Math.min(dayFontSize, 14) : dayFontSize}px`,

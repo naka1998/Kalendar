@@ -1,9 +1,11 @@
+import { getDayCellPadding } from "../calendarLayouts";
 import { escapeHtml } from "../htmlUtils";
-import type { PageData, HolidayMarkStyle } from "@/stores/types";
+import type { ContentAlign, PageData, HolidayMarkStyle } from "@/stores/types";
 import { DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
 
 export interface CellStyleOverrides {
   showWeekday?: boolean;
+  dayAlignV?: ContentAlign;
   dayFontSize?: number;
   cellPadding?: number;
 }
@@ -57,5 +59,5 @@ export function renderDayCell(
   const weekday = style?.showWeekday
     ? `<span class="calendar-list-weekday" style="color:${textColor}">${escapeHtml(page.weekdayHeaders[ci])}</span>`
     : "";
-  return `<div class="calendar-cell"${ruled} style="padding:${isList ? 0 : cellPadding}px 0"><span class="calendar-day-number" style="${spanStyle}">${cell.dayOfMonth}</span>${weekday}${mark}</div>`;
+  return `<div class="calendar-cell"${ruled} style="padding:${getDayCellPadding(isList ? 0 : cellPadding, style?.dayAlignV)}"><span class="calendar-day-number"${isCircle ? " data-circled" : ""} style="${spanStyle}">${cell.dayOfMonth}</span>${weekday}${mark}</div>`;
 }
