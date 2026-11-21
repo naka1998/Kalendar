@@ -303,10 +303,10 @@ ZIP:
 | ---------- | ------- | ------- | ------- | ------- |
 | Classic    | #FFFFFF | #1A1A1A | #DC2626 | #2563EB |
 | Monochrome | #FFFFFF | #1A1A1A | #4B5563 | #6B7280 |
-| Dark       | #1F2937 | #F9FAFB | #FCA5A5 | #93C5FD |
-| Cream      | #FFFBEB | #78350F | #DC2626 | #1D4ED8 |
-| Forest     | #1A2E1A | #D1FAE5 | #FCA5A5 | #93C5FD |
-| Minimal    | #FFFFFF | #9CA3AF | #6B7280 | #9CA3AF |
+| Slate      | #FFFFFF | #1E293B | #9F1239 | #1E40AF |
+| Sepia      | #FFFFFF | #34261D | #9A3412 | #6B4F36 |
+| Forest     | #FFFFFF | #1C3024 | #9F1239 | #166534 |
+| Minimal    | #FFFFFF | #262626 | #525252 | #525252 |
 
 ---
 

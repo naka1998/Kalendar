@@ -19,34 +19,27 @@ test.describe("Design Customization", () => {
     expect(count).toBeGreaterThan(1);
   });
 
-  test("can switch theme and see background color change", async ({ page }) => {
+  test("all themes keep a white page and change the month title color", async ({ page }) => {
     await openAppearance(page);
-    // Get the initial page background color
-    const pageOuter = page.locator('[data-testid="page-container"]').first().locator("..");
-    const initialBg = await pageOuter.evaluate((el) => el.style.background);
+    const calendarArea = page.getByTestId("calendar-area").first();
+    const pageOuter = page.getByTestId("page-container").first().locator("..");
+    const monthTitle = calendarArea.locator(":scope > div > div").first();
+    const expectedColors = {
+      Classic: "rgb(17, 24, 39)",
+      Monochrome: "rgb(55, 65, 81)",
+      Slate: "rgb(30, 58, 95)",
+      Sepia: "rgb(120, 53, 15)",
+      Forest: "rgb(20, 83, 45)",
+      Minimal: "rgb(38, 38, 38)",
+    };
 
-    // Remember which theme button is initially selected (has ring-2 class)
-    const themeButtons = page.locator(".grid-cols-3 button");
-    const firstSelected = await themeButtons.evaluateAll((buttons) =>
-      buttons.findIndex((b) => b.className.includes("ring-2")),
-    );
-
-    // Click a theme with a distinct background color (index 2 = "Dark" with #1F2937)
-    // This ensures the background actually changes from the default white themes
-    const targetIndex = firstSelected === 2 ? 3 : 2;
-    await themeButtons.nth(targetIndex).click();
-
-    // The clicked theme button should now have the selected ring
-    await expect(themeButtons.nth(targetIndex)).toHaveClass(/ring-2/);
-
-    // The previously selected button should no longer have the ring
-    if (firstSelected >= 0) {
-      await expect(themeButtons.nth(firstSelected)).not.toHaveClass(/ring-2/);
+    for (const [theme, color] of Object.entries(expectedColors)) {
+      const button = page.getByRole("button", { name: theme, exact: true });
+      await button.click();
+      await expect(button).toHaveClass(/ring-2/);
+      await expect(pageOuter).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      await expect(monthTitle).toHaveCSS("color", color);
     }
-
-    // Background color should actually change
-    const newBg = await pageOuter.evaluate((el) => el.style.background);
-    expect(newBg).not.toBe(initialBg);
   });
 
   test("font weight buttons work", async ({ page }) => {

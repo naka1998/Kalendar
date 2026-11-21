@@ -4,6 +4,42 @@
 
 テーマ、フォント、画像、日本の祝日を設定し、PDF/HTML/ZIPとして出力。コンビニ印刷にも対応。
 
+## カレンダーデザイン見本
+
+設定の「見た目」でテーマやフォントを切り替えたプレビューです。2026年5月の画像なしカレンダーで、日付欄の周辺を切り出しています。
+
+### カラーテーマ
+
+フォントは Montserrat（標準）で統一しています。
+
+| Classic | Monochrome |
+| --- | --- |
+| ![Classic のカレンダー](screenshots/design/theme-classic.png) | ![Monochrome のカレンダー](screenshots/design/theme-monochrome.png) |
+| **Slate** | **Sepia** |
+| ![Slate のカレンダー](screenshots/design/theme-slate.png) | ![Sepia のカレンダー](screenshots/design/theme-sepia.png) |
+| **Forest** | **Minimal** |
+| ![Forest のカレンダー](screenshots/design/theme-forest.png) | ![Minimal のカレンダー](screenshots/design/theme-minimal.png) |
+
+### フォント
+
+テーマは Classic、太さは標準（400）で統一しています。
+
+| Montserrat | Inter |
+| --- | --- |
+| ![Montserrat のカレンダー](screenshots/design/theme-classic.png) | ![Inter のカレンダー](screenshots/design/font-inter.png) |
+| **Noto Sans JP** | **IBM Plex Sans** |
+| ![Noto Sans JP のカレンダー](screenshots/design/font-noto-sans-jp.png) | ![IBM Plex Sans のカレンダー](screenshots/design/font-ibm-plex-sans.png) |
+| **Lato** | |
+| ![Lato のカレンダー](screenshots/design/font-lato.png) | |
+
+### フォントの太さ
+
+Classic と Montserrat の組み合わせで、日付の数字の太さを比較できます。
+
+| 細字（300） | 標準（400） | 太字（600） |
+| --- | --- | --- |
+| ![細字のカレンダー](screenshots/design/weight-300.png) | ![標準のカレンダー](screenshots/design/theme-classic.png) | ![太字のカレンダー](screenshots/design/weight-600.png) |
+
 ## 機能一覧
 
 ### カレンダー設定
@@ -21,7 +57,7 @@
 
 ### デザイン
 
-- **6種のカラーテーマ**: Classic, Monochrome, Dark, Cream, Forest, Minimal
+- **白背景のカラーテーマ6種**: Classic, Monochrome, Slate, Sepia, Forest, Minimal
 - **Google Fonts**: Montserrat, Inter, Noto Sans JP, IBM Plex Sans, Lato（ウェイト選択可）
 - **文字サイズ・余白カスタマイズ**: 月タイトル、日付、曜日のフォントサイズ、セル余白、ヘッダー間隔をスライダーで調整
 

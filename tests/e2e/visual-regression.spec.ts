@@ -36,32 +36,28 @@ test.describe("Visual Regression - Desktop", () => {
     });
   });
 
-  test("theme switch - dark theme", async ({ page }) => {
-    // Open appearance section and switch to dark theme
+  test("theme switch - Slate", async ({ page }) => {
     await page.getByText("見た目").click();
     await page.getByText("テーマ").waitFor();
 
-    // Click the dark theme (index 2)
-    const themeButtons = page.locator(".grid-cols-3 button");
-    await themeButtons.nth(2).click();
+    await page.getByRole("button", { name: "Slate", exact: true }).click();
     await page.waitForTimeout(500);
 
     const firstPage = page.locator("[data-month]").first();
-    await expect(firstPage).toHaveScreenshot("desktop-dark-theme.png", {
+    await expect(firstPage).toHaveScreenshot("desktop-slate-theme.png", {
       maxDiffPixelRatio: 0.01,
     });
   });
 
-  test("theme switch - cream theme", async ({ page }) => {
+  test("theme switch - Sepia", async ({ page }) => {
     await page.getByText("見た目").click();
     await page.getByText("テーマ").waitFor();
 
-    const themeButtons = page.locator(".grid-cols-3 button");
-    await themeButtons.nth(3).click();
+    await page.getByRole("button", { name: "Sepia", exact: true }).click();
     await page.waitForTimeout(500);
 
     const firstPage = page.locator("[data-month]").first();
-    await expect(firstPage).toHaveScreenshot("desktop-cream-theme.png", {
+    await expect(firstPage).toHaveScreenshot("desktop-sepia-theme.png", {
       maxDiffPixelRatio: 0.01,
     });
   });
