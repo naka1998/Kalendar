@@ -1,3 +1,5 @@
+import "fake-indexeddb/auto";
+import { IDBObjectStore } from "fake-indexeddb";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   saveToStorage,
@@ -98,44 +100,55 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
   };
 }
 
-beforeEach(() => {
-  localStorage.clear();
+beforeEach(async () => {
+  await clearStorage();
 });
 
 describe("saveToStorage", () => {
-  it("saves state to localStorage", () => {
+  it("saves state in IndexedDB without using localStorage", async () => {
     const state = createMockState();
-    const result = saveToStorage(state);
+    const result = await saveToStorage(state);
 
     expect(result.success).toBe(true);
-    expect(localStorage.getItem(STORAGE_KEYS.USER_SETTINGS)).not.toBeNull();
+    expect(localStorage.getItem(STORAGE_KEYS.USER_SETTINGS)).toBeNull();
+    expect(await loadFromStorage()).toMatchObject({ images: state.images });
   });
 
-  it("handles QuotaExceededError gracefully", () => {
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+  it("handles QuotaExceededError gracefully", async () => {
+    const state = createMockState();
+    await saveToStorage(state);
+    const write = vi.spyOn(IDBObjectStore.prototype, "clear").mockImplementationOnce(() => {
       throw new DOMException("quota exceeded", "QuotaExceededError");
     });
 
-    const state = createMockState();
-    const result = saveToStorage(state);
+    const result = await saveToStorage({ ...state, themeId: "ocean" });
+    write.mockRestore();
 
-    expect(result.success).toBe(false);
-    expect(result.error).toContain("保存容量");
+    expect(result).toEqual({ success: false, error: expect.stringContaining("保存容量") });
+    expect(await loadFromStorage()).toMatchObject({ themeId: state.themeId, images: state.images });
+  });
 
-    vi.restoreAllMocks();
+  it("keeps settings and images in sync across overlapping saves", async () => {
+    const first = saveToStorage(createMockState());
+    const second = saveToStorage(createMockState({ themeId: "ocean", images: {} }));
+
+    expect(await Promise.all([first, second])).toEqual([{ success: true }, { success: true }]);
+    const loaded = await loadFromStorage();
+    expect(loaded?.themeId).toBe("ocean");
+    expect(loaded?.images).toEqual({});
   });
 });
 
 describe("loadFromStorage", () => {
-  it("returns null when no data saved", () => {
-    expect(loadFromStorage()).toBeNull();
+  it("returns null when no data saved", async () => {
+    expect(await loadFromStorage()).toBeNull();
   });
 
-  it("returns saved state after saveToStorage", () => {
+  it("returns saved state after saveToStorage", async () => {
     const state = createMockState();
-    saveToStorage(state);
+    await saveToStorage(state);
 
-    const loaded = loadFromStorage();
+    const loaded = await loadFromStorage();
     expect(loaded).not.toBeNull();
     expect(loaded!.startMonth).toBe("2026-04");
     expect(loaded!.themeId).toBe("classic");
@@ -143,80 +156,80 @@ describe("loadFromStorage", () => {
     expect(loaded!.manualHolidays).toEqual([{ date: "2026-06-01", name: "記念日" }]);
   });
 
-  it("excludes apiHolidays and fetch state from saved data", () => {
+  it("excludes apiHolidays and fetch state from saved data", async () => {
     const state = createMockState();
-    saveToStorage(state);
+    await saveToStorage(state);
 
-    const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_SETTINGS)!);
-    expect(raw.state.apiHolidays).toBeUndefined();
-    expect(raw.state.holidaysFetched).toBeUndefined();
-    expect(raw.state.holidaysFetchError).toBeUndefined();
+    const loaded = await loadFromStorage();
+    expect(loaded).not.toHaveProperty("apiHolidays");
+    expect(loaded).not.toHaveProperty("holidaysFetched");
+    expect(loaded).not.toHaveProperty("holidaysFetchError");
   });
 
-  it("returns null for invalid JSON", () => {
+  it("returns null for invalid JSON", async () => {
     localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, "not json");
-    expect(loadFromStorage()).toBeNull();
+    expect(await loadFromStorage()).toBeNull();
   });
 
-  it("returns null for unsupported version", () => {
+  it("returns null for unsupported version", async () => {
     localStorage.setItem(
       STORAGE_KEYS.USER_SETTINGS,
       JSON.stringify({ version: 99, savedAt: "", state: {} }),
     );
-    expect(loadFromStorage()).toBeNull();
+    expect(await loadFromStorage()).toBeNull();
   });
 });
 
 describe("clearStorage", () => {
-  it("removes saved data", () => {
-    saveToStorage(createMockState());
-    expect(hasSavedData()).toBe(true);
+  it("removes saved data", async () => {
+    await saveToStorage(createMockState());
+    expect(await hasSavedData()).toBe(true);
 
-    clearStorage();
-    expect(hasSavedData()).toBe(false);
-    expect(loadFromStorage()).toBeNull();
+    await clearStorage();
+    expect(await hasSavedData()).toBe(false);
+    expect(await loadFromStorage()).toBeNull();
   });
 });
 
 describe("hasSavedData", () => {
-  it("returns false when no data", () => {
-    expect(hasSavedData()).toBe(false);
+  it("returns false when no data", async () => {
+    expect(await hasSavedData()).toBe(false);
   });
 
-  it("returns true after save", () => {
-    saveToStorage(createMockState());
-    expect(hasSavedData()).toBe(true);
+  it("returns true after save", async () => {
+    await saveToStorage(createMockState());
+    expect(await hasSavedData()).toBe(true);
   });
 
-  it("returns false for invalid JSON", () => {
+  it("returns false for invalid JSON", async () => {
     localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, "not json");
-    expect(hasSavedData()).toBe(false);
+    expect(await hasSavedData()).toBe(false);
   });
 
-  it("returns false for unsupported version", () => {
+  it("returns false for unsupported version", async () => {
     localStorage.setItem(
       STORAGE_KEYS.USER_SETTINGS,
       JSON.stringify({ version: 99, savedAt: "", state: {} }),
     );
-    expect(hasSavedData()).toBe(false);
+    expect(await hasSavedData()).toBe(false);
   });
 });
 
 describe("getSavedTimestamp", () => {
-  it("returns null when no data", () => {
-    expect(getSavedTimestamp()).toBeNull();
+  it("returns null when no data", async () => {
+    expect(await getSavedTimestamp()).toBeNull();
   });
 
-  it("returns ISO timestamp after save", () => {
-    saveToStorage(createMockState());
-    const ts = getSavedTimestamp();
+  it("returns ISO timestamp after save", async () => {
+    await saveToStorage(createMockState());
+    const ts = await getSavedTimestamp();
     expect(ts).not.toBeNull();
     expect(new Date(ts!).getTime()).not.toBeNaN();
   });
 });
 
 describe("round-trip", () => {
-  it("preserves all user-editable fields", () => {
+  it("preserves all user-editable fields", async () => {
     const state = createMockState({
       orientation: "landscape",
       weekStart: "monday",
@@ -236,9 +249,9 @@ describe("round-trip", () => {
         gridWidth: 100,
       },
     });
-    saveToStorage(state);
+    await saveToStorage(state);
 
-    const loaded = loadFromStorage()!;
+    const loaded = (await loadFromStorage())!;
     expect(loaded.orientation).toBe("landscape");
     expect(loaded.weekStart).toBe("monday");
     expect(loaded.fontWeight).toBe(600);
@@ -250,29 +263,35 @@ describe("round-trip", () => {
 });
 
 describe("backward compatibility", () => {
-  it("fills in gridWidth default when loading old data without it", () => {
+  it("fills in gridWidth default when loading old data without it", async () => {
     const state = createMockState();
-    saveToStorage(state);
+    await saveToStorage(state);
+    const persisted = (await loadFromStorage())!;
+    await clearStorage();
+    const { gridWidth: _, ...legacyStyle } = state.calendarStyle;
+    localStorage.setItem(
+      STORAGE_KEYS.USER_SETTINGS,
+      JSON.stringify({ version: 1, state: { ...persisted, calendarStyle: legacyStyle } }),
+    );
 
-    // Simulate old saved data without gridWidth
-    const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_SETTINGS)!);
-    delete raw.state.calendarStyle.gridWidth;
-    localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(raw));
-
-    const loaded = loadFromStorage()!;
+    const loaded = (await loadFromStorage())!;
     expect(loaded.calendarStyle.gridWidth).toBe(100);
+    expect(loaded.images).toEqual(state.images);
+    await saveToStorage({ ...state, ...loaded });
+    expect(localStorage.getItem(STORAGE_KEYS.USER_SETTINGS)).toBeNull();
+    expect(await loadFromStorage()).toEqual(loaded);
   });
 
-  it("preserves existing gridWidth value when present", () => {
+  it("preserves existing gridWidth value when present", async () => {
     const state = createMockState({
       calendarStyle: {
         ...createMockState().calendarStyle,
         gridWidth: 75,
       },
     });
-    saveToStorage(state);
+    await saveToStorage(state);
 
-    const loaded = loadFromStorage()!;
+    const loaded = (await loadFromStorage())!;
     expect(loaded.calendarStyle.gridWidth).toBe(75);
   });
 });

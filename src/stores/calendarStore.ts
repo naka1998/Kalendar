@@ -132,7 +132,7 @@ export const useCalendarStore = create<CalendarState>((set) => ({
   updateImageAspectRatio: (monthKey, aspectRatio) =>
     set((s) => {
       const image = s.images[monthKey];
-      if (!image) return s;
+      if (!image || image.aspectRatio === aspectRatio) return s;
       return { images: { ...s.images, [monthKey]: { ...image, aspectRatio } } };
     }),
 

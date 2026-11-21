@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { importFromHtmlFile } from "@/lib/htmlImporter";
-import { clearStorage } from "@/lib/storageService";
+import { resetSavedCalendar } from "@/hooks/useAutoSave";
 
 export function DataSection() {
   const store = useCalendarStore();
@@ -161,8 +161,7 @@ export function DataSection() {
           className="w-full border-destructive/30 text-xs text-destructive hover:bg-destructive/10"
           onClick={() => {
             if (window.confirm("カレンダーの設定をすべて初期状態に戻します。よろしいですか？")) {
-              clearStorage();
-              useCalendarStore.getState().resetCalendar();
+              resetSavedCalendar();
             }
           }}
         >

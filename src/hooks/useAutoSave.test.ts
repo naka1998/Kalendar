@@ -1,22 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useAutoSave, suppressNextAutoSave } from "./useAutoSave";
+import { resetSavedCalendar, useAutoSave, suppressNextAutoSave } from "./useAutoSave";
 import * as storageService from "@/lib/storageService";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { DEFAULTS } from "@/lib/constants";
 
 vi.mock("@/lib/storageService", () => ({
-  saveToStorage: vi.fn(() => ({ success: true })),
+  saveToStorage: vi.fn(async () => ({ success: true })),
   loadFromStorage: vi.fn(() => null),
   hasSavedData: vi.fn(() => false),
-  clearStorage: vi.fn(),
+  clearStorage: vi.fn(async () => ({ success: true })),
   getSavedTimestamp: vi.fn(() => null),
 }));
 
 beforeEach(() => {
   vi.useFakeTimers();
   vi.clearAllMocks();
-  vi.mocked(storageService.saveToStorage).mockReturnValue({ success: true });
+  vi.mocked(storageService.saveToStorage).mockResolvedValue({ success: true });
   // Reset store to defaults to ensure clean state between tests
   useCalendarStore.setState({
     themeId: DEFAULTS.THEME_ID,
@@ -106,5 +106,16 @@ describe("useAutoSave", () => {
       vi.advanceTimersByTime(1500);
     });
     expect(storageService.saveToStorage).toHaveBeenCalledTimes(1);
+  });
+
+  it("clears saved data without writing a pending edit back after reset", async () => {
+    renderHook(() => useAutoSave(true));
+    await act(async () => useCalendarStore.setState({ themeId: "ocean" }));
+    await act(async () => resetSavedCalendar());
+    await act(async () => vi.advanceTimersByTime(3000));
+
+    expect(useCalendarStore.getState().themeId).toBe(DEFAULTS.THEME_ID);
+    expect(storageService.clearStorage).toHaveBeenCalledTimes(1);
+    expect(storageService.saveToStorage).not.toHaveBeenCalled();
   });
 });
