@@ -42,6 +42,39 @@ test.describe("Design Customization", () => {
     }
   });
 
+  test("font cards show all categories and update the month title", async ({ page }) => {
+    await openAppearance(page);
+    const sidebar = page.locator("aside").first();
+    for (const [category, count] of [
+      ["かっこいい", 2],
+      ["しっかり", 3],
+      ["かわいい", 3],
+      ["おしゃれ", 3],
+    ] as const) {
+      const group = sidebar.getByRole("region", { name: category, exact: true });
+      await expect(group.getByRole("button")).toHaveCount(count);
+      await expect(group.getByText("2027 月 6", { exact: true })).toHaveCount(count);
+    }
+
+    const monthTitle = page
+      .getByTestId("calendar-area")
+      .first()
+      .locator(":scope > div > div")
+      .first();
+    for (const font of ["Inter", "M PLUS Rounded 1c", "Shippori Mincho"]) {
+      const card = sidebar.getByRole("button", { name: font, exact: true });
+      await card.click();
+      await expect(card).toHaveAttribute("aria-pressed", "true");
+      await expect
+        .poll(() =>
+          monthTitle.evaluate((title) => getComputedStyle(title).fontFamily.replaceAll('"', "")),
+        )
+        .toBe(font);
+      await expect(monthTitle).toHaveCSS("font-weight", "800");
+    }
+    await expect(page.getByTestId("page-container").first()).toHaveCSS("padding-top", "20px");
+  });
+
   test("font weight buttons work", async ({ page }) => {
     await openAppearance(page);
     const boldButton = page.getByRole("button", { name: "太字" });

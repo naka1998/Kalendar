@@ -55,7 +55,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
 
   const { dividerProps, isDragging, livePercent } = useDividerDrag({
     pageWidth,
-    pageHeight,
+    pageHeight: pageHeight - (calendarStyle.pageMarginTop ?? 0),
     scale,
     currentPercent: imagePercent,
     imagePosition,

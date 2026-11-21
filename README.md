@@ -22,15 +22,21 @@
 
 ### フォント
 
-テーマは Classic、太さは標準（400）で統一しています。
+テーマは Classic、日付の太さは標準（400）で統一しています。選んだフォントは年月タイトル、曜日、日付に適用されます。
 
-| Montserrat                                                             | Inter                                                                    |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| ![Montserrat のカレンダー](screenshots/design/theme-classic.png)       | ![Inter のカレンダー](screenshots/design/font-inter.png)                 |
-| **Noto Sans JP**                                                       | **IBM Plex Sans**                                                        |
-| ![Noto Sans JP のカレンダー](screenshots/design/font-noto-sans-jp.png) | ![IBM Plex Sans のカレンダー](screenshots/design/font-ibm-plex-sans.png) |
-| **Lato**                                                               |                                                                          |
-| ![Lato のカレンダー](screenshots/design/font-lato.png)                 |                                                                          |
+| Montserrat                                                                       | Inter                                                                              |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| ![Montserrat のカレンダー](screenshots/design/theme-classic.png)                 | ![Inter のカレンダー](screenshots/design/font-inter.png)                           |
+| **Noto Sans JP**                                                                 | **IBM Plex Sans**                                                                  |
+| ![Noto Sans JP のカレンダー](screenshots/design/font-noto-sans-jp.png)           | ![IBM Plex Sans のカレンダー](screenshots/design/font-ibm-plex-sans.png)           |
+| **Lato**                                                                         |                                                                                    |
+| ![Lato のカレンダー](screenshots/design/font-lato.png)                           |                                                                                    |
+| **Zen Maru Gothic**                                                              | **Nunito**                                                                         |
+| ![Zen Maru Gothic のカレンダー](screenshots/design/font-zen-maru-gothic.png)     | ![Nunito のカレンダー](screenshots/design/font-nunito.png)                         |
+| **M PLUS Rounded 1c**                                                            | **Cormorant Garamond**                                                             |
+| ![M PLUS Rounded 1c のカレンダー](screenshots/design/font-m-plus-rounded-1c.png) | ![Cormorant Garamond のカレンダー](screenshots/design/font-cormorant-garamond.png) |
+| **Playfair Display**                                                             | **Shippori Mincho**                                                                |
+| ![Playfair Display のカレンダー](screenshots/design/font-playfair-display.png)   | ![Shippori Mincho のカレンダー](screenshots/design/font-shippori-mincho.png)       |
 
 ### テーマとフォントの組み合わせ
 
@@ -64,8 +70,8 @@ Classic と Montserrat の組み合わせで、日付の数字の太さを比較
 ### デザイン
 
 - **白背景のカラーテーマ6種**: Classic, Monochrome, Slate, Sepia, Forest, Minimal
-- **Google Fonts**: Montserrat, Inter, Noto Sans JP, IBM Plex Sans, Lato（ウェイト選択可）
-- **文字サイズ・余白カスタマイズ**: 月タイトル、日付、曜日のフォントサイズ、セル余白、ヘッダー間隔をスライダーで調整
+- **Google Fonts 11種**: 「かっこいい」「しっかり」「かわいい」「おしゃれ」のカテゴリ別に、見本を見て選択
+- **文字サイズ・余白カスタマイズ**: 月タイトル、日付、曜日のフォントサイズ、セル余白、ヘッダー間隔、上余白（初期値20px）をスライダーで調整
 
 ### 画像
 
@@ -164,7 +170,7 @@ src/
 │   ├── zipGenerator.ts     # 純粋関数: PageData[] → ZIP
 │   ├── settingsExport.ts   # 設定のJSON化 / JSON復元
 │   ├── themes.ts           # 6テーマ定義
-│   ├── fonts.ts            # 5フォントプリセット
+│   ├── fonts.ts            # 11フォントプリセット
 │   └── constants.ts        # A4寸法、デフォルト値
 └── hooks/
     ├── useFontLoader.ts    # Google Fonts動的ロード

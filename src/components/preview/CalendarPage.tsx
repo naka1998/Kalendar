@@ -87,7 +87,8 @@ export function CalendarPage({
 
   // Calculate container size for edit overlay
   const containerW = horizontal ? (pageWidth * placeholderImagePercent) / 100 : pageWidth;
-  const containerH = horizontal ? pageHeight : (pageHeight * placeholderImagePercent) / 100;
+  const contentHeight = pageHeight - (calendarStyle.pageMarginTop ?? 0);
+  const containerH = horizontal ? contentHeight : (contentHeight * placeholderImagePercent) / 100;
 
   const handlePositionToggle = useCallback(() => {
     if (!onPositionChange) return;
