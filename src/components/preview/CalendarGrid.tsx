@@ -54,6 +54,7 @@ export function CalendarGrid({
     >
       {/* Month label */}
       <div
+        data-testid="month-title"
         className="font-extrabold tracking-tighter"
         style={{
           color: colors.monthLabel,

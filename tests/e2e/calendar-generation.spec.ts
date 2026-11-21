@@ -17,7 +17,7 @@ test.describe("Calendar Generation", () => {
   });
 
   test("displays month label in preview", async ({ page }) => {
-    await expect(page.locator("[data-month='2027-01'] .font-heading").first()).toHaveText(
+    await expect(page.locator("[data-month='2027-01']").getByTestId("month-title")).toHaveText(
       "2027.01",
     );
   });

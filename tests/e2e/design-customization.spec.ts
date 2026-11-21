@@ -21,9 +21,8 @@ test.describe("Design Customization", () => {
 
   test("all themes keep a white page and change the month title color", async ({ page }) => {
     await openAppearance(page);
-    const calendarArea = page.getByTestId("calendar-area").first();
     const pageOuter = page.getByTestId("page-container").first().locator("..");
-    const monthTitle = calendarArea.locator(":scope > div > div").first();
+    const monthTitle = page.getByTestId("month-title").first();
     const expectedColors = {
       Classic: "rgb(17, 24, 39)",
       Monochrome: "rgb(55, 65, 81)",
