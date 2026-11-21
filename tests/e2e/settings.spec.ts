@@ -10,7 +10,11 @@ test.describe("Settings", () => {
   });
 
   test("can expand basic settings and see controls", async ({ page }) => {
-    await page.getByText("基本設定").click();
+    const basicSettings = page.getByRole("button", { name: "基本設定", exact: true });
+    await expect(basicSettings).toHaveAttribute("aria-expanded", "true");
+    await basicSettings.click();
+    await expect(page.getByText("開始月")).toBeHidden();
+    await basicSettings.click();
     await expect(page.getByText("開始月")).toBeVisible();
     await expect(page.getByText("用紙")).toBeVisible();
   });

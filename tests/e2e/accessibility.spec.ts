@@ -26,8 +26,10 @@ test.describe("Accessibility - Desktop", () => {
   });
 
   test("sidebar basic section expanded has no violations", async ({ page }) => {
-    await page.getByText("基本設定").click();
-    await page.waitForTimeout(300);
+    await expect(page.getByRole("button", { name: "基本設定", exact: true })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
 
     const results = await scanPage(page);
     expect(results.violations).toEqual([]);

@@ -66,6 +66,8 @@
 
 ## 前提条件
 
+- Node.js 26 LTS（開発・CI のバージョンは `.node-version`）
+- pnpm（バージョンは `package.json` の `packageManager`）
 - [Vite+](https://viteplus.dev/) CLIがグローバルインストール済みであること
 
 ```bash
@@ -161,15 +163,12 @@ npx playwright test
 
 ## デプロイ
 
-静的ホスティングのみで運用可能。`dist/` フォルダを以下のいずれかにデプロイ:
+本番環境は Cloudflare Workers で配信します。設定は `wrangler.jsonc` にあります。
 
-- GitHub Pages
-- Cloudflare Pages
-- Vercel
-- Netlify
+静的ホスティングで配信する場合は、以下のコマンドで `dist/` を生成します。
 
 ```bash
-vp build
+pnpm run build
 ```
 
 ## ライセンス

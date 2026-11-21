@@ -1,0 +1,18 @@
+# Share Vite+'s Vite build with its plugins and Vitest.
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@8.3.8000
+
+overrides:
+  vite: "catalog:"
+  # Patched versions for dependencies still resolved to versions flagged by pnpm audit.
+  "shadcn>@babel/core": ^7.29.6
+  "shadcn>zod": ^4.6.6
+  "@ts-morph/common>minimatch": ^11.0.1
+  "minimatch>brace-expansion@>=5.0.0 <5.0.12": ^5.0.12
+  "picomatch@<2.3.2": ^2.3.2
+  "picomatch@>=4.0.0 <4.0.4": ^4.0.4
+  "source-map-js@>=1.0.0 <1.2.2": ^1.2.2
+
+allowBuilds:
+  esbuild: false
+  workerd: false
