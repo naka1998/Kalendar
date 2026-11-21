@@ -50,7 +50,7 @@ describe("calendarStore", () => {
       expect(state.imagePosition).toBe("top");
       expect(state.pageLayout).toBe("1-month");
       expect(state.calendarStyle.contentAlignV).toBe("center");
-      expect(state.calendarStyle.pageMarginTop).toBe(0);
+      expect(state.calendarStyle.pageMarginTop).toBe(20);
       expect(state.previewZoom).toBe("standard");
     });
   });

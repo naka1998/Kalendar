@@ -4,6 +4,54 @@
 
 テーマ、フォント、画像、日本の祝日を設定し、PDF/HTML/ZIPとして出力。コンビニ印刷にも対応。
 
+## カレンダーデザイン見本
+
+設定の「見た目」でテーマやフォントを切り替えたプレビューです。2026年5月の画像なしカレンダーで、日付欄の周辺を切り出しています。
+
+### カラーテーマ
+
+フォントは Montserrat（標準）で統一しています。
+
+| Classic                                                       | Monochrome                                                          |
+| ------------------------------------------------------------- | ------------------------------------------------------------------- |
+| ![Classic のカレンダー](screenshots/design/theme-classic.png) | ![Monochrome のカレンダー](screenshots/design/theme-monochrome.png) |
+| **Slate**                                                     | **Sepia**                                                           |
+| ![Slate のカレンダー](screenshots/design/theme-slate.png)     | ![Sepia のカレンダー](screenshots/design/theme-sepia.png)           |
+| **Forest**                                                    | **Minimal**                                                         |
+| ![Forest のカレンダー](screenshots/design/theme-forest.png)   | ![Minimal のカレンダー](screenshots/design/theme-minimal.png)       |
+
+### フォント
+
+テーマは Classic、日付の太さは標準（400）で統一しています。選んだフォントは年月タイトル、曜日、日付に適用されます。
+
+| Montserrat                                                                       | Inter                                                                              |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| ![Montserrat のカレンダー](screenshots/design/theme-classic.png)                 | ![Inter のカレンダー](screenshots/design/font-inter.png)                           |
+| **Noto Sans JP**                                                                 | **IBM Plex Sans**                                                                  |
+| ![Noto Sans JP のカレンダー](screenshots/design/font-noto-sans-jp.png)           | ![IBM Plex Sans のカレンダー](screenshots/design/font-ibm-plex-sans.png)           |
+| **Lato**                                                                         |                                                                                    |
+| ![Lato のカレンダー](screenshots/design/font-lato.png)                           |                                                                                    |
+| **Zen Maru Gothic**                                                              | **Nunito**                                                                         |
+| ![Zen Maru Gothic のカレンダー](screenshots/design/font-zen-maru-gothic.png)     | ![Nunito のカレンダー](screenshots/design/font-nunito.png)                         |
+| **M PLUS Rounded 1c**                                                            | **Cormorant Garamond**                                                             |
+| ![M PLUS Rounded 1c のカレンダー](screenshots/design/font-m-plus-rounded-1c.png) | ![Cormorant Garamond のカレンダー](screenshots/design/font-cormorant-garamond.png) |
+| **Playfair Display**                                                             | **Shippori Mincho**                                                                |
+| ![Playfair Display のカレンダー](screenshots/design/font-playfair-display.png)   | ![Shippori Mincho のカレンダー](screenshots/design/font-shippori-mincho.png)       |
+
+### テーマとフォントの組み合わせ
+
+| Slate × IBM Plex Sans                                                              | Sepia × Noto Sans JP                                                             |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| ![Slate と IBM Plex Sans のカレンダー](screenshots/design/slate-ibm-plex-sans.png) | ![Sepia と Noto Sans JP のカレンダー](screenshots/design/sepia-noto-sans-jp.png) |
+
+### フォントの太さ
+
+Classic と Montserrat の組み合わせで、日付の数字の太さを比較できます。
+
+| 細字（300）                                            | 標準（400）                                               | 太字（600）                                            |
+| ------------------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------------ |
+| ![細字のカレンダー](screenshots/design/weight-300.png) | ![標準のカレンダー](screenshots/design/theme-classic.png) | ![太字のカレンダー](screenshots/design/weight-600.png) |
+
 ## 機能一覧
 
 ### カレンダー設定
@@ -21,9 +69,9 @@
 
 ### デザイン
 
-- **6種のカラーテーマ**: Classic, Monochrome, Dark, Cream, Forest, Minimal
-- **Google Fonts**: Montserrat, Inter, Noto Sans JP, IBM Plex Sans, Lato（ウェイト選択可）
-- **文字サイズ・余白カスタマイズ**: 月タイトル、日付、曜日のフォントサイズ、セル余白、ヘッダー間隔をスライダーで調整
+- **白背景のカラーテーマ6種**: Classic, Monochrome, Slate, Sepia, Forest, Minimal
+- **Google Fonts 11種**: 「かっこいい」「しっかり」「かわいい」「おしゃれ」のカテゴリ別に、見本を見て選択
+- **文字サイズ・余白カスタマイズ**: 月タイトル、日付、曜日のフォントサイズ、セル余白、ヘッダー間隔、上余白（初期値20px）をスライダーで調整
 
 ### 画像
 
@@ -122,7 +170,7 @@ src/
 │   ├── zipGenerator.ts     # 純粋関数: PageData[] → ZIP
 │   ├── settingsExport.ts   # 設定のJSON化 / JSON復元
 │   ├── themes.ts           # 6テーマ定義
-│   ├── fonts.ts            # 5フォントプリセット
+│   ├── fonts.ts            # 11フォントプリセット
 │   └── constants.ts        # A4寸法、デフォルト値
 └── hooks/
     ├── useFontLoader.ts    # Google Fonts動的ロード

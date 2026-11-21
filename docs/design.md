@@ -303,22 +303,28 @@ ZIP:
 | ---------- | ------- | ------- | ------- | ------- |
 | Classic    | #FFFFFF | #1A1A1A | #DC2626 | #2563EB |
 | Monochrome | #FFFFFF | #1A1A1A | #4B5563 | #6B7280 |
-| Dark       | #1F2937 | #F9FAFB | #FCA5A5 | #93C5FD |
-| Cream      | #FFFBEB | #78350F | #DC2626 | #1D4ED8 |
-| Forest     | #1A2E1A | #D1FAE5 | #FCA5A5 | #93C5FD |
-| Minimal    | #FFFFFF | #9CA3AF | #6B7280 | #9CA3AF |
+| Slate      | #FFFFFF | #1E293B | #9F1239 | #1E40AF |
+| Sepia      | #FFFFFF | #34261D | #9A3412 | #6B4F36 |
+| Forest     | #FFFFFF | #1C3024 | #9F1239 | #166534 |
+| Minimal    | #FFFFFF | #262626 | #525252 | #525252 |
 
 ---
 
 ## 6. フォントプリセット
 
-| フォント      | ウェイト      | Google Fonts URL                 |
-| ------------- | ------------- | -------------------------------- |
-| Montserrat    | 300, 400, 600 | `Montserrat:wght@300;400;600`    |
-| Inter         | 300, 400, 600 | `Inter:wght@300;400;600`         |
-| Noto Sans JP  | 300, 400, 600 | `Noto+Sans+JP:wght@300;400;600`  |
-| IBM Plex Sans | 300, 400, 600 | `IBM+Plex+Sans:wght@300;400;600` |
-| Lato          | 300, 400, 700 | `Lato:wght@300;400;700`          |
+| カテゴリ   | フォント           | Google Fonts で読み込むウェイト |
+| ---------- | ------------------ | ------------------------------- |
+| かっこいい | Montserrat         | 300, 400, 600                   |
+| かっこいい | IBM Plex Sans      | 300, 400, 600                   |
+| しっかり   | Inter              | 300, 400, 600                   |
+| しっかり   | Noto Sans JP       | 300, 400, 600                   |
+| しっかり   | Lato               | 300, 400, 700                   |
+| かわいい   | Zen Maru Gothic    | 300, 400, 700                   |
+| かわいい   | Nunito             | 300, 400, 600, 700, 800         |
+| かわいい   | M PLUS Rounded 1c  | 300, 400, 700, 800              |
+| おしゃれ   | Cormorant Garamond | 300, 400, 600, 700              |
+| おしゃれ   | Playfair Display   | 400, 600, 700, 800              |
+| おしゃれ   | Shippori Mincho    | 400, 600, 700, 800              |
 
 ---
 

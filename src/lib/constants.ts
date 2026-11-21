@@ -40,7 +40,7 @@ export const DEFAULT_CALENDAR_STYLE = {
   contentAlignH: "center" as const,
   imageAlignV: "center" as const,
   imageAlignH: "center" as const,
-  pageMarginTop: 0,
+  pageMarginTop: 20,
   gridWidth: 100,
 } as const;
 

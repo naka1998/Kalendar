@@ -19,34 +19,59 @@ test.describe("Design Customization", () => {
     expect(count).toBeGreaterThan(1);
   });
 
-  test("can switch theme and see background color change", async ({ page }) => {
+  test("all themes keep a white page and change the month title color", async ({ page }) => {
     await openAppearance(page);
-    // Get the initial page background color
-    const pageOuter = page.locator('[data-testid="page-container"]').first().locator("..");
-    const initialBg = await pageOuter.evaluate((el) => el.style.background);
+    const pageOuter = page.getByTestId("page-container").first().locator("..");
+    const monthTitle = page.getByTestId("month-title").first();
+    const expectedColors = {
+      Classic: "rgb(17, 24, 39)",
+      Monochrome: "rgb(55, 65, 81)",
+      Slate: "rgb(30, 58, 95)",
+      Sepia: "rgb(120, 53, 15)",
+      Forest: "rgb(20, 83, 45)",
+      Minimal: "rgb(38, 38, 38)",
+    };
 
-    // Remember which theme button is initially selected (has ring-2 class)
-    const themeButtons = page.locator(".grid-cols-3 button");
-    const firstSelected = await themeButtons.evaluateAll((buttons) =>
-      buttons.findIndex((b) => b.className.includes("ring-2")),
-    );
+    for (const [theme, color] of Object.entries(expectedColors)) {
+      const button = page.getByRole("button", { name: theme, exact: true });
+      await button.click();
+      await expect(button).toHaveClass(/ring-2/);
+      await expect(pageOuter).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      await expect(monthTitle).toHaveCSS("color", color);
+    }
+  });
 
-    // Click a theme with a distinct background color (index 2 = "Dark" with #1F2937)
-    // This ensures the background actually changes from the default white themes
-    const targetIndex = firstSelected === 2 ? 3 : 2;
-    await themeButtons.nth(targetIndex).click();
-
-    // The clicked theme button should now have the selected ring
-    await expect(themeButtons.nth(targetIndex)).toHaveClass(/ring-2/);
-
-    // The previously selected button should no longer have the ring
-    if (firstSelected >= 0) {
-      await expect(themeButtons.nth(firstSelected)).not.toHaveClass(/ring-2/);
+  test("font cards show all categories and update the month title", async ({ page }) => {
+    await openAppearance(page);
+    const sidebar = page.locator("aside").first();
+    for (const [category, count] of [
+      ["かっこいい", 2],
+      ["しっかり", 3],
+      ["かわいい", 3],
+      ["おしゃれ", 3],
+    ] as const) {
+      const group = sidebar.getByRole("region", { name: category, exact: true });
+      await expect(group.getByRole("button")).toHaveCount(count);
+      await expect(group.getByText("2027 月 6", { exact: true })).toHaveCount(count);
     }
 
-    // Background color should actually change
-    const newBg = await pageOuter.evaluate((el) => el.style.background);
-    expect(newBg).not.toBe(initialBg);
+    const monthTitle = page
+      .getByTestId("calendar-area")
+      .first()
+      .locator(":scope > div > div")
+      .first();
+    for (const font of ["Inter", "M PLUS Rounded 1c", "Shippori Mincho"]) {
+      const card = sidebar.getByRole("button", { name: font, exact: true });
+      await card.click();
+      await expect(card).toHaveAttribute("aria-pressed", "true");
+      await expect
+        .poll(() =>
+          monthTitle.evaluate((title) => getComputedStyle(title).fontFamily.replaceAll('"', "")),
+        )
+        .toBe(font);
+      await expect(monthTitle).toHaveCSS("font-weight", "800");
+    }
+    await expect(page.getByTestId("page-container").first()).toHaveCSS("padding-top", "20px");
   });
 
   test("font weight buttons work", async ({ page }) => {

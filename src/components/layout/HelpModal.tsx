@@ -11,14 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useCalendarStore } from "@/stores/calendarStore";
-import { THEMES } from "@/lib/themes";
 
 export function HelpModal() {
-  const themeId = useCalendarStore((s) => s.themeId);
-  const theme = THEMES.find((t) => t.id === themeId) ?? THEMES[0];
-  const hasDarkBackground = theme.colors.background !== "#FFFFFF";
-
   return (
     <Dialog>
       <DialogTrigger
@@ -36,16 +30,6 @@ export function HelpModal() {
             設定 → プレビュー確認 → PDF出力 → 印刷が基本の流れです。
             まずはPDFで保存し、それを印刷してお使いください。
           </p>
-
-          {hasDarkBackground && (
-            <section className="mb-3 rounded-lg bg-surface-container-high p-3">
-              <p className="font-semibold text-sunday">⚠ 背景色ありテーマを使用中</p>
-              <p className="mt-1 text-on-surface-variant">
-                印刷設定で「背景のグラフィック」にチェックを入れてください。
-                チェックがないと背景色が印刷されません。
-              </p>
-            </section>
-          )}
 
           <Accordion>
             <AccordionItem value="formats">

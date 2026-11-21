@@ -92,16 +92,15 @@ export function renderPage(
   const imgPct = page.imagePercent;
   const gridPct = 100 - imgPct;
   const sizeProperty = horizontal ? "width" : "height";
-  const marginTop = calendarStyle?.pageMarginTop
-    ? `padding-top:${calendarStyle.pageMarginTop}px;`
-    : "";
+  const marginTopPx = calendarStyle?.pageMarginTop ?? 0;
+  const marginTop = marginTopPx ? `padding-top:${marginTopPx}px;` : "";
 
   // Calculate container dimensions in mm for crop rendering
   const orient = orientation === "landscape" ? "landscape" : "portrait";
   const fullW = PAGE_W_MM[orient];
-  const fullH = PAGE_H_MM[orient];
+  const contentHeightMm = PAGE_H_MM[orient] - (marginTopPx * 25.4) / 96;
   const containerWMm = horizontal ? (fullW * imgPct) / 100 : fullW;
-  const containerHMm = horizontal ? fullH : (fullH * imgPct) / 100;
+  const containerHMm = horizontal ? contentHeightMm : (contentHeightMm * imgPct) / 100;
 
   let contentHtml: string;
 
