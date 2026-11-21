@@ -1,14 +1,17 @@
-name: Deploy to GitHub Pages
+name: CI
 
 on:
   push:
     branches: [main]
+  pull_request:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency: ci-${{ github.ref }}
 
 jobs:
-  build:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1
@@ -35,15 +38,11 @@ jobs:
 
       - name: Build
         run: pnpm run build
-        env:
-          VITE_BASE_PATH: /kalendar/
 
       - name: E2E Test
         run: pnpm exec playwright test --ignore-snapshots --reporter=dot,html
         env:
           PLAYWRIGHT_HTML_OPEN: never
-          VITE_BASE_PATH: /kalendar/
-          PLAYWRIGHT_BASE_URL: http://localhost:5173/kalendar/
 
       - name: Upload E2E Report
         if: always()
@@ -52,12 +51,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4.1.0
-        with:
-          personal_token: ${{ secrets.GH_PAT }}
-          external_repository: naka1998/naka1998.github.io
-          publish_dir: ./dist
-          destination_dir: kalendar
-          publish_branch: master
