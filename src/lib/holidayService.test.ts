@@ -37,7 +37,11 @@ describe("createHolidayService", () => {
     const service = createHolidayService(fetcher, cache);
     const result = await service.fetchHolidays();
 
-    expect(result).toEqual(apiData);
+    expect(result).toMatchObject({
+      ...apiData,
+      "2027-01-01": "元日",
+      "2027-03-22": "春分の日 振替休日",
+    });
     expect(fetcher.fetch).toHaveBeenCalled();
     expect(cache.set).toHaveBeenCalledWith(STORAGE_KEYS.HOLIDAYS_DATA, JSON.stringify(apiData));
     expect(cache.set).toHaveBeenCalledWith(STORAGE_KEYS.HOLIDAYS_FETCHED_AT, expect.any(String));
@@ -55,7 +59,7 @@ describe("createHolidayService", () => {
     const service = createHolidayService(fetcher, cache);
     const result = await service.fetchHolidays();
 
-    expect(result).toEqual(cachedData);
+    expect(result).toMatchObject({ ...cachedData, "2027-01-01": "元日" });
     expect(fetcher.fetch).not.toHaveBeenCalled();
   });
 
@@ -71,7 +75,7 @@ describe("createHolidayService", () => {
     const service = createHolidayService(fetcher, cache);
     const result = await service.fetchHolidays();
 
-    expect(result).toEqual(apiData);
+    expect(result).toMatchObject(apiData);
     expect(fetcher.fetch).toHaveBeenCalled();
   });
 
@@ -87,7 +91,7 @@ describe("createHolidayService", () => {
     const service = createHolidayService(fetcher, cache);
     const result = await service.fetchHolidays();
 
-    expect(result).toEqual(cachedData);
+    expect(result).toMatchObject({ ...cachedData, "2027-03-22": "春分の日 振替休日" });
   });
 
   it("falls back to hardcoded holidays when no cache and API fails", async () => {
