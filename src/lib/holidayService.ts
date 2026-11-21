@@ -21,6 +21,10 @@ const defaultCache: HolidayCache = {
   set: (k: string, v: string) => localStorage.setItem(k, v),
 };
 
+function withFallbackHolidays(holidays: Record<string, string>): Record<string, string> {
+  return { ...FALLBACK_HOLIDAYS, ...holidays };
+}
+
 export function createHolidayService(
   fetcher: HolidayFetcher = defaultFetcher,
   cache: HolidayCache = defaultCache,
@@ -34,7 +38,7 @@ export function createHolidayService(
       if (cachedAt && cachedData) {
         const elapsed = Date.now() - Number(cachedAt);
         if (elapsed < CACHE_TTL_MS) {
-          return JSON.parse(cachedData) as Record<string, string>;
+          return withFallbackHolidays(JSON.parse(cachedData) as Record<string, string>);
         }
       }
 
@@ -49,11 +53,11 @@ export function createHolidayService(
         const holidays = data as Record<string, string>;
         cache.set(STORAGE_KEYS.HOLIDAYS_DATA, JSON.stringify(holidays));
         cache.set(STORAGE_KEYS.HOLIDAYS_FETCHED_AT, String(Date.now()));
-        return holidays;
+        return withFallbackHolidays(holidays);
       } catch {
         // Fallback to stale cache
         if (cachedData) {
-          return JSON.parse(cachedData) as Record<string, string>;
+          return withFallbackHolidays(JSON.parse(cachedData) as Record<string, string>);
         }
         // Fallback to hardcoded data
         return FALLBACK_HOLIDAYS;

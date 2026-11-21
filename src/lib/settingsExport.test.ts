@@ -5,8 +5,8 @@ import type { CalendarState } from "@/stores/types";
 
 function createMockState(): CalendarState {
   return {
-    startMonth: DEFAULTS.START_MONTH,
-    endMonth: DEFAULTS.END_MONTH,
+    startMonth: "2026-04",
+    endMonth: "2027-03",
     orientation: DEFAULTS.ORIENTATION,
     weekStart: DEFAULTS.WEEK_START,
     weekdayFormat: DEFAULTS.WEEKDAY_FORMAT,
