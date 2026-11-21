@@ -24,10 +24,7 @@ export function ThemeGrid() {
           >
             {/* Color preview dots */}
             <div className="flex gap-0.5">
-              <span
-                className="h-3 w-3 rounded-full"
-                style={{ background: t.colors.monthLabel }}
-              />
+              <span className="h-3 w-3 rounded-full" style={{ background: t.colors.monthLabel }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.text }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.sunday }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.saturday }} />

@@ -12,38 +12,38 @@
 
 フォントは Montserrat（標準）で統一しています。
 
-| Classic | Monochrome |
-| --- | --- |
+| Classic                                                       | Monochrome                                                          |
+| ------------------------------------------------------------- | ------------------------------------------------------------------- |
 | ![Classic のカレンダー](screenshots/design/theme-classic.png) | ![Monochrome のカレンダー](screenshots/design/theme-monochrome.png) |
-| **Slate** | **Sepia** |
-| ![Slate のカレンダー](screenshots/design/theme-slate.png) | ![Sepia のカレンダー](screenshots/design/theme-sepia.png) |
-| **Forest** | **Minimal** |
-| ![Forest のカレンダー](screenshots/design/theme-forest.png) | ![Minimal のカレンダー](screenshots/design/theme-minimal.png) |
+| **Slate**                                                     | **Sepia**                                                           |
+| ![Slate のカレンダー](screenshots/design/theme-slate.png)     | ![Sepia のカレンダー](screenshots/design/theme-sepia.png)           |
+| **Forest**                                                    | **Minimal**                                                         |
+| ![Forest のカレンダー](screenshots/design/theme-forest.png)   | ![Minimal のカレンダー](screenshots/design/theme-minimal.png)       |
 
 ### フォント
 
 テーマは Classic、太さは標準（400）で統一しています。
 
-| Montserrat | Inter |
-| --- | --- |
-| ![Montserrat のカレンダー](screenshots/design/theme-classic.png) | ![Inter のカレンダー](screenshots/design/font-inter.png) |
-| **Noto Sans JP** | **IBM Plex Sans** |
+| Montserrat                                                             | Inter                                                                    |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| ![Montserrat のカレンダー](screenshots/design/theme-classic.png)       | ![Inter のカレンダー](screenshots/design/font-inter.png)                 |
+| **Noto Sans JP**                                                       | **IBM Plex Sans**                                                        |
 | ![Noto Sans JP のカレンダー](screenshots/design/font-noto-sans-jp.png) | ![IBM Plex Sans のカレンダー](screenshots/design/font-ibm-plex-sans.png) |
-| **Lato** | |
-| ![Lato のカレンダー](screenshots/design/font-lato.png) | |
+| **Lato**                                                               |                                                                          |
+| ![Lato のカレンダー](screenshots/design/font-lato.png)                 |                                                                          |
 
 ### テーマとフォントの組み合わせ
 
-| Slate × IBM Plex Sans | Sepia × Noto Sans JP |
-| --- | --- |
+| Slate × IBM Plex Sans                                                              | Sepia × Noto Sans JP                                                             |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | ![Slate と IBM Plex Sans のカレンダー](screenshots/design/slate-ibm-plex-sans.png) | ![Sepia と Noto Sans JP のカレンダー](screenshots/design/sepia-noto-sans-jp.png) |
 
 ### フォントの太さ
 
 Classic と Montserrat の組み合わせで、日付の数字の太さを比較できます。
 
-| 細字（300） | 標準（400） | 太字（600） |
-| --- | --- | --- |
+| 細字（300）                                            | 標準（400）                                               | 太字（600）                                            |
+| ------------------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------------ |
 | ![細字のカレンダー](screenshots/design/weight-300.png) | ![標準のカレンダー](screenshots/design/theme-classic.png) | ![太字のカレンダー](screenshots/design/weight-600.png) |
 
 ## 機能一覧
