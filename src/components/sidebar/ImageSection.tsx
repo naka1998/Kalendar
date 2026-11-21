@@ -208,7 +208,11 @@ export function ImageSection() {
       </div>
 
       {/* Error display */}
-      {error && <p className="text-xs text-sunday">{error}</p>}
+      {error && (
+        <p role="alert" className="text-xs text-sunday">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
