@@ -66,6 +66,8 @@
 
 ## 前提条件
 
+- Node.js 26 LTS（開発・CI のバージョンは `.node-version`）
+- pnpm（バージョンは `package.json` の `packageManager`）
 - [Vite+](https://viteplus.dev/) CLIがグローバルインストール済みであること
 
 ```bash

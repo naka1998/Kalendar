@@ -15,13 +15,13 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6.1.1
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7.1.0
         with:
-          node-version: 22
+          node-version-file: .node-version
           cache: pnpm
 
       - name: Install dependencies
@@ -54,14 +54,14 @@ jobs:
 
       - name: Upload E2E Report
         if: always() && github.event.action != 'closed'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: playwright-report-pr-${{ github.event.number }}
           path: playwright-report/
           retention-days: 14
 
       - name: Deploy PR Preview
-        uses: rossjrw/pr-preview-action@v1
+        uses: rossjrw/pr-preview-action@v1.8.2
         with:
           source-dir: ./dist
           deploy-repository: naka1998/naka1998.github.io
