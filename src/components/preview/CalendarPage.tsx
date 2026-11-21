@@ -21,6 +21,7 @@ export interface CalendarPageProps {
   imageEdit: ImageEditProps;
   style: CalendarStyleProps;
   onImageUpload?: (file: File) => void;
+  imageUploadError?: string | null;
   onImageRemove?: () => void;
   // Divider drag
   dividerProps?: { onPointerDown: (e: React.PointerEvent) => void };
@@ -41,6 +42,7 @@ export function CalendarPage({
   imageEdit,
   style,
   onImageUpload,
+  imageUploadError,
   onImageRemove,
   dividerProps,
   isDividerDragging = false,
@@ -107,6 +109,14 @@ export function CalendarPage({
       }}
     >
       {showSafeMargin && <SafeMarginOverlay />}
+      {imageUploadError && (
+        <p
+          role="alert"
+          className="pointer-events-none absolute inset-x-4 top-4 z-20 rounded-md bg-surface px-4 py-3 text-center text-xl text-destructive shadow-sm"
+        >
+          {imageUploadError}
+        </p>
+      )}
       <div
         data-testid="page-container"
         className={`flex h-full ${isDividerDragging ? "select-none" : ""}`}

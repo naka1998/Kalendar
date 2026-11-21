@@ -8,15 +8,7 @@ import { useHolidays } from "@/hooks/useHolidays";
 import { useFontLoader } from "@/hooks/useFontLoader";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useCalendarStore } from "@/stores/calendarStore";
-import { loadFromStorage } from "@/lib/storageService";
 import { FONT_PRESETS } from "@/lib/fonts";
-
-// Auto-restore saved data on startup (runs once at module load).
-// This runs before useAutoSave subscribes, so no suppress flag is needed.
-const savedData = loadFromStorage();
-if (savedData) {
-  useCalendarStore.setState((prev) => ({ ...prev, ...savedData }));
-}
 
 export default function App() {
   useHolidays();

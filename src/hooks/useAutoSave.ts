@@ -1,15 +1,24 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
-import { saveToStorage } from "@/lib/storageService";
+import { clearStorage, saveToStorage } from "@/lib/storageService";
 import type { CalendarState } from "@/stores/types";
 
 const DEBOUNCE_MS = 1500;
 
 let suppressFlag = false;
 
-/** Call before restoring state to prevent auto-save from firing on the restore setState. */
+/** Skip the next store update when replacing the current calendar. */
 export function suppressNextAutoSave(): void {
   suppressFlag = true;
+}
+
+export function resetSavedCalendar(): void {
+  suppressNextAutoSave();
+  useCalendarStore.getState().resetCalendar();
+  suppressFlag = false;
+  void clearStorage().then((result) => {
+    if (!result.success) useCalendarStore.setState({ saveError: result.error });
+  });
 }
 
 type PersistedFields = Pick<
@@ -31,6 +40,8 @@ type PersistedFields = Pick<
   | "images"
   | "imagePercent"
   | "imagePosition"
+  | "imageFitMode"
+  | "imageCropSettings"
   | "monthThemeOverrides"
   | "calendarStyle"
 >;
@@ -53,6 +64,8 @@ const PERSISTED_KEYS: (keyof PersistedFields)[] = [
   "images",
   "imagePercent",
   "imagePosition",
+  "imageFitMode",
+  "imageCropSettings",
   "monthThemeOverrides",
   "calendarStyle",
 ];
@@ -73,70 +86,78 @@ function shallowEqual(a: PersistedFields, b: PersistedFields): boolean {
 }
 
 export function useAutoSave(enabled: boolean): void {
-  const prevRef = useRef<PersistedFields | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(() => {
     if (!enabled) return;
 
     // Capture current persisted fields as baseline (skip saving on initial mount)
-    prevRef.current = selectPersistedFields(useCalendarStore.getState());
+    let previous = selectPersistedFields(useCalendarStore.getState());
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let saveAttempt = 0;
+
+    const cancelTimer = () => {
+      clearTimeout(timer);
+      timer = undefined;
+    };
 
     const flush = () => {
-      if (timerRef.current !== null) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-        doSave();
+      if (timer !== undefined) {
+        cancelTimer();
+        void doSave();
       }
     };
 
-    const doSave = () => {
+    const doSave = async () => {
+      const attempt = ++saveAttempt;
       const state = useCalendarStore.getState();
-      const result = saveToStorage(state);
+      if (state.lastAutoSavedAt) useCalendarStore.setState({ lastAutoSavedAt: null });
+      const result = await saveToStorage(state);
+      if (attempt !== saveAttempt) return;
       if (result.success) {
         useCalendarStore.setState({ lastAutoSavedAt: new Date().toISOString(), saveError: null });
       } else {
-        useCalendarStore.setState({ saveError: result.error ?? "保存に失敗しました。" });
+        useCalendarStore.setState({ saveError: result.error });
       }
+    };
+
+    const flushWhenHidden = () => {
+      if (document.visibilityState === "hidden") flush();
     };
 
     const unsubscribe = useCalendarStore.subscribe((state) => {
       const current = selectPersistedFields(state);
 
-      // Check if suppress flag is set (restore operation)
       if (suppressFlag) {
         suppressFlag = false;
-        prevRef.current = current;
+        previous = current;
+        saveAttempt++;
+        cancelTimer();
         return;
       }
 
       // Skip if no persisted field changed
-      if (prevRef.current && shallowEqual(prevRef.current, current)) {
+      if (shallowEqual(previous, current)) {
         return;
       }
 
-      prevRef.current = current;
-
-      // Debounce
-      if (timerRef.current !== null) {
-        clearTimeout(timerRef.current);
+      const imagesChanged = previous.images !== current.images;
+      previous = current;
+      cancelTimer();
+      if (imagesChanged) {
+        void doSave();
+        return;
       }
-      timerRef.current = setTimeout(() => {
-        timerRef.current = null;
-        doSave();
-      }, DEBOUNCE_MS);
+      timer = setTimeout(flush, DEBOUNCE_MS);
     });
 
-    // Flush pending save on page unload
+    document.addEventListener("visibilitychange", flushWhenHidden);
     window.addEventListener("beforeunload", flush);
 
     return () => {
       unsubscribe();
+      document.removeEventListener("visibilitychange", flushWhenHidden);
       window.removeEventListener("beforeunload", flush);
-      if (timerRef.current !== null) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
+      saveAttempt++;
+      cancelTimer();
     };
   }, [enabled]);
 }

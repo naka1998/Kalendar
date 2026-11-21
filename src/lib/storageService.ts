@@ -14,14 +14,69 @@ interface SavedState extends PersistedCalendarSettings {
   imageCropSettings?: Record<string, ImageCropSettings>;
 }
 
-interface SavedData {
+interface SavedData<T = SavedState> {
   version: 1;
   savedAt: string;
-  state: SavedState;
+  state: T;
 }
 
-export function saveToStorage(state: CalendarState): { success: boolean; error?: string } {
-  const data: SavedData = {
+type StoredSettings = SavedData<Omit<SavedState, "images">>;
+type StoredImage = [string, MonthImage];
+type SaveResult = { success: true } | { success: false; error: string };
+
+const DATABASE = "kalendar";
+const SETTINGS_STORE = "settings";
+const IMAGES_STORE = "images";
+
+let databasePromise: Promise<IDBDatabase> | undefined;
+
+function openDatabase(): Promise<IDBDatabase> {
+  databasePromise ??= new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open(DATABASE, 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore(SETTINGS_STORE);
+      request.result.createObjectStore(IMAGES_STORE);
+    };
+    request.onsuccess = () => {
+      const database = request.result;
+      database.onclose = () => {
+        databasePromise = undefined;
+      };
+      database.onversionchange = () => {
+        database.close();
+        databasePromise = undefined;
+      };
+      resolve(database);
+    };
+    request.onerror = () => reject(request.error);
+  }).catch((error: unknown) => {
+    databasePromise = undefined;
+    throw error;
+  });
+  return databasePromise;
+}
+
+async function inTransaction<T>(
+  mode: IDBTransactionMode,
+  work: (transaction: IDBTransaction) => () => T,
+): Promise<T> {
+  const database = await openDatabase();
+  const transaction = database.transaction([SETTINGS_STORE, IMAGES_STORE], mode);
+  return new Promise((resolve, reject) => {
+    transaction.onabort = () => reject(transaction.error);
+    try {
+      const readResult = work(transaction);
+      transaction.oncomplete = () => resolve(readResult());
+      if (mode === "readwrite") transaction.commit?.();
+    } catch (error) {
+      transaction.abort();
+      reject(error);
+    }
+  });
+}
+
+export async function saveToStorage(state: CalendarState): Promise<SaveResult> {
+  const data: StoredSettings = {
     version: 1,
     savedAt: new Date().toISOString(),
     state: {
@@ -39,7 +94,6 @@ export function saveToStorage(state: CalendarState): { success: boolean; error?:
       fontId: state.fontId,
       fontWeight: state.fontWeight,
       useImages: state.useImages,
-      images: state.images,
       imagePercent: state.imagePercent,
       imagePosition: state.imagePosition,
       imageFitMode: state.imageFitMode,
@@ -50,72 +104,119 @@ export function saveToStorage(state: CalendarState): { success: boolean; error?:
   };
 
   try {
-    localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(data));
+    await inTransaction("readwrite", (transaction) => {
+      transaction.objectStore(SETTINGS_STORE).put(data, STORAGE_KEYS.USER_SETTINGS);
+      const images = transaction.objectStore(IMAGES_STORE);
+      images.clear();
+      for (const entry of Object.entries(state.images)) {
+        images.put(entry, entry[0]);
+      }
+      return () => undefined;
+    });
+    removeLegacyData();
     return { success: true };
-  } catch (e) {
-    if (e instanceof DOMException && e.name === "QuotaExceededError") {
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "QuotaExceededError") {
       return { success: false, error: "保存容量を超えました。画像を減らしてお試しください。" };
     }
     return { success: false, error: "保存に失敗しました。" };
   }
 }
 
-export function loadFromStorage(): SavedState | null {
+function readLegacyData(): SavedData | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
-    if (!raw) return null;
+    const data = raw ? (JSON.parse(raw) as SavedData) : null;
+    return data?.version === 1 && data.state ? data : null;
+  } catch {
+    return null;
+  }
+}
 
-    const data = JSON.parse(raw) as SavedData;
-    if (data.version !== 1) return null;
+function removeLegacyData(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEYS.USER_SETTINGS);
+  } catch {
+    // IndexedDB can still be available when localStorage is blocked.
+  }
+}
 
-    // Backward compatibility: migrate old contentAlign/imageAlign to V/H variants
-    if (data.state.calendarStyle) {
-      const style = data.state.calendarStyle as unknown as Record<string, unknown>;
-      if ("contentAlign" in style && !("contentAlignV" in style)) {
-        style.contentAlignV = style.contentAlign;
-        style.contentAlignH = "center";
-        delete style.contentAlign;
-      }
-      if ("imageAlign" in style && !("imageAlignV" in style)) {
-        style.imageAlignV = style.imageAlign;
-        style.imageAlignH = "center";
-        delete style.imageAlign;
-      }
-      if (!("gridWidth" in style)) {
-        style.gridWidth = 100;
-      }
+export async function loadFromStorage(): Promise<SavedState | null> {
+  let data: SavedData | null;
+  try {
+    data = await inTransaction("readonly", (transaction) => {
+      const settings = transaction.objectStore(SETTINGS_STORE).get(STORAGE_KEYS.USER_SETTINGS);
+      const images = transaction.objectStore(IMAGES_STORE).getAll();
+      return () => {
+        const stored = settings.result as StoredSettings | undefined;
+        return stored?.version === 1
+          ? {
+              ...stored,
+              state: {
+                ...stored.state,
+                images: Object.fromEntries(images.result as StoredImage[]),
+              },
+            }
+          : readLegacyData();
+      };
+    });
+  } catch (error) {
+    data = readLegacyData();
+    if (!data) throw error;
+  }
+  if (!data) return null;
+
+  // Backward compatibility: migrate old contentAlign/imageAlign to V/H variants
+  if (data.state.calendarStyle) {
+    const style = data.state.calendarStyle as unknown as Record<string, unknown>;
+    if ("contentAlign" in style && !("contentAlignV" in style)) {
+      style.contentAlignV = style.contentAlign;
+      style.contentAlignH = "center";
+      delete style.contentAlign;
     }
-
-    return data.state;
-  } catch {
-    return null;
+    if ("imageAlign" in style && !("imageAlignV" in style)) {
+      style.imageAlignV = style.imageAlign;
+      style.imageAlignH = "center";
+      delete style.imageAlign;
+    }
+    if (!("gridWidth" in style)) {
+      style.gridWidth = 100;
+    }
   }
+
+  return data.state;
 }
 
-export function clearStorage(): void {
-  localStorage.removeItem(STORAGE_KEYS.USER_SETTINGS);
-}
-
-export function hasSavedData(): boolean {
+export async function clearStorage(): Promise<SaveResult> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
-    if (!raw) return false;
-
-    const data = JSON.parse(raw) as SavedData;
-    return data.version === 1 && data.state != null;
+    await inTransaction("readwrite", (transaction) => {
+      transaction.objectStore(SETTINGS_STORE).clear();
+      transaction.objectStore(IMAGES_STORE).clear();
+      return () => undefined;
+    });
+    removeLegacyData();
+    return { success: true };
   } catch {
-    return false;
+    return { success: false, error: "保存データの削除に失敗しました。" };
   }
 }
 
-export function getSavedTimestamp(): string | null {
+async function readSavedSettings(): Promise<StoredSettings | null> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
-    if (!raw) return null;
-
-    const data = JSON.parse(raw) as SavedData;
-    return data.savedAt ?? null;
+    const data = await inTransaction("readonly", (transaction) => {
+      const settings = transaction.objectStore(SETTINGS_STORE).get(STORAGE_KEYS.USER_SETTINGS);
+      return () => settings.result as StoredSettings | undefined;
+    });
+    return data?.version === 1 ? data : readLegacyData();
   } catch {
-    return null;
+    return readLegacyData();
   }
+}
+
+export async function hasSavedData(): Promise<boolean> {
+  return (await readSavedSettings()) !== null;
+}
+
+export async function getSavedTimestamp(): Promise<string | null> {
+  return (await readSavedSettings())?.savedAt ?? null;
 }

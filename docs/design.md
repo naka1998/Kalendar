@@ -445,7 +445,7 @@ const DEFAULTS = {
 
 // 画像制約
 const IMAGE = {
-  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  MAX_FILE_SIZE: 30 * 1024 * 1024, // 30 MiB
   MAX_DIMENSION: 2400, // px
   JPEG_QUALITY: 0.85,
   ACCEPTED_TYPES: ["image/jpeg", "image/png"],

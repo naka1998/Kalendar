@@ -60,7 +60,7 @@ export const DEFAULT_IMAGE_CROP_SETTINGS = {
 export const CROP_MIN_SIZE = 0.1; // 最小トリミング枠サイズ (画像の10%)
 
 export const IMAGE = {
-  MAX_FILE_SIZE: 10 * 1024 * 1024,
+  MAX_FILE_SIZE: 30 * 1024 * 1024,
   MAX_DIMENSION: 2400,
   JPEG_QUALITY: 0.85,
   ACCEPTED_TYPES: ["image/jpeg", "image/png"],

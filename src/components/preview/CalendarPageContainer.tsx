@@ -35,7 +35,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const imageFitMode = useCalendarStore((s) => s.imageFitMode);
   const updateImageAspectRatio = useCalendarStore((s) => s.updateImageAspectRatio);
 
-  const { uploadImage } = useImageUpload();
+  const { uploadImage, error: imageUploadError } = useImageUpload();
   const scale = useScale();
   const {
     isEditing,
@@ -160,6 +160,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
         calendarStyle,
       }}
       onImageUpload={useImages ? handleImageUpload : undefined}
+      imageUploadError={useImages ? imageUploadError : undefined}
       onImageRemove={useImages ? handleImageRemove : undefined}
       dividerProps={dividerProps}
       isDividerDragging={isDragging}

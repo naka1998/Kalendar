@@ -1,7 +1,7 @@
 import { useCallback, useRef } from "react";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { importFromHtmlFile } from "@/lib/htmlImporter";
-import { clearStorage } from "@/lib/storageService";
+import { resetSavedCalendar } from "@/hooks/useAutoSave";
 import { Button } from "@/components/ui/button";
 
 export function SettingsActions() {
@@ -44,8 +44,7 @@ export function SettingsActions() {
         className="w-full border-destructive/30 text-xs text-destructive hover:bg-destructive/10"
         onClick={() => {
           if (window.confirm("カレンダーの設定をすべて初期状態に戻します。よろしいですか？")) {
-            clearStorage();
-            useCalendarStore.getState().resetCalendar();
+            resetSavedCalendar();
           }
         }}
       >

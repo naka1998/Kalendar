@@ -80,7 +80,9 @@ export function createImageProcessor(resizer: ImageResizer = defaultResizer): Im
     async resizeImage(file: File): Promise<ResizeResult> {
       // Validate file size
       if (file.size > IMAGE.MAX_FILE_SIZE) {
-        throw new Error(`File size exceeds ${IMAGE.MAX_FILE_SIZE / 1024 / 1024}MB limit`);
+        throw new Error(
+          `画像は1枚あたり${IMAGE.MAX_FILE_SIZE / 1024 / 1024} MiBまで登録できます。`,
+        );
       }
 
       // Validate MIME type

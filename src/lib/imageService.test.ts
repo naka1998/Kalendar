@@ -41,12 +41,19 @@ describe("createImageProcessor", () => {
     return new File([buffer], "test.jpg", { type });
   }
 
-  it("rejects files over 10MB", async () => {
+  it("accepts files at the 30 MiB limit", async () => {
+    const processor = createImageProcessor(mockResizer());
+    const file = createMockFile(30 * 1024 * 1024, "image/jpeg");
+
+    await expect(processor.resizeImage(file)).resolves.toMatchObject({ mimeType: "image/jpeg" });
+  });
+
+  it("rejects files one byte over 30 MiB before decoding", async () => {
     const resizer = mockResizer();
     const processor = createImageProcessor(resizer);
-    const file = createMockFile(11 * 1024 * 1024, "image/jpeg");
+    const file = createMockFile(30 * 1024 * 1024 + 1, "image/jpeg");
 
-    await expect(processor.resizeImage(file)).rejects.toThrow("File size exceeds");
+    await expect(processor.resizeImage(file)).rejects.toThrow("30 MiB");
     expect(resizer.loadImage).not.toHaveBeenCalled();
   });
 
