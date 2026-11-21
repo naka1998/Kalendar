@@ -32,6 +32,12 @@
 | **Lato** | |
 | ![Lato のカレンダー](screenshots/design/font-lato.png) | |
 
+### テーマとフォントの組み合わせ
+
+| Slate × IBM Plex Sans | Sepia × Noto Sans JP |
+| --- | --- |
+| ![Slate と IBM Plex Sans のカレンダー](screenshots/design/slate-ibm-plex-sans.png) | ![Sepia と Noto Sans JP のカレンダー](screenshots/design/sepia-noto-sans-jp.png) |
+
 ### フォントの太さ
 
 Classic と Montserrat の組み合わせで、日付の数字の太さを比較できます。
