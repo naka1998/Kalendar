@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { CALENDAR_LAYOUTS, getPresetStyle } from "@/lib/calendarLayouts";
+import { useCalendarStore } from "@/stores/calendarStore";
 import { Sidebar } from "./Sidebar";
 
 describe("Sidebar", () => {
@@ -24,10 +26,24 @@ describe("Sidebar", () => {
     expect(screen.getByText("データ")).toBeDefined();
   });
 
-  it("opens preset cards directly from the preset section", () => {
+  it("applies the declared settings when selecting any preset from the sidebar", () => {
+    const original = useCalendarStore.getState();
     render(<Sidebar />);
-    fireEvent.click(screen.getByRole("button", { name: "プリセット" }));
-    expect(screen.getByRole("button", { name: "縦リスト" })).toBeDefined();
+    try {
+      fireEvent.click(screen.getByRole("button", { name: "プリセット" }));
+      for (const preset of CALENDAR_LAYOUTS) {
+        fireEvent.click(screen.getByRole("button", { name: preset.label }));
+        expect(useCalendarStore.getState()).toMatchObject({
+          ...preset.page,
+          ...preset.appearance,
+          fontId: preset.fontId,
+          monthLabelFormat: preset.monthLabelFormat,
+          calendarStyle: getPresetStyle(preset.id),
+        });
+      }
+    } finally {
+      useCalendarStore.setState(original);
+    }
   });
 
   it("renders settings actions inside data section when expanded", () => {
