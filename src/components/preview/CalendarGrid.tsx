@@ -1,3 +1,13 @@
+import type { CSSProperties } from "react";
+import {
+  getCalendarTitle,
+  getDayCellPadding,
+  getDayRules,
+  getTitleSettings,
+  resolveCalendarLayout,
+  resolveDayAlignment,
+} from "@/lib/calendarLayouts";
+import "@/lib/calendarLayouts.css";
 import type {
   CalendarStyle,
   ColorTheme,
@@ -48,25 +58,60 @@ export function CalendarGrid({
   const { colors } = theme;
   const { monthFontSize, dayFontSize, weekdayFontSize, cellPadding, headerGap } = calendarStyle;
 
+  const layout = resolveCalendarLayout(calendarStyle.layoutPreset);
+  const { dayRuleH, dayRuleV, dayFrame } = getDayRules(calendarStyle);
+  const { titlePosition, titleOrder, titleRule, weekdayAlign } = getTitleSettings(calendarStyle);
+  const title = getCalendarTitle(titleOrder, monthLabel);
+  const dayAlignH = resolveDayAlignment(calendarStyle.dayAlignH);
+  const dayAlignV = resolveDayAlignment(calendarStyle.dayAlignV);
+  const dayPadding = getDayCellPadding(layout === "date-list" ? 0 : cellPadding, dayAlignV);
+  const dayCount = grid.flat().filter((cell) => cell.isCurrentMonth && cell.date).length;
+  const gridStyle = {
+    width: `${calendarStyle.gridWidth}%`,
+    fontFamily: `"${fontFamily}"`,
+    fontWeight,
+    "--calendar-grid-rule": colors.gridRule,
+    "--calendar-holiday-mark": colors.holidayMark,
+    "--calendar-list-rows": Math.ceil(dayCount / 2),
+    "--calendar-list-short-rows": Math.ceil(dayCount / 3),
+  } as CSSProperties;
+
   return (
     <div
-      style={{ width: `${calendarStyle.gridWidth}%`, fontFamily: `"${fontFamily}"`, fontWeight }}
+      data-calendar-layout={layout}
+      data-title-position={titlePosition}
+      data-title-order={titleOrder}
+      data-title-rule={titleRule}
+      data-weekday-align={weekdayAlign}
+      data-day-rule-h={dayRuleH}
+      data-day-rule-v={dayRuleV}
+      data-day-frame={dayFrame}
+      data-day-align-h={dayAlignH}
+      data-day-align-v={dayAlignV}
+      style={gridStyle}
     >
       {/* Month label */}
       <div
         data-testid="month-title"
-        className="font-extrabold tracking-tighter"
+        className="calendar-title font-extrabold"
         style={{
           color: colors.monthLabel,
           fontSize: `${monthFontSize}px`,
           marginBottom: `${headerGap}px`,
         }}
       >
-        {monthLabel}
+        {titleOrder === "stacked" && title.year && (
+          <span className="calendar-title-year">{title.year}</span>
+        )}
+        {title.main}
+        {titleOrder === "split" && title.year && (
+          <span className="calendar-title-year">{title.year}</span>
+        )}
       </div>
 
       {/* Header rule */}
       <div
+        className="calendar-title-rule"
         style={{
           borderBottom: `1px solid ${colors.headerRule}`,
           marginBottom: `${headerGap}px`,
@@ -74,11 +119,14 @@ export function CalendarGrid({
       />
 
       {/* Weekday headers */}
-      <div className="grid grid-cols-7" style={{ marginBottom: `${Math.round(headerGap / 2)}px` }}>
+      <div
+        className="calendar-weekdays grid grid-cols-7"
+        style={{ marginBottom: `${dayFrame || dayRuleV ? 0 : Math.round(headerGap / 2)}px` }}
+      >
         {weekdayHeaders.map((header, i) => (
           <div
             key={i}
-            className="text-center font-bold uppercase tracking-[0.2em]"
+            className="text-center font-bold uppercase"
             style={{
               color: colors.weekdayHeader,
               fontSize: `${weekdayFontSize}px`,
@@ -91,11 +139,18 @@ export function CalendarGrid({
       </div>
 
       {/* Day grid */}
-      <div className="grid grid-cols-7">
+      <div className="calendar-days grid grid-cols-7">
         {grid.map((row, ri) =>
           row.map((cell, ci) => {
             if (!cell.date || !cell.isCurrentMonth) {
-              return <div key={`${ri}-${ci}`} style={{ padding: `${cellPadding}px 0` }} />;
+              return (
+                <div
+                  key={`${ri}-${ci}`}
+                  className="calendar-cell"
+                  data-empty=""
+                  style={{ padding: `${cellPadding}px 0` }}
+                />
+              );
             }
 
             let textColor = colors.text;
@@ -109,26 +164,35 @@ export function CalendarGrid({
             return (
               <div
                 key={`${ri}-${ci}`}
-                className="flex flex-col items-center"
+                className="calendar-cell flex flex-col items-center"
+                data-ruled={ri < grid.length - 1 ? "" : undefined}
                 style={{
-                  padding: `${cellPadding}px 0`,
-                  borderBottom: ri < grid.length - 1 ? `1px solid ${colors.gridRule}` : undefined,
+                  padding: dayPadding,
                 }}
               >
                 <span
-                  className="flex items-center justify-center"
+                  className="calendar-day-number flex items-center"
+                  data-circled={isCircle ? "" : undefined}
                   style={{
                     color: textColor,
-                    fontSize: `${dayFontSize}px`,
-                    width: `${cellSize}px`,
-                    height: `${cellSize}px`,
+                    fontSize: `${layout === "date-list" ? Math.min(dayFontSize, 14) : dayFontSize}px`,
+                    width: layout === "date-list" ? undefined : `${cellSize}px`,
+                    height: layout === "date-list" ? undefined : `${cellSize}px`,
                     borderRadius: isCircle ? "50%" : undefined,
                     border: isCircle ? `1.5px solid ${colors.holidayMark}` : undefined,
-                    borderBottom: isUnderline ? `2px solid ${colors.holidayMark}` : undefined,
                   }}
                 >
-                  {cell.dayOfMonth}
+                  {isUnderline ? (
+                    <span className="calendar-holiday-underline">{cell.dayOfMonth}</span>
+                  ) : (
+                    cell.dayOfMonth
+                  )}
                 </span>
+                {layout === "date-list" && (
+                  <span className="calendar-list-weekday" style={{ color: textColor }}>
+                    {weekdayHeaders[ci]}
+                  </span>
+                )}
                 {cell.isHoliday && holidayMarkStyle === "dot" && (
                   <HolidayMark style="dot" color={colors.holidayMark} />
                 )}

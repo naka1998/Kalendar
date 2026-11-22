@@ -32,6 +32,22 @@ function makePage(overrides?: Partial<PageData>): PageData {
 }
 
 describe("renderGridHtml", () => {
+  it("exports saved rule-only layouts as the standard grid with matching rules", () => {
+    const full = renderGridHtml(makePage(), 100, { layoutPreset: "full-grid" });
+    const unruled = renderGridHtml(makePage(), 100, { layoutPreset: "unruled" });
+    expect(full).toContain(
+      'data-calendar-layout="standard" data-day-rule-h="true" data-day-rule-v="true"',
+    );
+    expect(unruled).toContain(
+      'data-calendar-layout="standard" data-day-rule-h="false" data-day-rule-v="false"',
+    );
+  });
+
+  it("falls back to the standard grid for the retired weekly bands preset", () => {
+    const html = renderGridHtml(makePage(), 100, { layoutPreset: "week-bands" });
+    expect(html).toContain('data-calendar-layout="standard"');
+  });
+
   it("renders month label", () => {
     const html = renderGridHtml(makePage());
     expect(html).toContain("2026.04");
@@ -65,9 +81,9 @@ describe("renderGridHtml", () => {
     expect(html).toContain(`color:${theme.colors.weekdayHeader}`);
   });
 
-  it("renders day grid with 7-column layout", () => {
+  it("renders the day grid", () => {
     const html = renderGridHtml(makePage());
-    expect(html).toContain("grid-template-columns:repeat(7,1fr)");
+    expect(html).toContain('<div class="calendar-days">');
   });
 
   it("renders day cells via renderDayCell", () => {

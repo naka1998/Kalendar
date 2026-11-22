@@ -1,3 +1,10 @@
+import type {
+  SavedCalendarLayout,
+  TitlePosition,
+  TitleOrder,
+  TitleRule,
+} from "@/lib/calendarLayouts";
+
 // === Basic Settings ===
 export type Orientation = "portrait" | "landscape";
 export type WeekStart = "sunday" | "monday";
@@ -33,6 +40,16 @@ export interface CalendarStyle {
   imageAlignH: ContentAlign;
   pageMarginTop: number;
   gridWidth: number;
+  layoutPreset?: SavedCalendarLayout;
+  titlePosition?: TitlePosition;
+  titleOrder?: TitleOrder;
+  titleRule?: TitleRule;
+  weekdayAlign?: ContentAlign;
+  dayRuleH?: boolean;
+  dayRuleV?: boolean;
+  dayFrame?: boolean;
+  dayAlignH?: ContentAlign;
+  dayAlignV?: ContentAlign;
 }
 
 // === Color Theme ===
@@ -126,6 +143,16 @@ export interface HtmlGeneratorInput {
       | "imageAlignH"
       | "pageMarginTop"
       | "gridWidth"
+      | "layoutPreset"
+      | "titlePosition"
+      | "titleOrder"
+      | "titleRule"
+      | "weekdayAlign"
+      | "dayRuleH"
+      | "dayRuleV"
+      | "dayFrame"
+      | "dayAlignH"
+      | "dayAlignV"
       | "monthFontSize"
       | "dayFontSize"
       | "weekdayFontSize"

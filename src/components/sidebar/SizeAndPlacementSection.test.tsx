@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { AppearanceSection } from "./AppearanceSection";
+import { SizeAndPlacementSection } from "./SizeAndPlacementSection";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { DEFAULTS, DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
 
@@ -13,26 +13,16 @@ beforeEach(() => {
   });
 });
 
-describe("AppearanceSection (formerly DesignSection)", () => {
-  it("renders theme label", () => {
-    render(<AppearanceSection />);
-    expect(screen.getByText("テーマ")).toBeDefined();
-  });
-
-  it("renders font label", () => {
-    render(<AppearanceSection />);
-    expect(screen.getByText("フォント")).toBeDefined();
-  });
-
+describe("SizeAndPlacementSection", () => {
   it("renders font weight options", () => {
-    render(<AppearanceSection />);
+    render(<SizeAndPlacementSection />);
     expect(screen.getByText("細字")).toBeDefined();
     expect(screen.getByText("標準")).toBeDefined();
     expect(screen.getByText("太字")).toBeDefined();
   });
 
   it("renders typography size controls", () => {
-    render(<AppearanceSection />);
+    render(<SizeAndPlacementSection />);
     expect(screen.getByText("月タイトル")).toBeDefined();
     expect(screen.getByText("日付")).toBeDefined();
     expect(screen.getByText("曜日")).toBeDefined();
@@ -42,7 +32,7 @@ describe("AppearanceSection (formerly DesignSection)", () => {
   });
 
   it("changes font weight on click", () => {
-    render(<AppearanceSection />);
+    render(<SizeAndPlacementSection />);
     fireEvent.click(screen.getByText("太字"));
     expect(useCalendarStore.getState().fontWeight).toBe(600);
   });
@@ -54,7 +44,7 @@ describe("AppearanceSection (formerly DesignSection)", () => {
         monthFontSize: 30,
       },
     });
-    render(<AppearanceSection />);
+    render(<SizeAndPlacementSection />);
     const monthLabel = screen.getByText("月タイトル");
     expect(monthLabel.className).toContain("text-amber-500");
   });
@@ -66,13 +56,13 @@ describe("AppearanceSection (formerly DesignSection)", () => {
         monthFontSize: 26,
       },
     });
-    render(<AppearanceSection />);
+    render(<SizeAndPlacementSection />);
     const monthLabel = screen.getByText("月タイトル");
     expect(monthLabel.className).toContain("text-red-500");
   });
 
   it("shows no warning color when font size is above thresholds", () => {
-    render(<AppearanceSection />);
+    render(<SizeAndPlacementSection />);
     const monthLabel = screen.getByText("月タイトル");
     expect(monthLabel.className).toContain("text-on-surface-variant");
     expect(monthLabel.className).not.toContain("text-amber-500");

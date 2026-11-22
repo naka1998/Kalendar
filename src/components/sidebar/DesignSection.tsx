@@ -1,7 +1,7 @@
 import { useCalendarStore } from "@/stores/calendarStore";
 import { Label } from "@/components/ui/label";
 import { ThemeGrid } from "./ThemeGrid";
-import { FontSelector } from "./FontSelector";
+import { FontSelector, FontWeightSelector } from "./FontSelector";
 import { SliderField, getFontWarningLevel } from "./SliderField";
 import { AlignGrid } from "./AlignGrid";
 import { FitModeGrid } from "./FitModeGrid";
@@ -18,6 +18,7 @@ export function DesignSection() {
     <div className="space-y-4">
       <ThemeGrid />
       <FontSelector />
+      <FontWeightSelector />
 
       {/* Image toggle */}
       <div className="flex items-center justify-between">

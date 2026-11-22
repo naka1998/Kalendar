@@ -80,7 +80,8 @@ describe("CalendarGrid", () => {
     });
     renderGrid({ grid, monthLabel: "2026.01", holidayMarkStyle: "underline" });
     const el = screen.getByText("1");
-    expect(el.style.borderBottom).toContain("2px solid");
+    expect(el.classList.contains("calendar-holiday-underline")).toBe(true);
+    expect(el.parentElement?.style.borderBottom).toBe("");
   });
 
   it("renders color-only style without extra decoration", () => {
