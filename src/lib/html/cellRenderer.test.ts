@@ -135,14 +135,15 @@ describe("renderDayCell", () => {
   it("renders underline for holiday with underline style", () => {
     const page = makePage({ holidayMarkStyle: "underline" });
     const html = renderDayCell(page, 0, 3, 1);
-    expect(html).toContain(`border-bottom:2px solid ${theme.colors.holidayMark}`);
+    expect(html).toContain('<span class="calendar-holiday-underline">29</span>');
+    expect(html).not.toContain("border-bottom:2px");
   });
 
   it("renders no extra decoration for color-only style", () => {
     const page = makePage({ holidayMarkStyle: "color-only" });
     const html = renderDayCell(page, 0, 3, 1);
     expect(html).not.toContain("border-radius");
-    expect(html).not.toContain("border-bottom:2px");
+    expect(html).not.toContain("calendar-holiday-underline");
     expect(html).toContain(`color:${theme.colors.sunday}`);
   });
 

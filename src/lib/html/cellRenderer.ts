@@ -50,7 +50,9 @@ export function renderDayCell(
   let spanStyle = `color:${textColor};display:flex;align-items:center;${isList ? `font-size:${Math.min(dayFontSize, 14)}px;` : `width:${cellSize}px;height:${cellSize}px;font-size:${dayFontSize}px;`}`;
   if (isCircle)
     spanStyle += `border-radius:50%;border:1.5px solid ${page.theme.colors.holidayMark};`;
-  if (isUnderline) spanStyle += `border-bottom:2px solid ${page.theme.colors.holidayMark};`;
+  const dayLabel = isUnderline
+    ? `<span class="calendar-holiday-underline">${cell.dayOfMonth}</span>`
+    : cell.dayOfMonth;
 
   const mark = cell.isHoliday
     ? renderHolidayMark(page.holidayMarkStyle, page.theme.colors.holidayMark)
@@ -59,5 +61,5 @@ export function renderDayCell(
   const weekday = style?.showWeekday
     ? `<span class="calendar-list-weekday" style="color:${textColor}">${escapeHtml(page.weekdayHeaders[ci])}</span>`
     : "";
-  return `<div class="calendar-cell"${ruled} style="padding:${getDayCellPadding(isList ? 0 : cellPadding, style?.dayAlignV)}"><span class="calendar-day-number"${isCircle ? " data-circled" : ""} style="${spanStyle}">${cell.dayOfMonth}</span>${weekday}${mark}</div>`;
+  return `<div class="calendar-cell"${ruled} style="padding:${getDayCellPadding(isList ? 0 : cellPadding, style?.dayAlignV)}"><span class="calendar-day-number"${isCircle ? " data-circled" : ""} style="${spanStyle}">${dayLabel}</span>${weekday}${mark}</div>`;
 }

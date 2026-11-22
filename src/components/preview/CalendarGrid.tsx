@@ -71,6 +71,7 @@ export function CalendarGrid({
     fontFamily: `"${fontFamily}"`,
     fontWeight,
     "--calendar-grid-rule": colors.gridRule,
+    "--calendar-holiday-mark": colors.holidayMark,
     "--calendar-list-rows": Math.ceil(dayCount / 2),
     "--calendar-list-short-rows": Math.ceil(dayCount / 3),
   } as CSSProperties;
@@ -92,7 +93,7 @@ export function CalendarGrid({
       {/* Month label */}
       <div
         data-testid="month-title"
-        className="calendar-title font-extrabold tracking-tighter"
+        className="calendar-title font-extrabold"
         style={{
           color: colors.monthLabel,
           fontSize: `${monthFontSize}px`,
@@ -125,7 +126,7 @@ export function CalendarGrid({
         {weekdayHeaders.map((header, i) => (
           <div
             key={i}
-            className="text-center font-bold uppercase tracking-[0.2em]"
+            className="text-center font-bold uppercase"
             style={{
               color: colors.weekdayHeader,
               fontSize: `${weekdayFontSize}px`,
@@ -179,10 +180,13 @@ export function CalendarGrid({
                     height: layout === "date-list" ? undefined : `${cellSize}px`,
                     borderRadius: isCircle ? "50%" : undefined,
                     border: isCircle ? `1.5px solid ${colors.holidayMark}` : undefined,
-                    borderBottom: isUnderline ? `2px solid ${colors.holidayMark}` : undefined,
                   }}
                 >
-                  {cell.dayOfMonth}
+                  {isUnderline ? (
+                    <span className="calendar-holiday-underline">{cell.dayOfMonth}</span>
+                  ) : (
+                    cell.dayOfMonth
+                  )}
                 </span>
                 {layout === "date-list" && (
                   <span className="calendar-list-weekday" style={{ color: textColor }}>

@@ -35,7 +35,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   for (const [label, layout] of [
     ["書き込み用", "writing"],
     ["クラシカル", "centered"],
-    ["右揃え・線なし", "right-aligned"],
+    ["モダン", "right-aligned"],
     ["年月を上下に", "stacked"],
     ["月は左、年は右", "split"],
     ["左サイド見出し", "side-title"],
@@ -47,6 +47,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
     await button.click();
     await expect(button).toHaveAttribute("aria-pressed", "true");
     await expect(calendar).toHaveAttribute("data-calendar-layout", layout);
+    await expect(calendar).toHaveAttribute("data-day-frame", String(layout === "writing"));
   }
 
   await openPanel(page, "サイズと配置");
@@ -212,4 +213,36 @@ test("toggles vertical rules, horizontal rules and the frame independently", asy
   await layouts.getByRole("button", { name: "日付カード", exact: true }).click();
   await expect(calendar).toHaveAttribute("data-day-rule-v", "true");
   await expect(calendar).toHaveAttribute("data-day-rule-h", "true");
+});
+
+test("aligns the Modern heading, weekdays, and underlined holiday dates", async ({ page }) => {
+  await page.goto("/");
+  await openPanel(page, "見た目");
+  await page.getByRole("button", { name: "モダン", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Monochrome", exact: true })).toHaveClass(/ring-2/);
+  const calendar = page.locator('[data-calendar-layout="right-aligned"]').first();
+  const holiday = calendar.locator(".calendar-holiday-underline").first();
+  await expect(holiday).toHaveText("1");
+  await expect(holiday).toHaveCSS("text-decoration-line", "underline");
+  await expect
+    .poll(() =>
+      calendar.evaluate((grid) => {
+        const edge = (selector: string) => {
+          const range = document.createRange();
+          range.selectNodeContents(grid.querySelector(selector)!);
+          return range.getBoundingClientRect().right;
+        };
+        const month = edge(".calendar-title");
+        const saturday = edge(".calendar-weekdays > :last-child");
+        const saturdayDate = edge(".calendar-cell:nth-child(7) .calendar-day-number");
+        const friday = edge(".calendar-weekdays > :nth-child(6)");
+        const holidayDate = edge(".calendar-holiday-underline");
+        return Math.max(
+          Math.abs(month - saturday),
+          Math.abs(saturday - saturdayDate),
+          Math.abs(friday - holidayDate),
+        );
+      }),
+    )
+    .toBeLessThan(1);
 });

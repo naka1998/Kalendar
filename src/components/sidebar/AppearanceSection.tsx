@@ -16,6 +16,8 @@ const thumbnails = import.meta.glob<string>("../../../screenshots/layouts/*.png"
 });
 export function AppearanceSection() {
   const style = useCalendarStore((s) => s.calendarStyle);
+  const themeId = useCalendarStore((s) => s.themeId);
+  const holidayMarkStyle = useCalendarStore((s) => s.holidayMarkStyle);
   const fontId = useCalendarStore((s) => s.fontId);
   const monthLabelFormat = useCalendarStore((s) => s.monthLabelFormat);
   const orientation = useCalendarStore((s) => s.orientation);
@@ -28,8 +30,16 @@ export function AppearanceSection() {
       <section aria-label="プリセット" className="space-y-2">
         <h3 className="text-sm font-bold">プリセット</h3>
         <div className="grid grid-cols-2 gap-2">
-          {CALENDAR_LAYOUTS.map(
-            ({ id, label, page, fontId: presetFontId, monthLabelFormat: presetMonthFormat }) => (
+          {CALENDAR_LAYOUTS.map((preset) => {
+            const {
+              id,
+              label,
+              page,
+              fontId: presetFontId,
+              monthLabelFormat: presetMonthFormat,
+            } = preset;
+            const appearance = "appearance" in preset ? preset.appearance : undefined;
+            return (
               <button
                 key={id}
                 type="button"
@@ -39,6 +49,7 @@ export function AppearanceSection() {
                   useCalendarStore.setState((state) => ({
                     calendarStyle: { ...state.calendarStyle, ...getPresetStyle(id) },
                     ...page,
+                    ...appearance,
                     fontId: presetFontId,
                     monthLabelFormat: presetMonthFormat,
                   }))
@@ -57,12 +68,15 @@ export function AppearanceSection() {
                     orientation !== page.orientation ||
                     imagePosition !== page.imagePosition ||
                     fontId !== presetFontId ||
-                    monthLabelFormat !== presetMonthFormat) && (
+                    monthLabelFormat !== presetMonthFormat ||
+                    (appearance &&
+                      (themeId !== appearance.themeId ||
+                        holidayMarkStyle !== appearance.holidayMarkStyle))) && (
                     <span className="text-on-surface-variant">調整済み</span>
                   )}
               </button>
-            ),
-          )}
+            );
+          })}
         </div>
       </section>
 

@@ -27,7 +27,8 @@ export const CALENDAR_LAYOUTS = [
   },
   {
     id: "right-aligned",
-    label: "右揃え・線なし",
+    label: "モダン",
+    appearance: { themeId: "monochrome", holidayMarkStyle: "underline" },
     page: PORTRAIT_PAGE,
     fontId: "inter",
     monthLabelFormat: "yyyy.mm",
@@ -89,7 +90,7 @@ export function getDayRules(
 ) {
   const layout = style?.layoutPreset;
   return {
-    dayFrame: style?.dayFrame === true,
+    dayFrame: style?.dayFrame ?? layout === "writing",
     dayRuleH: style?.dayRuleH ?? (layout !== "unruled" && layout !== "right-aligned"),
     dayRuleV:
       style?.dayRuleV ??

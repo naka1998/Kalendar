@@ -6,6 +6,18 @@
 
 :where([data-calendar-layout]) .calendar-weekdays > div {
   text-align: center;
+  letter-spacing: 0.2em;
+}
+
+:where([data-calendar-layout]) .calendar-title {
+  letter-spacing: -0.05em;
+}
+
+.calendar-holiday-underline {
+  text-decoration: underline;
+  text-decoration-color: var(--calendar-holiday-mark);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
 }
 
 :where([data-calendar-layout]) .calendar-day-number {
@@ -30,6 +42,11 @@
 [data-title-position="right"] .calendar-title,
 [data-weekday-align="end"] .calendar-weekdays > div {
   text-align: right;
+  letter-spacing: normal;
+}
+
+[data-title-position="right"][data-day-frame="true"] .calendar-title {
+  padding-inline-end: 1px;
 }
 
 [data-title-position="left"] .calendar-title,
