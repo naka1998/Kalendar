@@ -95,6 +95,10 @@ export function renderPage(
   const gridWidthPct = calendarStyle?.gridWidth ?? 100;
   const gridStyle = {
     layoutPreset: calendarStyle?.layoutPreset,
+    titlePosition: calendarStyle?.titlePosition,
+    titleOrder: calendarStyle?.titleOrder,
+    titleRule: calendarStyle?.titleRule,
+    weekdayAlign: calendarStyle?.weekdayAlign,
     dayRuleH: calendarStyle?.dayRuleH,
     dayRuleV: calendarStyle?.dayRuleV,
     dayAlignH: calendarStyle?.dayAlignH,

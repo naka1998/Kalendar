@@ -3,6 +3,7 @@ import {
   getCalendarTitle,
   getDayCellPadding,
   getDayRules,
+  getTitleSettings,
   resolveCalendarLayout,
   resolveDayAlignment,
 } from "@/lib/calendarLayouts";
@@ -59,7 +60,8 @@ export function CalendarGrid({
 
   const layout = resolveCalendarLayout(calendarStyle.layoutPreset);
   const { dayRuleH, dayRuleV } = getDayRules(calendarStyle);
-  const title = getCalendarTitle(layout, monthLabel);
+  const { titlePosition, titleOrder, titleRule, weekdayAlign } = getTitleSettings(calendarStyle);
+  const title = getCalendarTitle(titleOrder, monthLabel);
   const dayAlignH = resolveDayAlignment(calendarStyle.dayAlignH);
   const dayAlignV = resolveDayAlignment(calendarStyle.dayAlignV);
   const dayPadding = getDayCellPadding(layout === "date-list" ? 0 : cellPadding, dayAlignV);
@@ -76,6 +78,10 @@ export function CalendarGrid({
   return (
     <div
       data-calendar-layout={layout}
+      data-title-position={titlePosition}
+      data-title-order={titleOrder}
+      data-title-rule={titleRule}
+      data-weekday-align={weekdayAlign}
       data-day-rule-h={dayRuleH}
       data-day-rule-v={dayRuleV}
       data-day-align-h={dayAlignH}
@@ -92,11 +98,11 @@ export function CalendarGrid({
           marginBottom: `${headerGap}px`,
         }}
       >
-        {layout === "stacked" && title.year && (
+        {titleOrder === "stacked" && title.year && (
           <span className="calendar-title-year">{title.year}</span>
         )}
         {title.main}
-        {layout !== "stacked" && title.year && (
+        {titleOrder === "split" && title.year && (
           <span className="calendar-title-year">{title.year}</span>
         )}
       </div>

@@ -1,4 +1,9 @@
-import type { SavedCalendarLayout } from "@/lib/calendarLayouts";
+import type {
+  SavedCalendarLayout,
+  TitlePosition,
+  TitleOrder,
+  TitleRule,
+} from "@/lib/calendarLayouts";
 
 // === Basic Settings ===
 export type Orientation = "portrait" | "landscape";
@@ -36,6 +41,10 @@ export interface CalendarStyle {
   pageMarginTop: number;
   gridWidth: number;
   layoutPreset?: SavedCalendarLayout;
+  titlePosition?: TitlePosition;
+  titleOrder?: TitleOrder;
+  titleRule?: TitleRule;
+  weekdayAlign?: ContentAlign;
   dayRuleH?: boolean;
   dayRuleV?: boolean;
   dayAlignH?: ContentAlign;
@@ -134,6 +143,10 @@ export interface HtmlGeneratorInput {
       | "pageMarginTop"
       | "gridWidth"
       | "layoutPreset"
+      | "titlePosition"
+      | "titleOrder"
+      | "titleRule"
+      | "weekdayAlign"
       | "dayRuleH"
       | "dayRuleV"
       | "dayAlignH"

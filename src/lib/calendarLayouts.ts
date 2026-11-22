@@ -3,6 +3,7 @@ import { DEFAULT_CALENDAR_STYLE } from "./constants";
 
 export const CALENDAR_LAYOUTS = [
   { id: "standard", label: "標準グリッド" },
+  { id: "writing", label: "書き込み用" },
   { id: "centered", label: "中央・短い下線" },
   { id: "right-aligned", label: "右揃え・線なし" },
   { id: "stacked", label: "年月を上下に" },
@@ -26,12 +27,75 @@ export function getDayRules(style?: Pick<CalendarStyle, "layoutPreset" | "dayRul
   return {
     dayRuleH: style?.dayRuleH ?? (layout !== "unruled" && layout !== "right-aligned"),
     dayRuleV:
-      style?.dayRuleV ?? (layout === "full-grid" || layout === "cards" || layout === "week-bands"),
+      style?.dayRuleV ??
+      (layout === "full-grid" ||
+        layout === "writing" ||
+        layout === "cards" ||
+        layout === "week-bands"),
   };
 }
 
-export function getCalendarTitle(layout: CalendarLayout, label: string) {
-  if (layout !== "stacked" && layout !== "split" && layout !== "date-list") return { main: label };
+export const TITLE_POSITIONS = [
+  { value: "left", label: "左" },
+  { value: "center", label: "中央" },
+  { value: "right", label: "右" },
+  { value: "side", label: "左側に縦書き" },
+] as const;
+export const TITLE_ORDERS = [
+  { value: "together", label: "ひと続き" },
+  { value: "stacked", label: "年を上、月を下" },
+  { value: "split", label: "月を左、年を右" },
+] as const;
+export const TITLE_RULES = [
+  { value: "full", label: "全幅" },
+  { value: "short", label: "短い線" },
+  { value: "none", label: "なし" },
+] as const;
+export type TitlePosition = (typeof TITLE_POSITIONS)[number]["value"];
+export type TitleOrder = (typeof TITLE_ORDERS)[number]["value"];
+export type TitleRule = (typeof TITLE_RULES)[number]["value"];
+
+export function getTitleSettings(
+  style?: Pick<
+    CalendarStyle,
+    "layoutPreset" | "titlePosition" | "titleOrder" | "titleRule" | "weekdayAlign"
+  >,
+) {
+  const layout = resolveCalendarLayout(style?.layoutPreset);
+  const defaultPosition =
+    layout === "centered" || layout === "cards" || layout === "writing"
+      ? "center"
+      : layout === "right-aligned"
+        ? "right"
+        : layout === "side-title"
+          ? "side"
+          : "left";
+  const defaultOrder =
+    layout === "stacked"
+      ? "stacked"
+      : layout === "split" || layout === "date-list"
+        ? "split"
+        : "together";
+  const defaultRule =
+    layout === "centered"
+      ? "short"
+      : layout === "right-aligned" || layout === "side-title" || layout === "writing"
+        ? "none"
+        : "full";
+  return {
+    titlePosition:
+      TITLE_POSITIONS.find(({ value }) => value === style?.titlePosition)?.value ?? defaultPosition,
+    titleOrder:
+      TITLE_ORDERS.find(({ value }) => value === style?.titleOrder)?.value ?? defaultOrder,
+    titleRule: TITLE_RULES.find(({ value }) => value === style?.titleRule)?.value ?? defaultRule,
+    weekdayAlign:
+      resolveDayAlignment(style?.weekdayAlign) ??
+      (layout === "stacked" ? "start" : layout === "right-aligned" ? "end" : "center"),
+  };
+}
+
+export function getCalendarTitle(order: TitleOrder, label: string) {
+  if (order === "together") return { main: label };
 
   // Keep the selected language and month notation when separating the year.
   const japanese = label.match(/^(\d{4}年)(.+)$/);
@@ -55,22 +119,34 @@ const LAYOUT_FONT_SIZES: Partial<
   "date-list": { monthFontSize: 40, dayFontSize: 13 },
 };
 
-export function getLayoutStyleChange(
-  style: CalendarStyle,
-  next: CalendarLayout,
-): Partial<CalendarStyle> {
-  const previousSizes = LAYOUT_FONT_SIZES[resolveCalendarLayout(style.layoutPreset)];
-  const nextSizes = LAYOUT_FONT_SIZES[next];
-  const change: Partial<CalendarStyle> = { layoutPreset: next };
-  if (style.layoutPreset === "full-grid" || style.layoutPreset === "unruled") {
-    Object.assign(change, getDayRules(style));
-  }
-  for (const key of ["monthFontSize", "dayFontSize", "weekdayFontSize"] as const) {
-    if (style[key] === (previousSizes?.[key] ?? DEFAULT_CALENDAR_STYLE[key])) {
-      change[key] = nextSizes?.[key] ?? DEFAULT_CALENDAR_STYLE[key];
-    }
-  }
-  return change;
+export function getPresetStyle(layoutPreset: CalendarLayout) {
+  return {
+    layoutPreset,
+    ...getTitleSettings({ layoutPreset }),
+    ...getDayRules({ layoutPreset }),
+    dayAlignH: undefined,
+    dayAlignV: undefined,
+    monthFontSize: DEFAULT_CALENDAR_STYLE.monthFontSize,
+    dayFontSize: DEFAULT_CALENDAR_STYLE.dayFontSize,
+    weekdayFontSize: DEFAULT_CALENDAR_STYLE.weekdayFontSize,
+    cellPadding: DEFAULT_CALENDAR_STYLE.cellPadding,
+    headerGap: DEFAULT_CALENDAR_STYLE.headerGap,
+    gridWidth: DEFAULT_CALENDAR_STYLE.gridWidth,
+    ...LAYOUT_FONT_SIZES[layoutPreset],
+  };
+}
+
+export function isPresetAdjusted(style: CalendarStyle): boolean {
+  const preset = getPresetStyle(resolveCalendarLayout(style.layoutPreset));
+  const current = {
+    ...style,
+    layoutPreset: preset.layoutPreset,
+    ...getTitleSettings(style),
+    ...getDayRules(style),
+  };
+  return (Object.keys(preset) as (keyof typeof preset)[]).some(
+    (key) => preset[key] !== current[key],
+  );
 }
 
 export function resolveDayAlignment(value: ContentAlign | undefined): ContentAlign | undefined {

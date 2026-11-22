@@ -118,6 +118,7 @@ test.describe("Layout interaction", () => {
 
   test("top margin slider exists in design section", async ({ page }) => {
     await page.getByText("見た目").click();
+    await page.getByText("詳細調整", { exact: true }).click();
     await expect(page.getByText("上余白")).toBeVisible();
   });
 

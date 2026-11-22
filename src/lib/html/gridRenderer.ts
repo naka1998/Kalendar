@@ -1,17 +1,19 @@
-import type { ContentAlign, PageData } from "@/stores/types";
+import type { CalendarStyle, ContentAlign, PageData } from "@/stores/types";
 import { DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
 import { escapeHtml } from "../htmlUtils";
 import {
   getCalendarTitle,
   resolveCalendarLayout,
   resolveDayAlignment,
-  type SavedCalendarLayout,
+  getTitleSettings,
   getDayRules,
 } from "../calendarLayouts";
 import { renderDayCell } from "./cellRenderer";
 
-export interface GridStyleOverrides {
-  layoutPreset?: SavedCalendarLayout;
+export interface GridStyleOverrides extends Pick<
+  CalendarStyle,
+  "layoutPreset" | "titlePosition" | "titleOrder" | "titleRule" | "weekdayAlign"
+> {
   dayRuleH?: boolean;
   dayRuleV?: boolean;
   dayAlignH?: ContentAlign;
@@ -36,7 +38,8 @@ export function renderGridHtml(
 
   const layout = resolveCalendarLayout(style?.layoutPreset);
   const { dayRuleH, dayRuleV } = getDayRules(style);
-  const title = getCalendarTitle(layout, page.monthLabel);
+  const { titlePosition, titleOrder, titleRule, weekdayAlign } = getTitleSettings(style);
+  const title = getCalendarTitle(titleOrder, page.monthLabel);
   const dayAlignH = resolveDayAlignment(style?.dayAlignH);
   const dayAlignV = resolveDayAlignment(style?.dayAlignV);
   const alignmentAttrs = [
@@ -47,9 +50,9 @@ export function renderGridHtml(
     ? `<span class="calendar-title-year">${escapeHtml(title.year)}</span>`
     : "";
   const titleText =
-    layout === "stacked" ? year + escapeHtml(title.main) : escapeHtml(title.main) + year;
+    titleOrder === "stacked" ? year + escapeHtml(title.main) : escapeHtml(title.main) + year;
   const dayCount = page.grid.flat().filter((cell) => cell.isCurrentMonth && cell.date).length;
-  let gridHtml = `<div data-calendar-layout="${layout}"${alignmentAttrs} data-day-rule-h="${dayRuleH}" data-day-rule-v="${dayRuleV}" style="width:${gridWidth}%;--calendar-grid-rule:${page.theme.colors.gridRule};--calendar-list-rows:${Math.ceil(dayCount / 2)};--calendar-list-short-rows:${Math.ceil(dayCount / 3)}">`;
+  let gridHtml = `<div data-calendar-layout="${layout}"${alignmentAttrs} data-day-rule-h="${dayRuleH}" data-day-rule-v="${dayRuleV}" data-title-position="${titlePosition}" data-title-order="${titleOrder}" data-title-rule="${titleRule}" data-weekday-align="${weekdayAlign}" style="width:${gridWidth}%;--calendar-grid-rule:${page.theme.colors.gridRule};--calendar-list-rows:${Math.ceil(dayCount / 2)};--calendar-list-short-rows:${Math.ceil(dayCount / 3)}">`;
   // Month label
   gridHtml += `<div class="calendar-title" style="color:${page.theme.colors.monthLabel};font-size:${monthFontSize}px;font-weight:800;letter-spacing:-0.05em;margin-bottom:${headerGap}px">${titleText}</div>`;
   // Header rule

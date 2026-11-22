@@ -76,6 +76,7 @@ test.describe("Design Customization", () => {
 
   test("font weight buttons work", async ({ page }) => {
     await openAppearance(page);
+    await page.getByText("詳細調整", { exact: true }).click();
     const boldButton = page.getByRole("button", { name: "太字" });
     await boldButton.click();
     await expect(boldButton).toBeVisible();
@@ -119,6 +120,7 @@ test.describe("Design Customization", () => {
 
   test("slider controls are visible", async ({ page }) => {
     await openAppearance(page);
+    await page.getByText("詳細調整", { exact: true }).click();
     await expect(page.getByText("月タイトル")).toBeVisible();
     await expect(page.getByText("日付", { exact: true })).toBeVisible();
     await expect(page.getByText("曜日", { exact: true })).toBeVisible();

@@ -1,147 +1,236 @@
 import {
   CALENDAR_LAYOUTS,
-  getLayoutStyleChange,
   getDayRules,
+  getPresetStyle,
+  getTitleSettings,
+  isPresetAdjusted,
   resolveCalendarLayout,
+  TITLE_ORDERS,
+  TITLE_POSITIONS,
+  TITLE_RULES,
 } from "@/lib/calendarLayouts";
 import { useCalendarStore } from "@/stores/calendarStore";
-import { Label } from "@/components/ui/label";
+import standardPreview from "../../../screenshots/layouts/standard.png";
 import { ThemeGrid } from "./ThemeGrid";
-import { FontSelector } from "./FontSelector";
+import { FontSelector, FontWeightSelector } from "./FontSelector";
 import { SliderField, getFontWarningLevel } from "./SliderField";
 
-const DAY_ALIGNMENT_OPTIONS = [undefined, "start", "center", "end"] as const;
-const DAY_ALIGNMENT_FIELDS = [
-  { field: "dayAlignH", label: "日付の左右揃え", choices: ["自動", "左", "中央", "右"] },
-  { field: "dayAlignV", label: "日付の上下揃え", choices: ["自動", "上", "中央", "下"] },
+const thumbnails = import.meta.glob<string>("../../../screenshots/layouts/*.png", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+const alignmentOptions = [
+  { value: "", label: "自動" },
+  { value: "start", label: "左" },
+  { value: "center", label: "中央" },
+  { value: "end", label: "右" },
+] as const;
+const verticalOptions = [
+  { value: "", label: "自動" },
+  { value: "start", label: "上" },
+  { value: "center", label: "中央" },
+  { value: "end", label: "下" },
 ] as const;
 
-export function AppearanceSection() {
-  const calendarStyle = useCalendarStore((s) => s.calendarStyle);
-  const setCalendarStyle = useCalendarStore((s) => s.setCalendarStyle);
+function SettingSelect<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: readonly { value: T; label: string }[];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <label className="flex items-center justify-between gap-2 text-xs">
+      {label}
+      <select
+        className="min-w-24 rounded-md bg-surface-container-high p-1.5 text-xs focus-visible:ring-2 focus-visible:ring-ring"
+        value={value}
+        onChange={(event) => {
+          const selected = options.find((option) => option.value === event.target.value);
+          if (selected) onChange(selected.value);
+        }}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
 
-  const dayRules = getDayRules(calendarStyle);
+export function AppearanceSection() {
+  const style = useCalendarStore((s) => s.calendarStyle);
+  const setStyle = useCalendarStore((s) => s.setCalendarStyle);
+  const layout = resolveCalendarLayout(style.layoutPreset);
+  const adjusted = isPresetAdjusted(style);
+  const dayRules = getDayRules(style);
+  const title = getTitleSettings(style);
 
   return (
     <div className="space-y-4">
-      <section aria-label="レイアウト" className="space-y-1.5">
-        <h3 className="text-xs font-bold tracking-[0.2em] text-on-surface-variant">レイアウト</h3>
+      <section aria-label="プリセット" className="space-y-2">
+        <h3 className="text-sm font-bold">プリセット</h3>
         <div className="grid grid-cols-2 gap-2">
           {CALENDAR_LAYOUTS.map(({ id, label }) => (
             <button
               key={id}
               type="button"
-              aria-pressed={resolveCalendarLayout(calendarStyle.layoutPreset) === id}
-              onClick={() => setCalendarStyle(getLayoutStyleChange(calendarStyle, id))}
-              className="rounded-lg border border-transparent bg-surface-container-high px-2 py-2 text-xs hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-surface"
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </section>
-      <section aria-label="日付欄の罫線" className="space-y-1.5">
-        <h3 className="text-xs font-bold text-on-surface-variant">日付欄の罫線</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {(
-            [
-              { field: "dayRuleV", label: "縦罫線" },
-              { field: "dayRuleH", label: "横罫線" },
-            ] as const
-          ).map(({ field, label }) => (
-            <button
-              key={field}
-              type="button"
+              aria-pressed={layout === id}
               aria-label={label}
-              aria-pressed={dayRules[field]}
-              onClick={() => setCalendarStyle({ [field]: !dayRules[field] })}
-              className="rounded-lg border border-transparent bg-surface-container-high px-2 py-2 text-xs hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-surface"
+              onClick={() => setStyle(getPresetStyle(id))}
+              className="flex min-w-0 flex-col gap-1 rounded-lg border border-transparent bg-surface-container-high p-1.5 text-xs hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-surface"
             >
-              {label} {dayRules[field] ? "あり" : "なし"}
+              <img
+                alt=""
+                loading="lazy"
+                src={thumbnails[`../../../screenshots/layouts/${id}.png`] ?? standardPreview}
+                className="aspect-[5/3] w-full rounded-sm bg-white object-contain"
+              />
+              <span>{label}</span>
+              {layout === id && adjusted && (
+                <span className="text-on-surface-variant">調整済み</span>
+              )}
             </button>
           ))}
         </div>
       </section>
-      {DAY_ALIGNMENT_FIELDS.map(({ field, label, choices }) => (
-        <section key={field} aria-label={label} className="space-y-1.5">
-          <h3 className="text-xs font-bold text-on-surface-variant">{label}</h3>
-          <div className="grid grid-cols-4 rounded-lg bg-surface-container-high p-1">
-            {DAY_ALIGNMENT_OPTIONS.map((alignment, index) => (
-              <button
-                key={choices[index]}
-                type="button"
-                aria-pressed={calendarStyle[field] === alignment}
-                onClick={() => setCalendarStyle({ [field]: alignment })}
-                className="rounded-md px-1 py-1.5 text-xs text-on-surface-variant focus-visible:ring-2 focus-visible:ring-ring aria-pressed:bg-surface aria-pressed:text-on-surface aria-pressed:shadow-sm"
-              >
-                {choices[index]}
-              </button>
-            ))}
-          </div>
-        </section>
-      ))}
+
       <ThemeGrid />
       <FontSelector />
 
-      {/* Calendar text size & spacing */}
-      <div className="space-y-3">
-        <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-          文字サイズ・余白
-        </Label>
+      <details className="space-y-3 rounded-lg border border-border p-2">
+        <summary className="cursor-pointer text-sm font-bold">詳細調整</summary>
+        <section aria-label="月見出し" className="space-y-2">
+          <h3 className="text-xs font-bold">月見出し</h3>
+          <SettingSelect
+            label="見出しの位置"
+            value={title.titlePosition}
+            options={TITLE_POSITIONS}
+            onChange={(titlePosition) => setStyle({ titlePosition })}
+          />
+          <SettingSelect
+            label="年と月の並べ方"
+            value={title.titleOrder}
+            options={TITLE_ORDERS}
+            onChange={(titleOrder) => setStyle({ titleOrder })}
+          />
+          <SettingSelect
+            label="見出しの下線"
+            value={title.titleRule}
+            options={TITLE_RULES}
+            onChange={(titleRule) => setStyle({ titleRule })}
+          />
+          <SliderField
+            label="月タイトル"
+            value={style.monthFontSize}
+            min={24}
+            max={72}
+            onChange={(monthFontSize) => setStyle({ monthFontSize })}
+            warningLevel={getFontWarningLevel(style.monthFontSize, 30, 26)}
+          />
+          <SliderField
+            label="ヘッダー間隔"
+            value={style.headerGap}
+            min={2}
+            max={20}
+            onChange={(headerGap) => setStyle({ headerGap })}
+          />
+        </section>
 
-        <SliderField
-          label="月タイトル"
-          value={calendarStyle.monthFontSize}
-          min={24}
-          max={72}
-          onChange={(v) => setCalendarStyle({ monthFontSize: v })}
-          warningLevel={getFontWarningLevel(calendarStyle.monthFontSize, 30, 26)}
-        />
-        <SliderField
-          label="日付"
-          value={calendarStyle.dayFontSize}
-          min={10}
-          max={24}
-          onChange={(v) => setCalendarStyle({ dayFontSize: v })}
-          warningLevel={getFontWarningLevel(calendarStyle.dayFontSize, 12, 11)}
-        />
-        <SliderField
-          label="曜日"
-          value={calendarStyle.weekdayFontSize}
-          min={10}
-          max={20}
-          onChange={(v) => setCalendarStyle({ weekdayFontSize: v })}
-          warningLevel={getFontWarningLevel(calendarStyle.weekdayFontSize, 11, 10)}
-        />
-        <SliderField
-          label="セル余白"
-          value={calendarStyle.cellPadding}
-          min={2}
-          max={16}
-          onChange={(v) => setCalendarStyle({ cellPadding: v })}
-        />
-        <SliderField
-          label="ヘッダー間隔"
-          value={calendarStyle.headerGap}
-          min={2}
-          max={20}
-          onChange={(v) => setCalendarStyle({ headerGap: v })}
-        />
-        <SliderField
-          label="上余白"
-          value={calendarStyle.pageMarginTop}
-          min={0}
-          max={80}
-          onChange={(v) => setCalendarStyle({ pageMarginTop: v })}
-        />
-        <SliderField
-          label="グリッド幅"
-          value={calendarStyle.gridWidth}
-          min={50}
-          max={100}
-          onChange={(v) => setCalendarStyle({ gridWidth: v })}
-        />
-      </div>
+        <section aria-label="日付・曜日" className="space-y-2 border-t border-border pt-3">
+          <h3 className="text-xs font-bold">日付・曜日</h3>
+          <div role="group" aria-label="日付欄の罫線" className="grid grid-cols-2 gap-2">
+            {(
+              [
+                { field: "dayRuleV", label: "縦罫線" },
+                { field: "dayRuleH", label: "横罫線" },
+              ] as const
+            ).map(({ field, label }) => (
+              <label key={field} className="flex items-center gap-1 text-xs">
+                <input
+                  type="checkbox"
+                  checked={dayRules[field]}
+                  onChange={(event) => setStyle({ [field]: event.target.checked })}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+          <SettingSelect
+            label="日付の左右揃え"
+            value={style.dayAlignH ?? ""}
+            options={alignmentOptions}
+            onChange={(value) => setStyle({ dayAlignH: value || undefined })}
+          />
+          <SettingSelect
+            label="日付の上下揃え"
+            value={style.dayAlignV ?? ""}
+            options={verticalOptions}
+            onChange={(value) => setStyle({ dayAlignV: value || undefined })}
+          />
+          {layout !== "date-list" && (
+            <SettingSelect
+              label="曜日の左右揃え"
+              value={title.weekdayAlign}
+              options={alignmentOptions.slice(1)}
+              onChange={(value) => setStyle({ weekdayAlign: value || undefined })}
+            />
+          )}
+          <SliderField
+            label="日付"
+            value={layout === "date-list" ? Math.min(style.dayFontSize, 14) : style.dayFontSize}
+            min={10}
+            max={layout === "date-list" ? 14 : 24}
+            onChange={(dayFontSize) => setStyle({ dayFontSize })}
+            warningLevel={getFontWarningLevel(style.dayFontSize, 12, 11)}
+          />
+          {layout !== "date-list" && (
+            <SliderField
+              label="曜日"
+              value={style.weekdayFontSize}
+              min={10}
+              max={20}
+              onChange={(weekdayFontSize) => setStyle({ weekdayFontSize })}
+              warningLevel={getFontWarningLevel(style.weekdayFontSize, 11, 10)}
+            />
+          )}
+          <FontWeightSelector />
+          {layout !== "date-list" && (
+            <SliderField
+              label="セル余白"
+              value={style.cellPadding}
+              min={2}
+              max={16}
+              onChange={(cellPadding) => setStyle({ cellPadding })}
+            />
+          )}
+        </section>
+
+        <section aria-label="用紙内の余白" className="space-y-2 border-t border-border pt-3">
+          <h3 className="text-xs font-bold">用紙内の余白</h3>
+          <SliderField
+            label="上余白"
+            value={style.pageMarginTop}
+            min={0}
+            max={80}
+            onChange={(pageMarginTop) => setStyle({ pageMarginTop })}
+          />
+          <SliderField
+            label="日付欄の幅"
+            value={style.gridWidth}
+            min={50}
+            max={100}
+            onChange={(gridWidth) => setStyle({ gridWidth })}
+          />
+        </section>
+      </details>
     </div>
   );
 }
