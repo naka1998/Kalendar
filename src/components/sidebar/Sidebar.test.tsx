@@ -17,6 +17,7 @@ describe("Sidebar", () => {
     render(<Sidebar />);
     expect(screen.getByText("基本設定")).toBeDefined();
     expect(screen.getByText("見た目")).toBeDefined();
+    expect(screen.getByText("サイズと配置")).toBeDefined();
     expect(screen.getByText("画像")).toBeDefined();
     expect(screen.getByText("データ")).toBeDefined();
   });
