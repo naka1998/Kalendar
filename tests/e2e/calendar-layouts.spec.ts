@@ -131,7 +131,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   await expect(image.locator("img").first()).toBeVisible();
 });
 
-test("applies preset font and month format and preserves print margin", async ({ page }) => {
+test("applies preset typography and preserves spacing", async ({ page }) => {
   await page.goto("/");
   await openPanel(page, "プリセット");
   const layout = page.getByRole("region", { name: "プリセット", exact: true });
@@ -156,7 +156,17 @@ test("applies preset font and month format and preserves print margin", async ({
   await expect(monthTitle).toHaveCSS("font-size", "54px");
 
   const margin = page.getByText("上余白", { exact: true }).locator("..").getByRole("slider");
+  const cellPadding = page.getByText("セル余白", { exact: true }).locator("..").getByRole("slider");
+  const headerGap = page
+    .getByText("ヘッダー間隔", { exact: true })
+    .locator("..")
+    .getByRole("slider");
+  const gridWidth = page.getByText("日付欄の幅", { exact: true }).locator("..").getByRole("slider");
   await margin.press("End");
+  await cellPadding.press("End");
+  await headerGap.press("End");
+  await gridWidth.press("Home");
+  await page.getByRole("button", { name: "太字", exact: true }).click();
   await daySize.press("End");
   await expect(daySize).toHaveValue("24");
   await openPanel(page, "プリセット");
@@ -169,6 +179,14 @@ test("applies preset font and month format and preserves print margin", async ({
   await openPanel(page, "サイズと配置");
   await expect(daySize).toHaveValue("14");
   await expect(margin).toHaveValue("80");
+  await expect(cellPadding).toHaveValue("16");
+  await expect(headerGap).toHaveValue("20");
+  await expect(gridWidth).toHaveValue("100");
+  await expect(
+    page
+      .getByRole("region", { name: "サイズと配置" })
+      .getByRole("button", { name: "標準", exact: true }),
+  ).toHaveClass(/shadow-sm/);
   await expect(monthTitle).toHaveCSS("font-size", "48px");
   await expect(monthTitle).toHaveText("2027.01");
 });
@@ -249,6 +267,19 @@ test("aligns the Modern heading, weekdays, and underlined holiday dates", async 
       }),
     )
     .toBeLessThan(1);
+
+  await openPanel(page, "プリセット");
+  await page
+    .getByRole("region", { name: "プリセット" })
+    .getByRole("button", { name: "標準", exact: true })
+    .click();
+  await expect(
+    page.locator("[data-calendar-layout]").first().locator(".calendar-holiday-underline"),
+  ).toHaveCount(0);
+  await page.getByRole("button", { name: "基本設定", exact: true }).click();
+  await expect(page.getByRole("button", { name: "ドット", exact: true })).toHaveClass(/shadow-sm/);
+  await openPanel(page, "見た目");
+  await expect(page.getByRole("button", { name: "Classic", exact: true })).toHaveClass(/ring-2/);
 });
 
 test("applies the Practical Left and Smart preset settings", async ({ page }) => {

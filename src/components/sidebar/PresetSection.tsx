@@ -1,4 +1,3 @@
-import type { CalendarState } from "@/stores/types";
 import {
   CALENDAR_LAYOUTS,
   getPresetStyle,
@@ -18,6 +17,7 @@ export function PresetSection() {
   const weekdayFormat = useCalendarStore((s) => s.weekdayFormat);
   const themeId = useCalendarStore((s) => s.themeId);
   const holidayMarkStyle = useCalendarStore((s) => s.holidayMarkStyle);
+  const fontWeight = useCalendarStore((s) => s.fontWeight);
   const fontId = useCalendarStore((s) => s.fontId);
   const monthLabelFormat = useCalendarStore((s) => s.monthLabelFormat);
   const orientation = useCalendarStore((s) => s.orientation);
@@ -31,18 +31,16 @@ export function PresetSection() {
         const {
           id,
           label,
+          appearance,
           page,
           fontId: presetFontId,
           monthLabelFormat: presetMonthFormat,
         } = preset;
-        const appearance: Partial<
-          Pick<CalendarState, "themeId" | "holidayMarkStyle" | "weekdayFormat">
-        > = "appearance" in preset ? preset.appearance : {};
         const hasAppearanceOverrides =
-          (appearance.themeId !== undefined && themeId !== appearance.themeId) ||
-          (appearance.holidayMarkStyle !== undefined &&
-            holidayMarkStyle !== appearance.holidayMarkStyle) ||
-          (appearance.weekdayFormat !== undefined && weekdayFormat !== appearance.weekdayFormat);
+          themeId !== appearance.themeId ||
+          holidayMarkStyle !== appearance.holidayMarkStyle ||
+          weekdayFormat !== appearance.weekdayFormat ||
+          fontWeight !== appearance.fontWeight;
         return (
           <button
             key={id}

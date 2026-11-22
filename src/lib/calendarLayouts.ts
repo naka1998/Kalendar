@@ -1,7 +1,18 @@
 import type { CalendarStyle, ContentAlign } from "@/stores/types";
-import { DEFAULT_CALENDAR_STYLE } from "./constants";
+import { DEFAULT_CALENDAR_STYLE, DEFAULTS } from "./constants";
 
 const PORTRAIT_PAGE = { orientation: "portrait", imagePosition: "top" } as const;
+
+const DEFAULT_PRESET_APPEARANCE = {
+  weekdayFormat: DEFAULTS.WEEKDAY_FORMAT,
+  holidayMarkStyle: DEFAULTS.HOLIDAY_MARK_STYLE,
+  themeId: DEFAULTS.THEME_ID,
+  fontWeight: DEFAULTS.FONT_WEIGHT,
+};
+const JAPANESE_PRESET_APPEARANCE = {
+  ...DEFAULT_PRESET_APPEARANCE,
+  weekdayFormat: "ja",
+} as const;
 
 export const CALENDAR_LAYOUTS = [
   {
@@ -10,6 +21,7 @@ export const CALENDAR_LAYOUTS = [
     page: PORTRAIT_PAGE,
     fontId: "montserrat",
     monthLabelFormat: "yyyy.mm",
+    appearance: DEFAULT_PRESET_APPEARANCE,
   },
   {
     id: "writing",
@@ -17,6 +29,7 @@ export const CALENDAR_LAYOUTS = [
     page: PORTRAIT_PAGE,
     fontId: "noto-sans-jp",
     monthLabelFormat: "ja",
+    appearance: JAPANESE_PRESET_APPEARANCE,
   },
   {
     id: "centered",
@@ -24,30 +37,35 @@ export const CALENDAR_LAYOUTS = [
     page: PORTRAIT_PAGE,
     fontId: "shippori-mincho",
     monthLabelFormat: "month-yyyy",
+    appearance: DEFAULT_PRESET_APPEARANCE,
   },
   {
     id: "right-aligned",
     label: "モダン",
-    appearance: { themeId: "monochrome", holidayMarkStyle: "underline" },
     page: PORTRAIT_PAGE,
     fontId: "inter",
     monthLabelFormat: "yyyy.mm",
+    appearance: {
+      ...DEFAULT_PRESET_APPEARANCE,
+      themeId: "monochrome",
+      holidayMarkStyle: "underline",
+    },
   },
   {
     id: "stacked",
     label: "実用的な左揃え",
-    appearance: { weekdayFormat: "ja" },
     page: PORTRAIT_PAGE,
     fontId: "noto-sans-jp",
     monthLabelFormat: "ja",
+    appearance: JAPANESE_PRESET_APPEARANCE,
   },
   {
     id: "split",
     label: "スマート",
-    appearance: { themeId: "dark" },
     page: PORTRAIT_PAGE,
     fontId: "ibm-plex-sans",
     monthLabelFormat: "yyyy.mm",
+    appearance: { ...DEFAULT_PRESET_APPEARANCE, themeId: "dark" },
   },
   {
     id: "side-title",
@@ -55,6 +73,7 @@ export const CALENDAR_LAYOUTS = [
     page: PORTRAIT_PAGE,
     fontId: "zen-maru-gothic",
     monthLabelFormat: "ja",
+    appearance: JAPANESE_PRESET_APPEARANCE,
   },
   {
     id: "cards",
@@ -62,6 +81,7 @@ export const CALENDAR_LAYOUTS = [
     page: PORTRAIT_PAGE,
     fontId: "m-plus-rounded-1c",
     monthLabelFormat: "ja",
+    appearance: JAPANESE_PRESET_APPEARANCE,
   },
   {
     id: "date-list",
@@ -69,6 +89,7 @@ export const CALENDAR_LAYOUTS = [
     page: { orientation: "landscape", imagePosition: "left" },
     fontId: "noto-sans-jp",
     monthLabelFormat: "ja",
+    appearance: JAPANESE_PRESET_APPEARANCE,
   },
 ] as const;
 
@@ -187,8 +208,6 @@ export function getPresetStyle(layoutPreset: CalendarLayout) {
     monthFontSize: DEFAULT_CALENDAR_STYLE.monthFontSize,
     dayFontSize: DEFAULT_CALENDAR_STYLE.dayFontSize,
     weekdayFontSize: DEFAULT_CALENDAR_STYLE.weekdayFontSize,
-    cellPadding: DEFAULT_CALENDAR_STYLE.cellPadding,
-    headerGap: DEFAULT_CALENDAR_STYLE.headerGap,
     gridWidth: DEFAULT_CALENDAR_STYLE.gridWidth,
     ...LAYOUT_FONT_SIZES[layoutPreset],
   };
