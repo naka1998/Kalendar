@@ -35,17 +35,19 @@ export const CALENDAR_LAYOUTS = [
   },
   {
     id: "stacked",
-    label: "年月を上下に",
+    label: "実用的な左揃え",
+    appearance: { weekdayFormat: "ja" },
     page: PORTRAIT_PAGE,
     fontId: "noto-sans-jp",
     monthLabelFormat: "ja",
   },
   {
     id: "split",
-    label: "月は左、年は右",
+    label: "スマート",
+    appearance: { themeId: "dark" },
     page: PORTRAIT_PAGE,
     fontId: "ibm-plex-sans",
-    monthLabelFormat: "ja",
+    monthLabelFormat: "yyyy.mm",
   },
   {
     id: "side-title",
@@ -180,6 +182,7 @@ const LAYOUT_FONT_SIZES: Partial<
   >
 > = {
   centered: { monthFontSize: 54, dayFontSize: 16 },
+  stacked: { weekdayFontSize: 14, dayFontSize: 16 },
   "side-title": { monthFontSize: 36 },
   cards: { monthFontSize: 54, dayFontSize: 18, weekdayFontSize: 13 },
   "date-list": { monthFontSize: 40, dayFontSize: 13 },

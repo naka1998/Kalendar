@@ -36,8 +36,8 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
     ["書き込み用", "writing"],
     ["クラシカル", "centered"],
     ["モダン", "right-aligned"],
-    ["年月を上下に", "stacked"],
-    ["月は左、年は右", "split"],
+    ["実用的な左揃え", "stacked"],
+    ["スマート", "split"],
     ["左サイド見出し", "side-title"],
     ["日付カード", "cards"],
     ["週ごとの帯", "week-bands"],
@@ -90,7 +90,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
 
   const dates = calendar.locator(".calendar-list-weekday");
   await expect(dates).toHaveCount(31);
-  await expect(dates.first()).toHaveText("Fri");
+  await expect(dates.first()).toHaveText("金");
 
   await page.getByRole("button", { name: "出力", exact: true }).click();
   const pendingDownload = page.waitForEvent("download");
@@ -245,4 +245,20 @@ test("aligns the Modern heading, weekdays, and underlined holiday dates", async 
       }),
     )
     .toBeLessThan(1);
+});
+
+test("applies the Practical Left and Smart preset settings", async ({ page }) => {
+  await page.goto("/");
+  await openPanel(page, "見た目");
+  const presets = page.getByRole("region", { name: "プリセット", exact: true });
+  const calendar = page.locator("[data-calendar-layout]").first();
+  await presets.getByRole("button", { name: "実用的な左揃え", exact: true }).click();
+  const weekdays = calendar.locator(".calendar-weekdays > div");
+  await expect(weekdays).toHaveText(["日", "月", "火", "水", "木", "金", "土"]);
+  await expect(weekdays.first()).toHaveCSS("font-size", "14px");
+  await expect(calendar.locator(".calendar-day-number").first()).toHaveCSS("font-size", "16px");
+
+  await presets.getByRole("button", { name: "スマート", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Slate", exact: true })).toHaveClass(/ring-2/);
+  await expect(calendar.getByTestId("month-title")).toHaveText("012027");
 });

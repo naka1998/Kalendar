@@ -1,3 +1,4 @@
+import type { CalendarState } from "@/stores/types";
 import {
   CALENDAR_LAYOUTS,
   getPresetStyle,
@@ -16,6 +17,7 @@ const thumbnails = import.meta.glob<string>("../../../screenshots/layouts/*.png"
 });
 export function AppearanceSection() {
   const style = useCalendarStore((s) => s.calendarStyle);
+  const weekdayFormat = useCalendarStore((s) => s.weekdayFormat);
   const themeId = useCalendarStore((s) => s.themeId);
   const holidayMarkStyle = useCalendarStore((s) => s.holidayMarkStyle);
   const fontId = useCalendarStore((s) => s.fontId);
@@ -38,7 +40,15 @@ export function AppearanceSection() {
               fontId: presetFontId,
               monthLabelFormat: presetMonthFormat,
             } = preset;
-            const appearance = "appearance" in preset ? preset.appearance : undefined;
+            const appearance: Partial<
+              Pick<CalendarState, "themeId" | "holidayMarkStyle" | "weekdayFormat">
+            > = "appearance" in preset ? preset.appearance : {};
+            const hasAppearanceOverrides =
+              (appearance.themeId !== undefined && themeId !== appearance.themeId) ||
+              (appearance.holidayMarkStyle !== undefined &&
+                holidayMarkStyle !== appearance.holidayMarkStyle) ||
+              (appearance.weekdayFormat !== undefined &&
+                weekdayFormat !== appearance.weekdayFormat);
             return (
               <button
                 key={id}
@@ -69,9 +79,7 @@ export function AppearanceSection() {
                     imagePosition !== page.imagePosition ||
                     fontId !== presetFontId ||
                     monthLabelFormat !== presetMonthFormat ||
-                    (appearance &&
-                      (themeId !== appearance.themeId ||
-                        holidayMarkStyle !== appearance.holidayMarkStyle))) && (
+                    hasAppearanceOverrides) && (
                     <span className="text-on-surface-variant">調整済み</span>
                   )}
               </button>
