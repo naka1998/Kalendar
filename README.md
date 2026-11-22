@@ -54,21 +54,21 @@ Classic と Montserrat の組み合わせで、日付の数字の太さを比較
 
 ## レイアウト見本
 
-設定の「見た目 → レイアウト」から、標準グリッドと10種類のレイアウトを選べます。レイアウトごとの初期文字サイズで、2027年6月を表示した見本です。縦リストはA4横向き・左に画像を置いた印刷例です。
+設定の「見た目 → レイアウト」から、標準グリッドと8種類のレイアウトを選べます。レイアウトごとの初期文字サイズで、2027年6月を表示した見本です。縦リストはA4横向き・左に画像を置いた印刷例です。
+
+日付欄の縦罫線と横罫線を個別に切り替えられます。標準グリッドでは、両方を「あり」にすると全面格子、両方を「なし」にすると罫線なしになります。
 
 日付の左右・上下揃えは別々に指定できます。「自動」を選ぶとレイアウト本来の揃え方になります。
 
-| 中央・短い下線                                      | 右揃え・線なし                                           |
-| --------------------------------------------------- | -------------------------------------------------------- |
-| ![中央・短い下線](screenshots/layouts/centered.png) | ![右揃え・線なし](screenshots/layouts/right-aligned.png) |
-| **年月を上下に**                                    | **月は左、年は右**                                       |
-| ![年月を上下に](screenshots/layouts/stacked.png)    | ![月は左、年は右](screenshots/layouts/split.png)         |
-| **全面格子**                                        | **左サイド見出し**                                       |
-| ![全面格子](screenshots/layouts/full-grid.png)      | ![左サイド見出し](screenshots/layouts/side-title.png)    |
-| **罫線なし**                                        | **日付カード**                                           |
-| ![罫線なし](screenshots/layouts/unruled.png)        | ![日付カード](screenshots/layouts/cards.png)             |
-| **週ごとの帯**                                      | **縦リスト**                                             |
-| ![週ごとの帯](screenshots/layouts/week-bands.png)   | ![縦リスト](screenshots/layouts/date-list.png)           |
+| 中央・短い下線                                        | 右揃え・線なし                                           |
+| ----------------------------------------------------- | -------------------------------------------------------- |
+| ![中央・短い下線](screenshots/layouts/centered.png)   | ![右揃え・線なし](screenshots/layouts/right-aligned.png) |
+| **年月を上下に**                                      | **月は左、年は右**                                       |
+| ![年月を上下に](screenshots/layouts/stacked.png)      | ![月は左、年は右](screenshots/layouts/split.png)         |
+| **左サイド見出し**                                    | **日付カード**                                           |
+| ![左サイド見出し](screenshots/layouts/side-title.png) | ![日付カード](screenshots/layouts/cards.png)             |
+| **週ごとの帯**                                        | **縦リスト**                                             |
+| ![週ごとの帯](screenshots/layouts/week-bands.png)     | ![縦リスト](screenshots/layouts/date-list.png)           |
 
 ## 機能一覧
 

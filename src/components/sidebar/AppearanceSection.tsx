@@ -1,6 +1,7 @@
 import {
   CALENDAR_LAYOUTS,
   getLayoutStyleChange,
+  getDayRules,
   resolveCalendarLayout,
 } from "@/lib/calendarLayouts";
 import { useCalendarStore } from "@/stores/calendarStore";
@@ -19,6 +20,8 @@ export function AppearanceSection() {
   const calendarStyle = useCalendarStore((s) => s.calendarStyle);
   const setCalendarStyle = useCalendarStore((s) => s.setCalendarStyle);
 
+  const dayRules = getDayRules(calendarStyle);
+
   return (
     <div className="space-y-4">
       <section aria-label="レイアウト" className="space-y-1.5">
@@ -33,6 +36,28 @@ export function AppearanceSection() {
               className="rounded-lg border border-transparent bg-surface-container-high px-2 py-2 text-xs hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-surface"
             >
               {label}
+            </button>
+          ))}
+        </div>
+      </section>
+      <section aria-label="日付欄の罫線" className="space-y-1.5">
+        <h3 className="text-xs font-bold text-on-surface-variant">日付欄の罫線</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {(
+            [
+              { field: "dayRuleV", label: "縦罫線" },
+              { field: "dayRuleH", label: "横罫線" },
+            ] as const
+          ).map(({ field, label }) => (
+            <button
+              key={field}
+              type="button"
+              aria-label={label}
+              aria-pressed={dayRules[field]}
+              onClick={() => setCalendarStyle({ [field]: !dayRules[field] })}
+              className="rounded-lg border border-transparent bg-surface-container-high px-2 py-2 text-xs hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-surface"
+            >
+              {label} {dayRules[field] ? "あり" : "なし"}
             </button>
           ))}
         </div>

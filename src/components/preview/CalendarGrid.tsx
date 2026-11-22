@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import {
   getCalendarTitle,
   getDayCellPadding,
+  getDayRules,
   resolveCalendarLayout,
   resolveDayAlignment,
 } from "@/lib/calendarLayouts";
@@ -57,6 +58,7 @@ export function CalendarGrid({
   const { monthFontSize, dayFontSize, weekdayFontSize, cellPadding, headerGap } = calendarStyle;
 
   const layout = resolveCalendarLayout(calendarStyle.layoutPreset);
+  const { dayRuleH, dayRuleV } = getDayRules(calendarStyle);
   const title = getCalendarTitle(layout, monthLabel);
   const dayAlignH = resolveDayAlignment(calendarStyle.dayAlignH);
   const dayAlignV = resolveDayAlignment(calendarStyle.dayAlignV);
@@ -74,6 +76,8 @@ export function CalendarGrid({
   return (
     <div
       data-calendar-layout={layout}
+      data-day-rule-h={dayRuleH}
+      data-day-rule-v={dayRuleV}
       data-day-align-h={dayAlignH}
       data-day-align-v={dayAlignV}
       style={gridStyle}

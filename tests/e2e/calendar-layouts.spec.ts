@@ -1,18 +1,26 @@
 import { test, expect } from "./fixtures/global-setup";
 
-test("selects ten calendar layouts and exports the date list", async ({ page }) => {
+test("selects eight calendar layouts and exports the date list", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "見た目", exact: true }).click();
   const controls = page.getByRole("region", { name: "レイアウト", exact: true });
   const calendar = page.locator("[data-calendar-layout]").first();
-  await expect(controls.getByRole("button")).toHaveCount(11);
+  await expect(controls.getByRole("button")).toHaveCount(9);
   await expect(calendar).toHaveAttribute("data-calendar-layout", "standard");
   const horizontal = page.getByRole("region", { name: "日付の左右揃え" });
   const vertical = page.getByRole("region", { name: "日付の上下揃え" });
   await horizontal.getByRole("button", { name: "右", exact: true }).click();
   await vertical.getByRole("button", { name: "下", exact: true }).click();
   const dayCell = calendar.locator(".calendar-cell:not([data-empty])").first();
-  await expect(dayCell).toHaveCSS("align-items", "flex-end");
+  await expect
+    .poll(() =>
+      dayCell.evaluate((cell) => {
+        const bounds = cell.getBoundingClientRect();
+        const number = cell.querySelector(".calendar-day-number")!.getBoundingClientRect();
+        return bounds.right - number.right < number.left - bounds.left;
+      }),
+    )
+    .toBe(true);
   await expect(dayCell).toHaveCSS("padding-top", "16px");
   await expect(dayCell).toHaveCSS("padding-bottom", "0px");
 
@@ -21,9 +29,7 @@ test("selects ten calendar layouts and exports the date list", async ({ page }) 
     ["右揃え・線なし", "right-aligned"],
     ["年月を上下に", "stacked"],
     ["月は左、年は右", "split"],
-    ["全面格子", "full-grid"],
     ["左サイド見出し", "side-title"],
-    ["罫線なし", "unruled"],
     ["日付カード", "cards"],
     ["週ごとの帯", "week-bands"],
     ["縦リスト", "date-list"],
@@ -42,7 +48,15 @@ test("selects ten calendar layouts and exports the date list", async ({ page }) 
     "aria-pressed",
     "true",
   );
-  await expect(calendar.locator(".calendar-day-number").first()).toHaveCSS("align-self", "end");
+  await expect
+    .poll(() =>
+      dayCell.evaluate((cell) => {
+        const bounds = cell.getBoundingClientRect();
+        const number = cell.querySelector(".calendar-day-number")!.getBoundingClientRect();
+        return bounds.bottom - number.bottom <= 2;
+      }),
+    )
+    .toBe(true);
 
   const dates = calendar.locator(".calendar-list-weekday");
   await expect(dates).toHaveCount(31);
@@ -58,6 +72,7 @@ test("selects ten calendar layouts and exports the date list", async ({ page }) 
   const html = Buffer.concat(chunks).toString("utf8");
   expect(html).toContain('<div data-calendar-layout="date-list"');
   expect(html).toContain('class="calendar-list-weekday"');
+  expect(html).toContain('data-day-rule-h="true" data-day-rule-v="false"');
   expect(html).toContain('data-day-align-h="end" data-day-align-v="end"');
 });
 
@@ -73,7 +88,34 @@ test("uses layout font defaults and keeps manually adjusted sizes", async ({ pag
 
   await daySize.press("End");
   await expect(daySize).toHaveValue("24");
-  await layout.getByRole("button", { name: "全面格子", exact: true }).click();
+  await layout.getByRole("button", { name: "標準グリッド", exact: true }).click();
   await expect(daySize).toHaveValue("24");
   await expect(monthTitle).toHaveCSS("font-size", "48px");
+});
+
+test("toggles vertical and horizontal rules independently", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "見た目", exact: true }).click();
+  const rules = page.getByRole("region", { name: "日付欄の罫線" });
+  const vertical = rules.getByRole("button", { name: "縦罫線" });
+  const horizontal = rules.getByRole("button", { name: "横罫線" });
+  const calendar = page.locator("[data-calendar-layout]").first();
+  const cell = calendar.locator(".calendar-cell[data-ruled]").first();
+
+  await expect(cell).toHaveCSS("border-left-width", "0px");
+  await expect(cell).toHaveCSS("border-bottom-width", "1px");
+  await vertical.click();
+  await expect(cell).toHaveCSS("border-left-width", "1px");
+  await expect(cell).toHaveCSS("border-bottom-width", "1px");
+  await horizontal.click();
+  await expect(cell).toHaveCSS("border-left-width", "1px");
+  await expect(cell).toHaveCSS("border-bottom-width", "0px");
+  await vertical.click();
+  await expect(cell).toHaveCSS("border-left-width", "0px");
+  await expect(cell).toHaveCSS("border-bottom-width", "0px");
+
+  const layouts = page.getByRole("region", { name: "レイアウト", exact: true });
+  await layouts.getByRole("button", { name: "日付カード", exact: true }).click();
+  await expect(calendar).toHaveAttribute("data-day-rule-v", "false");
+  await expect(calendar).toHaveAttribute("data-day-rule-h", "false");
 });

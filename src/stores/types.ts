@@ -1,4 +1,4 @@
-import type { CalendarLayout } from "@/lib/calendarLayouts";
+import type { SavedCalendarLayout } from "@/lib/calendarLayouts";
 
 // === Basic Settings ===
 export type Orientation = "portrait" | "landscape";
@@ -35,7 +35,9 @@ export interface CalendarStyle {
   imageAlignH: ContentAlign;
   pageMarginTop: number;
   gridWidth: number;
-  layoutPreset?: CalendarLayout;
+  layoutPreset?: SavedCalendarLayout;
+  dayRuleH?: boolean;
+  dayRuleV?: boolean;
   dayAlignH?: ContentAlign;
   dayAlignV?: ContentAlign;
 }
@@ -132,6 +134,8 @@ export interface HtmlGeneratorInput {
       | "pageMarginTop"
       | "gridWidth"
       | "layoutPreset"
+      | "dayRuleH"
+      | "dayRuleV"
       | "dayAlignH"
       | "dayAlignV"
       | "monthFontSize"

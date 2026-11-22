@@ -32,6 +32,17 @@ function makePage(overrides?: Partial<PageData>): PageData {
 }
 
 describe("renderGridHtml", () => {
+  it("exports saved rule-only layouts as the standard grid with matching rules", () => {
+    const full = renderGridHtml(makePage(), 100, { layoutPreset: "full-grid" });
+    const unruled = renderGridHtml(makePage(), 100, { layoutPreset: "unruled" });
+    expect(full).toContain(
+      'data-calendar-layout="standard" data-day-rule-h="true" data-day-rule-v="true"',
+    );
+    expect(unruled).toContain(
+      'data-calendar-layout="standard" data-day-rule-h="false" data-day-rule-v="false"',
+    );
+  });
+
   it("renders month label", () => {
     const html = renderGridHtml(makePage());
     expect(html).toContain("2026.04");

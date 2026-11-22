@@ -7,9 +7,7 @@ export const CALENDAR_LAYOUTS = [
   { id: "right-aligned", label: "右揃え・線なし" },
   { id: "stacked", label: "年月を上下に" },
   { id: "split", label: "月は左、年は右" },
-  { id: "full-grid", label: "全面格子" },
   { id: "side-title", label: "左サイド見出し" },
-  { id: "unruled", label: "罫線なし" },
   { id: "cards", label: "日付カード" },
   { id: "week-bands", label: "週ごとの帯" },
   { id: "date-list", label: "縦リスト" },
@@ -17,8 +15,19 @@ export const CALENDAR_LAYOUTS = [
 
 export type CalendarLayout = (typeof CALENDAR_LAYOUTS)[number]["id"];
 
-export function resolveCalendarLayout(layout: CalendarLayout | undefined): CalendarLayout {
+export type SavedCalendarLayout = CalendarLayout | "full-grid" | "unruled";
+
+export function resolveCalendarLayout(layout: SavedCalendarLayout | undefined): CalendarLayout {
   return CALENDAR_LAYOUTS.find(({ id }) => id === layout)?.id ?? "standard";
+}
+
+export function getDayRules(style?: Pick<CalendarStyle, "layoutPreset" | "dayRuleH" | "dayRuleV">) {
+  const layout = style?.layoutPreset;
+  return {
+    dayRuleH: style?.dayRuleH ?? (layout !== "unruled" && layout !== "right-aligned"),
+    dayRuleV:
+      style?.dayRuleV ?? (layout === "full-grid" || layout === "cards" || layout === "week-bands"),
+  };
 }
 
 export function getCalendarTitle(layout: CalendarLayout, label: string) {
@@ -53,6 +62,9 @@ export function getLayoutStyleChange(
   const previousSizes = LAYOUT_FONT_SIZES[resolveCalendarLayout(style.layoutPreset)];
   const nextSizes = LAYOUT_FONT_SIZES[next];
   const change: Partial<CalendarStyle> = { layoutPreset: next };
+  if (style.layoutPreset === "full-grid" || style.layoutPreset === "unruled") {
+    Object.assign(change, getDayRules(style));
+  }
   for (const key of ["monthFontSize", "dayFontSize", "weekdayFontSize"] as const) {
     if (style[key] === (previousSizes?.[key] ?? DEFAULT_CALENDAR_STYLE[key])) {
       change[key] = nextSizes?.[key] ?? DEFAULT_CALENDAR_STYLE[key];
