@@ -59,7 +59,7 @@ export function CalendarGrid({
   const { monthFontSize, dayFontSize, weekdayFontSize, cellPadding, headerGap } = calendarStyle;
 
   const layout = resolveCalendarLayout(calendarStyle.layoutPreset);
-  const { dayRuleH, dayRuleV } = getDayRules(calendarStyle);
+  const { dayRuleH, dayRuleV, dayFrame } = getDayRules(calendarStyle);
   const { titlePosition, titleOrder, titleRule, weekdayAlign } = getTitleSettings(calendarStyle);
   const title = getCalendarTitle(titleOrder, monthLabel);
   const dayAlignH = resolveDayAlignment(calendarStyle.dayAlignH);
@@ -84,6 +84,7 @@ export function CalendarGrid({
       data-weekday-align={weekdayAlign}
       data-day-rule-h={dayRuleH}
       data-day-rule-v={dayRuleV}
+      data-day-frame={dayFrame}
       data-day-align-h={dayAlignH}
       data-day-align-v={dayAlignV}
       style={gridStyle}
@@ -119,7 +120,7 @@ export function CalendarGrid({
       {/* Weekday headers */}
       <div
         className="calendar-weekdays grid grid-cols-7"
-        style={{ marginBottom: `${Math.round(headerGap / 2)}px` }}
+        style={{ marginBottom: `${dayFrame || dayRuleV ? 0 : Math.round(headerGap / 2)}px` }}
       >
         {weekdayHeaders.map((header, i) => (
           <div

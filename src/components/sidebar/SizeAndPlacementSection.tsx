@@ -103,11 +103,12 @@ export function SizeAndPlacementSection() {
 
       <section aria-label="日付・曜日" className="space-y-2 border-t border-border pt-3">
         <h3 className="text-xs font-bold">日付・曜日</h3>
-        <div role="group" aria-label="日付欄の罫線" className="grid grid-cols-2 gap-2">
+        <div role="group" aria-label="日付欄の罫線" className="grid grid-cols-3 gap-2">
           {(
             [
               { field: "dayRuleV", label: "縦罫線" },
               { field: "dayRuleH", label: "横罫線" },
+              { field: "dayFrame", label: "枠" },
             ] as const
           ).map(({ field, label }) => (
             <label key={field} className="flex items-center gap-1 text-xs">

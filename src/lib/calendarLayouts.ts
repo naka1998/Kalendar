@@ -4,16 +4,76 @@ import { DEFAULT_CALENDAR_STYLE } from "./constants";
 const PORTRAIT_PAGE = { orientation: "portrait", imagePosition: "top" } as const;
 
 export const CALENDAR_LAYOUTS = [
-  { id: "standard", label: "標準グリッド", page: PORTRAIT_PAGE },
-  { id: "writing", label: "書き込み用", page: PORTRAIT_PAGE },
-  { id: "centered", label: "中央・短い下線", page: PORTRAIT_PAGE },
-  { id: "right-aligned", label: "右揃え・線なし", page: PORTRAIT_PAGE },
-  { id: "stacked", label: "年月を上下に", page: PORTRAIT_PAGE },
-  { id: "split", label: "月は左、年は右", page: PORTRAIT_PAGE },
-  { id: "side-title", label: "左サイド見出し", page: PORTRAIT_PAGE },
-  { id: "cards", label: "日付カード", page: PORTRAIT_PAGE },
-  { id: "week-bands", label: "週ごとの帯", page: PORTRAIT_PAGE },
-  { id: "date-list", label: "縦リスト", page: { orientation: "landscape", imagePosition: "left" } },
+  {
+    id: "standard",
+    label: "標準",
+    page: PORTRAIT_PAGE,
+    fontId: "montserrat",
+    monthLabelFormat: "yyyy.mm",
+  },
+  {
+    id: "writing",
+    label: "書き込み用",
+    page: PORTRAIT_PAGE,
+    fontId: "noto-sans-jp",
+    monthLabelFormat: "ja",
+  },
+  {
+    id: "centered",
+    label: "クラシカル",
+    page: PORTRAIT_PAGE,
+    fontId: "shippori-mincho",
+    monthLabelFormat: "month-yyyy",
+  },
+  {
+    id: "right-aligned",
+    label: "右揃え・線なし",
+    page: PORTRAIT_PAGE,
+    fontId: "inter",
+    monthLabelFormat: "yyyy.mm",
+  },
+  {
+    id: "stacked",
+    label: "年月を上下に",
+    page: PORTRAIT_PAGE,
+    fontId: "noto-sans-jp",
+    monthLabelFormat: "ja",
+  },
+  {
+    id: "split",
+    label: "月は左、年は右",
+    page: PORTRAIT_PAGE,
+    fontId: "ibm-plex-sans",
+    monthLabelFormat: "ja",
+  },
+  {
+    id: "side-title",
+    label: "左サイド見出し",
+    page: PORTRAIT_PAGE,
+    fontId: "zen-maru-gothic",
+    monthLabelFormat: "ja",
+  },
+  {
+    id: "cards",
+    label: "日付カード",
+    page: PORTRAIT_PAGE,
+    fontId: "m-plus-rounded-1c",
+    monthLabelFormat: "ja",
+  },
+  {
+    id: "week-bands",
+    label: "週ごとの帯",
+    page: PORTRAIT_PAGE,
+    fontId: "inter",
+    monthLabelFormat: "yyyy.mm",
+  },
+  {
+    id: "date-list",
+    label: "縦リスト",
+    page: { orientation: "landscape", imagePosition: "left" },
+    fontId: "noto-sans-jp",
+    monthLabelFormat: "ja",
+  },
 ] as const;
 
 export type CalendarLayout = (typeof CALENDAR_LAYOUTS)[number]["id"];
@@ -24,9 +84,12 @@ export function resolveCalendarLayout(layout: SavedCalendarLayout | undefined): 
   return CALENDAR_LAYOUTS.find(({ id }) => id === layout)?.id ?? "standard";
 }
 
-export function getDayRules(style?: Pick<CalendarStyle, "layoutPreset" | "dayRuleH" | "dayRuleV">) {
+export function getDayRules(
+  style?: Pick<CalendarStyle, "layoutPreset" | "dayRuleH" | "dayRuleV" | "dayFrame">,
+) {
   const layout = style?.layoutPreset;
   return {
+    dayFrame: style?.dayFrame === true,
     dayRuleH: style?.dayRuleH ?? (layout !== "unruled" && layout !== "right-aligned"),
     dayRuleV:
       style?.dayRuleV ??

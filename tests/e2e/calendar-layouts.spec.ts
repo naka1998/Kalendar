@@ -34,7 +34,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   await openPanel(page, "見た目");
   for (const [label, layout] of [
     ["書き込み用", "writing"],
-    ["中央・短い下線", "centered"],
+    ["クラシカル", "centered"],
     ["右揃え・線なし", "right-aligned"],
     ["年月を上下に", "stacked"],
     ["月は左、年は右", "split"],
@@ -59,6 +59,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   await page.getByRole("combobox", { name: "見出しの下線" }).selectOption("none");
   await expect(calendar.getByTestId("month-title")).toHaveCSS("text-align", "center");
   await expect(calendar.locator(".calendar-title-rule")).toBeHidden();
+  await page.getByRole("checkbox", { name: "枠", exact: true }).check();
   await openPanel(page, "見た目");
   await expect(controls.getByRole("button", { name: "縦リスト", exact: true })).toContainText(
     "調整済み",
@@ -107,7 +108,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   expect(html).toContain(
     'data-title-position="center" data-title-order="together" data-title-rule="none"',
   );
-  expect(html).toContain('data-day-rule-h="true" data-day-rule-v="false"');
+  expect(html).toContain('data-day-rule-h="true" data-day-rule-v="false" data-day-frame="true"');
   expect(html).toContain('data-day-align-h="end" data-day-align-v="end"');
 
   await controls.getByRole("button", { name: "日付カード", exact: true }).click();
@@ -130,14 +131,23 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   await expect(image.locator("img").first()).toBeVisible();
 });
 
-test("applies preset defaults and preserves print margin and font", async ({ page }) => {
+test("applies preset font and month format and preserves print margin", async ({ page }) => {
   await page.goto("/");
   await openPanel(page, "見た目");
   const layout = page.getByRole("region", { name: "プリセット", exact: true });
   const daySize = page.getByText("日付", { exact: true }).locator("..").getByRole("slider");
   const monthTitle = page.getByTestId("month-title").first();
-  await page.getByRole("button", { name: "Inter", exact: true }).click();
+  await layout.getByRole("button", { name: "クラシカル", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Shippori Mincho", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(monthTitle).toHaveText("January 2027");
   await layout.getByRole("button", { name: "日付カード", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "M PLUS Rounded 1c", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(monthTitle).toHaveText("2027年1月");
   await openPanel(page, "サイズと配置");
   await expect(daySize).toHaveValue("18");
   await expect(monthTitle).toHaveCSS("font-size", "54px");
@@ -147,8 +157,8 @@ test("applies preset defaults and preserves print margin and font", async ({ pag
   await daySize.press("End");
   await expect(daySize).toHaveValue("24");
   await openPanel(page, "見た目");
-  await layout.getByRole("button", { name: "標準グリッド", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Inter", exact: true })).toHaveAttribute(
+  await layout.getByRole("button", { name: "標準", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Montserrat", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
@@ -156,22 +166,37 @@ test("applies preset defaults and preserves print margin and font", async ({ pag
   await expect(daySize).toHaveValue("14");
   await expect(margin).toHaveValue("80");
   await expect(monthTitle).toHaveCSS("font-size", "48px");
+  await expect(monthTitle).toHaveText("2027.01");
 });
 
-test("toggles vertical and horizontal rules independently", async ({ page }) => {
+test("toggles vertical rules, horizontal rules and the frame independently", async ({ page }) => {
   await page.goto("/");
   await openPanel(page, "サイズと配置");
   const rules = page.getByRole("group", { name: "日付欄の罫線" });
   const vertical = rules.getByRole("checkbox", { name: "縦罫線" });
   const horizontal = rules.getByRole("checkbox", { name: "横罫線" });
   const calendar = page.locator("[data-calendar-layout]").first();
-  const cell = calendar.locator(".calendar-cell[data-ruled]").first();
+  const frame = rules.getByRole("checkbox", { name: "枠", exact: true });
+  const weekdays = calendar.locator(".calendar-weekdays");
+  const days = calendar.locator(".calendar-days");
+  const cell = days.locator(".calendar-cell[data-ruled]").first();
 
   await expect(cell).toHaveCSS("border-left-width", "0px");
   await expect(cell).toHaveCSS("border-bottom-width", "1px");
   await vertical.click();
   await expect(cell).toHaveCSS("border-left-width", "1px");
   await expect(cell).toHaveCSS("border-bottom-width", "1px");
+  await expect(weekdays.locator("> div").first()).toHaveCSS("border-left-width", "0px");
+  await expect(weekdays.locator("> div").nth(1)).toHaveCSS("border-left-width", "1px");
+  await expect(weekdays.locator("> div").last()).toHaveCSS("border-right-width", "0px");
+  await expect(days.locator("> div").first()).toHaveCSS("border-left-width", "0px");
+  await expect(days.locator("> div").nth(6)).toHaveCSS("border-right-width", "0px");
+  await expect(weekdays).toHaveCSS("border-top-width", "0px");
+  await expect(days).toHaveCSS("border-bottom-width", "0px");
+  await frame.check();
+  await expect(weekdays).toHaveCSS("border-top-width", "1px");
+  await expect(days).toHaveCSS("border-bottom-width", "1px");
+  await expect(days).toHaveCSS("border-right-width", "1px");
   await horizontal.click();
   await expect(cell).toHaveCSS("border-left-width", "1px");
   await expect(cell).toHaveCSS("border-bottom-width", "0px");
@@ -179,6 +204,9 @@ test("toggles vertical and horizontal rules independently", async ({ page }) => 
   await expect(cell).toHaveCSS("border-left-width", "0px");
   await expect(cell).toHaveCSS("border-bottom-width", "0px");
 
+  await expect(days).toHaveCSS("border-right-width", "1px");
+  await frame.uncheck();
+  await expect(days).toHaveCSS("border-right-width", "0px");
   await openPanel(page, "見た目");
   const layouts = page.getByRole("region", { name: "プリセット", exact: true });
   await layouts.getByRole("button", { name: "日付カード", exact: true }).click();

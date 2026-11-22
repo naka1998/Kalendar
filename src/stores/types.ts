@@ -47,6 +47,7 @@ export interface CalendarStyle {
   weekdayAlign?: ContentAlign;
   dayRuleH?: boolean;
   dayRuleV?: boolean;
+  dayFrame?: boolean;
   dayAlignH?: ContentAlign;
   dayAlignV?: ContentAlign;
 }
@@ -149,6 +150,7 @@ export interface HtmlGeneratorInput {
       | "weekdayAlign"
       | "dayRuleH"
       | "dayRuleV"
+      | "dayFrame"
       | "dayAlignH"
       | "dayAlignV"
       | "monthFontSize"

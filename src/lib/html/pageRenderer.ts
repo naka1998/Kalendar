@@ -101,6 +101,7 @@ export function renderPage(
     weekdayAlign: calendarStyle?.weekdayAlign,
     dayRuleH: calendarStyle?.dayRuleH,
     dayRuleV: calendarStyle?.dayRuleV,
+    dayFrame: calendarStyle?.dayFrame,
     dayAlignH: calendarStyle?.dayAlignH,
     dayAlignV: calendarStyle?.dayAlignV,
     monthFontSize: calendarStyle?.monthFontSize,
