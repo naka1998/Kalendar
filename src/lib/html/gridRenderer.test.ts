@@ -43,6 +43,11 @@ describe("renderGridHtml", () => {
     );
   });
 
+  it("falls back to the standard grid for the retired weekly bands preset", () => {
+    const html = renderGridHtml(makePage(), 100, { layoutPreset: "week-bands" });
+    expect(html).toContain('data-calendar-layout="standard"');
+  });
+
   it("renders month label", () => {
     const html = renderGridHtml(makePage());
     expect(html).toContain("2026.04");

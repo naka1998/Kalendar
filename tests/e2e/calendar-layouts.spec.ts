@@ -11,7 +11,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   await openPanel(page, "プリセット");
   const controls = page.getByRole("region", { name: "プリセット", exact: true });
   const calendar = page.locator("[data-calendar-layout]").first();
-  await expect(controls.getByRole("button")).toHaveCount(10);
+  await expect(controls.getByRole("button")).toHaveCount(9);
   await expect(calendar).toHaveAttribute("data-calendar-layout", "standard");
   await openPanel(page, "サイズと配置");
   const horizontal = page.getByRole("combobox", { name: "日付の左右揃え" });
@@ -40,7 +40,6 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
     ["スマート", "split"],
     ["左サイド見出し", "side-title"],
     ["日付カード", "cards"],
-    ["週ごとの帯", "week-bands"],
     ["縦リスト", "date-list"],
   ]) {
     const button = controls.getByRole("button", { name: label, exact: true });

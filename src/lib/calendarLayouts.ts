@@ -64,13 +64,6 @@ export const CALENDAR_LAYOUTS = [
     monthLabelFormat: "ja",
   },
   {
-    id: "week-bands",
-    label: "週ごとの帯",
-    page: PORTRAIT_PAGE,
-    fontId: "inter",
-    monthLabelFormat: "yyyy.mm",
-  },
-  {
     id: "date-list",
     label: "縦リスト",
     page: { orientation: "landscape", imagePosition: "left" },
@@ -81,7 +74,7 @@ export const CALENDAR_LAYOUTS = [
 
 export type CalendarLayout = (typeof CALENDAR_LAYOUTS)[number]["id"];
 
-export type SavedCalendarLayout = CalendarLayout | "full-grid" | "unruled";
+export type SavedCalendarLayout = CalendarLayout | "full-grid" | "unruled" | "week-bands";
 
 export function resolveCalendarLayout(layout: SavedCalendarLayout | undefined): CalendarLayout {
   return CALENDAR_LAYOUTS.find(({ id }) => id === layout)?.id ?? "standard";
@@ -95,11 +88,7 @@ export function getDayRules(
     dayFrame: style?.dayFrame ?? layout === "writing",
     dayRuleH: style?.dayRuleH ?? (layout !== "unruled" && layout !== "right-aligned"),
     dayRuleV:
-      style?.dayRuleV ??
-      (layout === "full-grid" ||
-        layout === "writing" ||
-        layout === "cards" ||
-        layout === "week-bands"),
+      style?.dayRuleV ?? (layout === "full-grid" || layout === "writing" || layout === "cards"),
   };
 }
 
