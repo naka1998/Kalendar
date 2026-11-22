@@ -1,14 +1,14 @@
 import type { Page } from "@playwright/test";
 import { test, expect } from "./fixtures/global-setup";
 
-async function openPanel(page: Page, name: "見た目" | "サイズと配置") {
+async function openPanel(page: Page, name: "プリセット" | "見た目" | "サイズと配置") {
   const trigger = page.getByRole("button", { name, exact: true });
   if ((await trigger.getAttribute("aria-expanded")) !== "true") await trigger.click();
 }
 
 test("selects calendar presets and exports the date list", async ({ page }) => {
   await page.goto("/");
-  await openPanel(page, "見た目");
+  await openPanel(page, "プリセット");
   const controls = page.getByRole("region", { name: "プリセット", exact: true });
   const calendar = page.locator("[data-calendar-layout]").first();
   await expect(controls.getByRole("button")).toHaveCount(10);
@@ -31,7 +31,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   await expect(dayCell).toHaveCSS("padding-top", "16px");
   await expect(dayCell).toHaveCSS("padding-bottom", "0px");
 
-  await openPanel(page, "見た目");
+  await openPanel(page, "プリセット");
   for (const [label, layout] of [
     ["書き込み用", "writing"],
     ["クラシカル", "centered"],
@@ -61,7 +61,7 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   await expect(calendar.getByTestId("month-title")).toHaveCSS("text-align", "center");
   await expect(calendar.locator(".calendar-title-rule")).toBeHidden();
   await page.getByRole("checkbox", { name: "枠", exact: true }).check();
-  await openPanel(page, "見た目");
+  await openPanel(page, "プリセット");
   await expect(controls.getByRole("button", { name: "縦リスト", exact: true })).toContainText(
     "調整済み",
   );
@@ -134,17 +134,20 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
 
 test("applies preset font and month format and preserves print margin", async ({ page }) => {
   await page.goto("/");
-  await openPanel(page, "見た目");
+  await openPanel(page, "プリセット");
   const layout = page.getByRole("region", { name: "プリセット", exact: true });
   const daySize = page.getByText("日付", { exact: true }).locator("..").getByRole("slider");
   const monthTitle = page.getByTestId("month-title").first();
   await layout.getByRole("button", { name: "クラシカル", exact: true }).click();
+  await openPanel(page, "見た目");
   await expect(page.getByRole("button", { name: "Shippori Mincho", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
   await expect(monthTitle).toHaveText("January 2027");
+  await openPanel(page, "プリセット");
   await layout.getByRole("button", { name: "日付カード", exact: true }).click();
+  await openPanel(page, "見た目");
   await expect(
     page.getByRole("button", { name: "M PLUS Rounded 1c", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -157,8 +160,9 @@ test("applies preset font and month format and preserves print margin", async ({
   await margin.press("End");
   await daySize.press("End");
   await expect(daySize).toHaveValue("24");
-  await openPanel(page, "見た目");
+  await openPanel(page, "プリセット");
   await layout.getByRole("button", { name: "標準", exact: true }).click();
+  await openPanel(page, "見た目");
   await expect(page.getByRole("button", { name: "Montserrat", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",
@@ -208,7 +212,7 @@ test("toggles vertical rules, horizontal rules and the frame independently", asy
   await expect(days).toHaveCSS("border-right-width", "1px");
   await frame.uncheck();
   await expect(days).toHaveCSS("border-right-width", "0px");
-  await openPanel(page, "見た目");
+  await openPanel(page, "プリセット");
   const layouts = page.getByRole("region", { name: "プリセット", exact: true });
   await layouts.getByRole("button", { name: "日付カード", exact: true }).click();
   await expect(calendar).toHaveAttribute("data-day-rule-v", "true");
@@ -217,8 +221,9 @@ test("toggles vertical rules, horizontal rules and the frame independently", asy
 
 test("aligns the Modern heading, weekdays, and underlined holiday dates", async ({ page }) => {
   await page.goto("/");
-  await openPanel(page, "見た目");
+  await openPanel(page, "プリセット");
   await page.getByRole("button", { name: "モダン", exact: true }).click();
+  await openPanel(page, "見た目");
   await expect(page.getByRole("button", { name: "Monochrome", exact: true })).toHaveClass(/ring-2/);
   const calendar = page.locator('[data-calendar-layout="right-aligned"]').first();
   const holiday = calendar.locator(".calendar-holiday-underline").first();
@@ -249,7 +254,7 @@ test("aligns the Modern heading, weekdays, and underlined holiday dates", async 
 
 test("applies the Practical Left and Smart preset settings", async ({ page }) => {
   await page.goto("/");
-  await openPanel(page, "見た目");
+  await openPanel(page, "プリセット");
   const presets = page.getByRole("region", { name: "プリセット", exact: true });
   const calendar = page.locator("[data-calendar-layout]").first();
   await presets.getByRole("button", { name: "実用的な左揃え", exact: true }).click();
@@ -259,6 +264,7 @@ test("applies the Practical Left and Smart preset settings", async ({ page }) =>
   await expect(calendar.locator(".calendar-day-number").first()).toHaveCSS("font-size", "16px");
 
   await presets.getByRole("button", { name: "スマート", exact: true }).click();
+  await openPanel(page, "見た目");
   await expect(page.getByRole("button", { name: "Slate", exact: true })).toHaveClass(/ring-2/);
   await expect(calendar.getByTestId("month-title")).toHaveText("012027");
 });

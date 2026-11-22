@@ -24,9 +24,9 @@ describe("AppearanceSection", () => {
     expect(screen.getByText("フォント")).toBeDefined();
   });
 
-  it("shows presets and keeps the detailed controls in another section", () => {
+  it("keeps presets and detailed controls in separate sections", () => {
     render(<AppearanceSection />);
-    expect(screen.getByRole("button", { name: "縦リスト" })).toBeDefined();
+    expect(screen.queryByRole("button", { name: "縦リスト" })).toBeNull();
     expect(screen.queryByText("上余白")).toBeNull();
   });
 });

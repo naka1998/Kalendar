@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { PresetSection } from "./PresetSection";
 import { BasicSection } from "./BasicSection";
 import { AppearanceSection } from "./AppearanceSection";
 import { SizeAndPlacementSection } from "./SizeAndPlacementSection";
@@ -24,6 +25,15 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
       )}
 
       <Accordion defaultValue={["basic"]} className="space-y-2">
+        <AccordionItem value="presets" className="border-none">
+          <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
+            プリセット
+          </AccordionTrigger>
+          <AccordionContent className="px-3 pt-2">
+            <PresetSection />
+          </AccordionContent>
+        </AccordionItem>
+
         <AccordionItem value="basic" className="border-none">
           <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
             基本設定
