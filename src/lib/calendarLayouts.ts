@@ -1,17 +1,19 @@
 import type { CalendarStyle, ContentAlign } from "@/stores/types";
 import { DEFAULT_CALENDAR_STYLE } from "./constants";
 
+const PORTRAIT_PAGE = { orientation: "portrait", imagePosition: "top" } as const;
+
 export const CALENDAR_LAYOUTS = [
-  { id: "standard", label: "標準グリッド" },
-  { id: "writing", label: "書き込み用" },
-  { id: "centered", label: "中央・短い下線" },
-  { id: "right-aligned", label: "右揃え・線なし" },
-  { id: "stacked", label: "年月を上下に" },
-  { id: "split", label: "月は左、年は右" },
-  { id: "side-title", label: "左サイド見出し" },
-  { id: "cards", label: "日付カード" },
-  { id: "week-bands", label: "週ごとの帯" },
-  { id: "date-list", label: "縦リスト" },
+  { id: "standard", label: "標準グリッド", page: PORTRAIT_PAGE },
+  { id: "writing", label: "書き込み用", page: PORTRAIT_PAGE },
+  { id: "centered", label: "中央・短い下線", page: PORTRAIT_PAGE },
+  { id: "right-aligned", label: "右揃え・線なし", page: PORTRAIT_PAGE },
+  { id: "stacked", label: "年月を上下に", page: PORTRAIT_PAGE },
+  { id: "split", label: "月は左、年は右", page: PORTRAIT_PAGE },
+  { id: "side-title", label: "左サイド見出し", page: PORTRAIT_PAGE },
+  { id: "cards", label: "日付カード", page: PORTRAIT_PAGE },
+  { id: "week-bands", label: "週ごとの帯", page: PORTRAIT_PAGE },
+  { id: "date-list", label: "縦リスト", page: { orientation: "landscape", imagePosition: "left" } },
 ] as const;
 
 export type CalendarLayout = (typeof CALENDAR_LAYOUTS)[number]["id"];

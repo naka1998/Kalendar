@@ -109,6 +109,25 @@ test("selects calendar presets and exports the date list", async ({ page }) => {
   );
   expect(html).toContain('data-day-rule-h="true" data-day-rule-v="false"');
   expect(html).toContain('data-day-align-h="end" data-day-align-v="end"');
+
+  await controls.getByRole("button", { name: "日付カード", exact: true }).click();
+  await expect(calendar).toHaveAttribute("data-calendar-layout", "cards");
+  await expect(pageContainer).toHaveCSS("flex-direction", "column");
+  await expect
+    .poll(async () => {
+      const paper = await pageContainer.boundingBox();
+      const imageBox = await image.boundingBox();
+      const calendarBox = await calendar.boundingBox();
+      return (
+        !!paper &&
+        !!imageBox &&
+        !!calendarBox &&
+        paper.height > paper.width &&
+        imageBox.y < calendarBox.y
+      );
+    })
+    .toBe(true);
+  await expect(image.locator("img").first()).toBeVisible();
 });
 
 test("applies preset defaults and preserves print margin and font", async ({ page }) => {
