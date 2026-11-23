@@ -1,11 +1,13 @@
 import {
   getDayRules,
+  getCaptionFontSizes,
   getTitleSettings,
   resolveCalendarLayout,
   TITLE_ORDERS,
   TITLE_POSITIONS,
   TITLE_RULES,
 } from "@/lib/calendarLayouts";
+import { CAPTION_FONT_SIZE } from "@/lib/constants";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { FontWeightSelector } from "./FontSelector";
 import { PlacementSettings } from "./PlacementSettings";
@@ -62,6 +64,7 @@ export function SizeAndPlacementSection() {
   const layout = resolveCalendarLayout(style.layoutPreset);
   const dayRules = getDayRules(style);
   const title = getTitleSettings(style);
+  const { captionTitleFontSize, captionBodyFontSize } = getCaptionFontSizes(style);
 
   return (
     <div className="space-y-3">
@@ -101,6 +104,24 @@ export function SizeAndPlacementSection() {
           min={2}
           max={20}
           onChange={(headerGap) => setStyle({ headerGap })}
+        />
+      </section>
+
+      <section aria-label="キャプション" className="space-y-2 border-t border-border pt-3">
+        <h3 className="text-xs font-bold">キャプション</h3>
+        <SliderField
+          label="タイトル"
+          value={captionTitleFontSize}
+          min={CAPTION_FONT_SIZE.MIN}
+          max={CAPTION_FONT_SIZE.MAX}
+          onChange={(captionTitleFontSize) => setStyle({ captionTitleFontSize })}
+        />
+        <SliderField
+          label="本文"
+          value={captionBodyFontSize}
+          min={CAPTION_FONT_SIZE.MIN}
+          max={CAPTION_FONT_SIZE.MAX}
+          onChange={(captionBodyFontSize) => setStyle({ captionBodyFontSize })}
         />
       </section>
 

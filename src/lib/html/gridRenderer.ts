@@ -3,6 +3,7 @@ import { DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
 import { escapeHtml } from "../htmlUtils";
 import {
   getCalendarTitle,
+  getCaptionFontSizes,
   resolveCalendarLayout,
   resolveDayAlignment,
   getTitleSettings,
@@ -12,7 +13,13 @@ import { renderDayCell } from "./cellRenderer";
 
 export interface GridStyleOverrides extends Pick<
   CalendarStyle,
-  "layoutPreset" | "titlePosition" | "titleOrder" | "titleRule" | "weekdayAlign"
+  | "layoutPreset"
+  | "titlePosition"
+  | "titleOrder"
+  | "titleRule"
+  | "weekdayAlign"
+  | "captionTitleFontSize"
+  | "captionBodyFontSize"
 > {
   dayRuleH?: boolean;
   dayRuleV?: boolean;
@@ -59,11 +66,12 @@ export function renderGridHtml(
   let gridHtml = `<div data-calendar-layout="${layout}"${alignmentAttrs}${imagePositionAttr} data-day-rule-h="${dayRuleH}" data-day-rule-v="${dayRuleV}" data-day-frame="${dayFrame}" data-title-position="${titlePosition}" data-title-order="${titleOrder}" data-title-rule="${titleRule}" data-weekday-align="${weekdayAlign}" style="width:${gridWidth}%;--calendar-grid-rule:${page.theme.colors.gridRule};--calendar-holiday-mark:${page.theme.colors.holidayMark};--calendar-list-rows:${Math.ceil(dayCount / 2)};--calendar-list-short-rows:${Math.ceil(dayCount / 3)}">`;
   const monthTitle = `<div class="calendar-title" style="color:${page.theme.colors.monthLabel};font-size:${monthFontSize}px;font-weight:800;margin-bottom:${headerGap}px">${titleText}</div>`;
   if (caption) {
+    const { captionTitleFontSize, captionBodyFontSize } = getCaptionFontSizes(style);
     const captionTitle = caption.title
-      ? `<div class="calendar-image-caption-title">${escapeHtml(caption.title)}</div>`
+      ? `<div class="calendar-image-caption-title" style="font-size:${captionTitleFontSize}px">${escapeHtml(caption.title)}</div>`
       : "";
     const captionBody = caption.body
-      ? `<div class="calendar-image-caption-body">${escapeHtml(caption.body)}</div>`
+      ? `<div class="calendar-image-caption-body" style="font-size:${captionBodyFontSize}px">${escapeHtml(caption.body)}</div>`
       : "";
     gridHtml += `<div class="calendar-caption-header">${monthTitle}<div class="calendar-image-caption" style="color:${page.theme.colors.text}">${captionTitle}${captionBody}</div></div>`;
   } else {

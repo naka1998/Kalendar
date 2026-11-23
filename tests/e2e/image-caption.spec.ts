@@ -46,7 +46,22 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   await page.reload();
   await expect(caption.locator(".calendar-image-caption-title")).toHaveText(title);
 
-  await page.getByRole("button", { name: "サイズと配置", exact: true }).click();
+  const sizeSettings = page.getByRole("button", { name: "サイズと配置", exact: true });
+  await sizeSettings.click();
+  const captionSettings = page.getByRole("region", { name: "キャプション", exact: true });
+  const titleSize = captionSettings.getByRole("slider", { name: "タイトル" });
+  const bodySize = captionSettings.getByRole("slider", { name: "本文" });
+  await titleSize.press("ArrowRight");
+  await titleSize.press("ArrowRight");
+  await bodySize.press("ArrowRight");
+  await expect(caption.locator(".calendar-image-caption-title")).toHaveCSS("font-size", "20px");
+  await expect(caption.locator(".calendar-image-caption-body")).toHaveCSS("font-size", "13px");
+  await expect(page.getByText(/自動保存済み/)).toBeVisible();
+  await page.reload();
+  await expect(caption.locator(".calendar-image-caption-title")).toHaveCSS("font-size", "20px");
+  await expect(caption.locator(".calendar-image-caption-body")).toHaveCSS("font-size", "13px");
+
+  await sizeSettings.click();
   await page
     .getByText("日付欄の幅", { exact: true })
     .locator("..")
@@ -68,11 +83,11 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   await expect(printedCaption.locator(".calendar-image-caption-title")).toHaveText(title);
   await expect(printedCaption.locator(".calendar-image-caption-title")).toHaveCSS(
     "font-size",
-    "18px",
+    "20px",
   );
   await expect(printedCaption.locator(".calendar-image-caption-body")).toHaveCSS(
     "font-size",
-    "12px",
+    "13px",
   );
   const printedPhoto = (await printPage.locator(".page img").first().boundingBox())!;
   const printedMonth = (await printPage.locator(".calendar-title").first().boundingBox())!;
@@ -96,15 +111,21 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   const zippedHtml = await zip.file("index.html")!.async("string");
   expect(zippedHtml).toContain("写真 &lt;1&gt; &amp; 春");
   expect(zippedHtml).toContain(body);
+  expect(zippedHtml).toContain('class="calendar-image-caption-title" style="font-size:20px"');
+  expect(zippedHtml).toContain('class="calendar-image-caption-body" style="font-size:13px"');
 
   await image.hover();
   await image.getByRole("button", { name: "キャプション", exact: true }).click();
   await dialog.getByRole("button", { name: "キャプションを削除", exact: true }).click();
   await expect(caption).toHaveCount(0);
+  await titleSize.press("ArrowLeft");
+  await bodySize.press("ArrowLeft");
 
   await page.getByRole("button", { name: "データ", exact: true }).click();
   await page.locator('input[accept=".html,.htm"]').setInputFiles(htmlPath);
   await expect(caption.locator(".calendar-image-caption-title")).toHaveText(title);
+  await expect(caption.locator(".calendar-image-caption-title")).toHaveCSS("font-size", "20px");
+  await expect(caption.locator(".calendar-image-caption-body")).toHaveCSS("font-size", "13px");
   await image.hover();
   await image.getByRole("button", { name: "キャプション", exact: true }).click();
   await expect(dialog.getByLabel("タイトル")).toHaveValue(title);

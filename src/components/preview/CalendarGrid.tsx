@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import {
   getCalendarTitle,
+  getCaptionFontSizes,
   getDayCellPadding,
   getDayRules,
   getTitleSettings,
@@ -45,6 +46,7 @@ export function CalendarGrid({
 }: CalendarGridProps) {
   const { colors } = theme;
   const { monthFontSize, dayFontSize, weekdayFontSize, cellPadding, headerGap } = calendarStyle;
+  const { captionTitleFontSize, captionBodyFontSize } = getCaptionFontSizes(calendarStyle);
 
   const layout = resolveCalendarLayout(calendarStyle.layoutPreset);
   const { dayRuleH, dayRuleV, dayFrame } = getDayRules(calendarStyle);
@@ -104,10 +106,20 @@ export function CalendarGrid({
           {monthTitle}
           <div className="calendar-image-caption" style={{ color: colors.text }}>
             {imageCaption.title && (
-              <div className="calendar-image-caption-title">{imageCaption.title}</div>
+              <div
+                className="calendar-image-caption-title"
+                style={{ fontSize: captionTitleFontSize }}
+              >
+                {imageCaption.title}
+              </div>
             )}
             {imageCaption.body && (
-              <div className="calendar-image-caption-body">{imageCaption.body}</div>
+              <div
+                className="calendar-image-caption-body"
+                style={{ fontSize: captionBodyFontSize }}
+              >
+                {imageCaption.body}
+              </div>
             )}
           </div>
         </div>

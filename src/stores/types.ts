@@ -30,6 +30,8 @@ export interface ImageCropSettings {
 // === Calendar Style ===
 export interface CalendarStyle {
   monthFontSize: number;
+  captionTitleFontSize?: number;
+  captionBodyFontSize?: number;
   dayFontSize: number;
   weekdayFontSize: number;
   cellPadding: number;
@@ -160,6 +162,8 @@ export interface HtmlGeneratorInput {
       | "dayAlignH"
       | "dayAlignV"
       | "monthFontSize"
+      | "captionTitleFontSize"
+      | "captionBodyFontSize"
       | "dayFontSize"
       | "weekdayFontSize"
       | "cellPadding"

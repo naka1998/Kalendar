@@ -32,6 +32,8 @@ export const DEFAULTS = {
 
 export const DEFAULT_CALENDAR_STYLE = {
   monthFontSize: 48,
+  captionTitleFontSize: 18,
+  captionBodyFontSize: 12,
   dayFontSize: 14,
   weekdayFontSize: 12,
   cellPadding: 8,
@@ -43,6 +45,8 @@ export const DEFAULT_CALENDAR_STYLE = {
   pageMarginTop: 20,
   gridWidth: 100,
 } as const;
+
+export const CAPTION_FONT_SIZE = { MIN: 8, MAX: 40 } as const;
 
 /** Safe margin for print: 5mm at 96dpi ≈ 19px */
 export const SAFE_MARGIN_PX = 19;
