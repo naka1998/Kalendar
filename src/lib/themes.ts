@@ -87,20 +87,6 @@ export const THEMES: ColorTheme[] = [
     },
   },
   {
-    id: "botanical",
-    name: "Botanical",
-    colors: {
-      text: "#2D4336",
-      sunday: "#854749",
-      saturday: "#34594B",
-      holidayMark: "#884547",
-      headerRule: "#7C9277",
-      gridRule: "#ABBDA4",
-      weekdayHeader: "#3D5846",
-      monthLabel: "#2F513E",
-    },
-  },
-  {
     id: "blueprint",
     name: "Blueprint",
     colors: {
@@ -143,20 +129,6 @@ export const THEMES: ColorTheme[] = [
     },
   },
   {
-    id: "retro-terminal",
-    name: "Retro Terminal",
-    colors: {
-      text: "#6B460D",
-      sunday: "#8D351A",
-      saturday: "#785514",
-      holidayMark: "#8D351A",
-      headerRule: "#A27638",
-      gridRule: "#D6BF94",
-      weekdayHeader: "#755616",
-      monthLabel: "#523606",
-    },
-  },
-  {
     id: "pop-grid",
     name: "Pop Grid",
     colors: {
@@ -168,20 +140,6 @@ export const THEMES: ColorTheme[] = [
       gridRule: "#5C70A8",
       weekdayHeader: "#172A65",
       monthLabel: "#214AC4",
-    },
-  },
-  {
-    id: "dusk",
-    name: "Dusk",
-    colors: {
-      text: "#3E3255",
-      sunday: "#9A3A68",
-      saturday: "#414F89",
-      holidayMark: "#9A3A68",
-      headerRule: "#826398",
-      gridRule: "#D1C5E0",
-      weekdayHeader: "#5B4677",
-      monthLabel: "#55376E",
     },
   },
 ];

@@ -22,9 +22,9 @@
 | **Forest**                                                    |                                                                     |
 | ![Forest のカレンダー](screenshots/design/theme-forest.png)   |                                                                     |
 
-Editorial、Botanical、Blueprint、Risograph、Clay、Retro Terminal、Pop Grid、Dusk を2027年1月の同じ月表示で比較できます。
+Editorial、Blueprint、Risograph、Clay、Pop Grid を2027年1月の同じ月表示で比較できます。
 
-![2027年1月の月表示で新しい8テーマを並べたプレビュー](screenshots/design/monthly-theme-comparison.webp)
+![2027年1月の月表示で新しい5テーマを並べたプレビュー](screenshots/design/monthly-theme-comparison.webp)
 
 ### フォント
 
@@ -97,7 +97,7 @@ Classic と Montserrat の組み合わせで、日付の数字の太さを比較
 
 ### デザイン
 
-- **白背景のカラーテーマ13種**: 上のカレンダーデザイン見本で比較できます
+- **白背景のカラーテーマ10種**: 上のカレンダーデザイン見本で比較できます
 - **Google Fonts 11種**: 「かっこいい」「しっかり」「かわいい」「おしゃれ」のカテゴリ別に、見本を見て選択
 - **文字サイズ・余白カスタマイズ**: 月タイトル、日付、曜日のフォントサイズ、セル余白、ヘッダー間隔、上余白（初期値20px）をスライダーで調整
 

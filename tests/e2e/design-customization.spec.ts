@@ -31,16 +31,15 @@ test.describe("Design Customization", () => {
       Sepia: "120, 53, 15",
       Forest: "20, 83, 45",
       Editorial: "32, 45, 68",
-      Botanical: "47, 81, 62",
       Blueprint: "18, 78, 112",
       Risograph: "36, 57, 112",
       Clay: "102, 56, 44",
-      "Retro Terminal": "82, 54, 6",
       "Pop Grid": "33, 74, 196",
-      Dusk: "85, 55, 110",
     };
 
-    await expect(page.getByRole("button", { name: "Minimal", exact: true })).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: /^(Minimal|Botanical|Retro Terminal|Dusk)$/ }),
+    ).toHaveCount(0);
     for (const [theme, title] of Object.entries(expectedColors)) {
       const button = page.getByRole("button", { name: theme, exact: true });
       await button.click();

@@ -126,11 +126,11 @@ describe("importSettings", () => {
     const json = JSON.stringify({
       version: 1,
       themeId: "minimal",
-      monthThemeOverrides: { "2027-01": "minimal", "2027-02": "dusk" },
+      monthThemeOverrides: { "2027-01": "minimal", "2027-02": "blueprint" },
     });
     expect(importSettings(json)).toMatchObject({
       themeId: "monochrome",
-      monthThemeOverrides: { "2027-01": "monochrome", "2027-02": "dusk" },
+      monthThemeOverrides: { "2027-01": "monochrome", "2027-02": "blueprint" },
     });
   });
 
