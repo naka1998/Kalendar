@@ -24,11 +24,8 @@ export function ThemeGrid() {
                 : "hover:bg-surface-container-high"
             }`}
           >
-            <div
-              aria-hidden="true"
-              className="flex gap-0.5 rounded-full border border-outline/40 px-1.5 py-1"
-              style={{ backgroundColor: t.colors.background }}
-            >
+            <div aria-hidden="true" className="flex gap-0.5">
+              <span className="h-3 w-3 rounded-full" style={{ background: t.colors.monthLabel }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.text }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.sunday }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.saturday }} />

@@ -4,7 +4,7 @@ import { DividerHandle } from "./DividerHandle";
 import { ImageArea } from "./ImageArea";
 import { SafeMarginOverlay } from "./SafeMarginOverlay";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
-import { A4 } from "@/lib/constants";
+import { A4, CALENDAR_PAGE_BACKGROUND } from "@/lib/constants";
 import { justifyContentClass, alignItemsClass } from "@/lib/alignmentUtils";
 import "@/lib/calendarThemes.css";
 import { useCallback } from "react";
@@ -108,7 +108,7 @@ export function CalendarPage({
       style={{
         width: `${pageWidth}px`,
         height: `${pageHeight}px`,
-        backgroundColor: colors.background,
+        backgroundColor: CALENDAR_PAGE_BACKGROUND,
         boxShadow: "var(--shadow-a4)",
       }}
     >

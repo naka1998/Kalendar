@@ -7,7 +7,6 @@ const mockThemes: ColorTheme[] = [
     id: "classic",
     name: "Classic",
     colors: {
-      background: "#FFFFFF",
       text: "#1A1A1A",
       sunday: "#DC2626",
       saturday: "#2563EB",
@@ -22,7 +21,6 @@ const mockThemes: ColorTheme[] = [
     id: "dark",
     name: "Dark",
     colors: {
-      background: "#1F2937",
       text: "#F9FAFB",
       sunday: "#FCA5A5",
       saturday: "#93C5FD",

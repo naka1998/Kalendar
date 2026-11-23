@@ -11,34 +11,35 @@ test.describe("Design Customization", () => {
     await page.goto("/");
   });
 
-  test("selecting a theme updates the calendar page and month title colors", async ({ page }) => {
+  test("all themes keep white paper and update the month title color", async ({ page }) => {
     await openAppearance(page);
     const pageOuter = page.getByTestId("page-container").first().locator("..");
     const monthTitle = page.getByTestId("month-title").first();
     const calendarDays = pageOuter.locator(".calendar-cell:not([data-empty]) .calendar-day-number");
     const originalDays = await calendarDays.allTextContents();
     const expectedColors = {
-      Classic: ["255, 255, 255", "17, 24, 39"],
-      Monochrome: ["255, 255, 255", "55, 65, 81"],
-      Slate: ["255, 255, 255", "30, 58, 95"],
-      Sepia: ["255, 255, 255", "120, 53, 15"],
-      Forest: ["255, 255, 255", "20, 83, 45"],
-      Editorial: ["246, 240, 228", "32, 45, 68"],
-      Botanical: ["232, 239, 223", "47, 81, 62"],
-      Blueprint: ["17, 46, 76", "218, 246, 255"],
-      Risograph: ["255, 242, 214", "36, 57, 112"],
-      Clay: ["243, 219, 203", "102, 56, 44"],
-      "Retro Terminal": ["23, 35, 28", "255, 208, 130"],
-      "Pop Grid": ["251, 247, 235", "33, 74, 196"],
-      Dusk: ["48, 44, 85", "255, 244, 255"],
+      Classic: "17, 24, 39",
+      Monochrome: "55, 65, 81",
+      Slate: "30, 58, 95",
+      Sepia: "120, 53, 15",
+      Forest: "20, 83, 45",
+      Editorial: "32, 45, 68",
+      Botanical: "47, 81, 62",
+      Blueprint: "18, 78, 112",
+      Risograph: "36, 57, 112",
+      Clay: "102, 56, 44",
+      "Retro Terminal": "82, 54, 6",
+      "Pop Grid": "33, 74, 196",
+      Dusk: "85, 55, 110",
     };
 
     await expect(page.getByRole("button", { name: "Minimal", exact: true })).toHaveCount(0);
-    for (const [theme, [background, title]] of Object.entries(expectedColors)) {
+    for (const [theme, title] of Object.entries(expectedColors)) {
       const button = page.getByRole("button", { name: theme, exact: true });
       await button.click();
       await expect(button).toHaveAttribute("aria-pressed", "true");
-      await expect(pageOuter).toHaveCSS("background-color", `rgb(${background})`);
+      await expect(pageOuter).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      await expect(pageOuter).toHaveCSS("background-image", "none");
       await expect(monthTitle).toHaveCSS("color", `rgb(${title})`);
       await expect(calendarDays).toHaveText(originalDays);
     }

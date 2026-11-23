@@ -36,7 +36,6 @@ interface ColorTheme {
   id: string;
   name: string;
   colors: {
-    background: string; // ページ背景色
     text: string; // 平日文字色
     sunday: string; // 日曜・祝日文字色
     saturday: string; // 土曜文字色
@@ -299,14 +298,23 @@ ZIP:
 
 ## 5. テーマ定義
 
-| テーマ     | 背景    | 文字    | 日曜    | 土曜    |
-| ---------- | ------- | ------- | ------- | ------- |
-| Classic    | #FFFFFF | #1A1A1A | #DC2626 | #2563EB |
-| Monochrome | #FFFFFF | #1A1A1A | #4B5563 | #6B7280 |
-| Slate      | #FFFFFF | #1E293B | #9F1239 | #1E40AF |
-| Sepia      | #FFFFFF | #34261D | #9A3412 | #6B4F36 |
-| Forest     | #FFFFFF | #1C3024 | #9F1239 | #166534 |
-| Minimal    | #FFFFFF | #262626 | #525252 | #525252 |
+印刷時の見え方を安定させるため、プレビューと出力で用紙の背景を白（`#FFFFFF`）に統一します。配色は文字・罫線・祝日マークなどに適用します。
+
+| テーマ         | 文字    | 日曜    | 土曜    |
+| -------------- | ------- | ------- | ------- |
+| Classic        | #1A1A1A | #DC2626 | #2563EB |
+| Monochrome     | #1A1A1A | #4B5563 | #6B7280 |
+| Slate          | #1E293B | #9F1239 | #1E40AF |
+| Sepia          | #34261D | #9A3412 | #6B4F36 |
+| Forest         | #1C3024 | #9F1239 | #166534 |
+| Editorial      | #202D44 | #8D3D42 | #365479 |
+| Botanical      | #2D4336 | #854749 | #34594B |
+| Blueprint      | #103955 | #9C382B | #006389 |
+| Risograph      | #243970 | #A53830 | #365798 |
+| Clay           | #50342F | #933B29 | #695047 |
+| Retro Terminal | #6B460D | #8D351A | #785514 |
+| Pop Grid       | #192956 | #912638 | #1842BB |
+| Dusk           | #3E3255 | #9A3A68 | #414F89 |
 
 ---
 

@@ -4,6 +4,7 @@ import { escapeHtml } from "../htmlUtils";
 import { renderGridHtml } from "./gridRenderer";
 import { calcCropRender, isFullImageCrop } from "../cropUtils";
 import { objectPositionValue, justifyContentValue, alignItemsValue } from "../alignmentUtils";
+import { CALENDAR_PAGE_BACKGROUND } from "../constants";
 
 // Page dimensions in mm for export rendering
 const PAGE_W_MM = { portrait: 210, landscape: 297 };
@@ -71,7 +72,6 @@ export function renderPage(
   fontWeight: number,
   calendarStyle?: HtmlGeneratorInput["calendarStyle"],
 ): string {
-  const { colors } = page.theme;
   const width = orientation === "portrait" ? "210mm" : "297mm";
   const height = orientation === "portrait" ? "297mm" : "210mm";
 
@@ -147,5 +147,5 @@ export function renderPage(
     contentHtml = `<div style="height:100%;padding:24px;">${gridHtml}</div>`;
   }
 
-  return `<div class="page" data-calendar-theme="${escapeHtml(page.theme.id)}" style="width:${width};height:${height};${marginTop}background-color:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${contentHtml}</div>`;
+  return `<div class="page" data-calendar-theme="${escapeHtml(page.theme.id)}" style="width:${width};height:${height};${marginTop}background-color:${CALENDAR_PAGE_BACKGROUND};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${contentHtml}</div>`;
 }

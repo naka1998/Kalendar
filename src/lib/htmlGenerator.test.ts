@@ -79,8 +79,7 @@ describe("generateSingleHtml", () => {
 
   it("applies theme colors as inline styles", () => {
     const html = generateSingleHtml(createTestInput());
-    expect(html).toContain(THEMES[0].colors.background);
-    expect(html).toContain(THEMES[0].colors.monthLabel);
+    expect(html).toContain(`color:${THEMES[0].colors.monthLabel}`);
   });
 
   it("embeds base64 image when provided", () => {

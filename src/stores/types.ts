@@ -59,7 +59,6 @@ export interface ColorTheme {
   id: string;
   name: string;
   colors: {
-    background: string;
     text: string;
     sunday: string;
     saturday: string;

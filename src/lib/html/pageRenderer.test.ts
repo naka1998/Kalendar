@@ -44,9 +44,9 @@ describe("renderPage", () => {
     expect(html).toContain("height:210mm");
   });
 
-  it("applies theme background color", () => {
-    const html = renderPage(makePage(), "portrait", "Montserrat", 400);
-    expect(html).toContain(`background-color:${theme.colors.background}`);
+  it.each(THEMES)("uses white paper for $name", (theme) => {
+    const html = renderPage(makePage({ theme }), "portrait", "Montserrat", 400);
+    expect(html).toContain("background-color:#FFFFFF");
   });
 
   it("applies font family and weight", () => {
