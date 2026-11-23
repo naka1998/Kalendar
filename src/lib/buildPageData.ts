@@ -28,6 +28,7 @@ export function buildPageData(monthKey: string, state: PageDataDeps): PageData {
   const rawGrid = getMonthGrid(monthKey, state.weekStart);
   const grid = enrichDayCells(rawGrid, holidays);
   const theme = resolveTheme(state.themeId, monthKey, state.monthThemeOverrides, THEMES);
+  const image = state.useImages ? state.images[monthKey] : undefined;
 
   return {
     monthLabel: formatMonthLabel(monthKey, state.monthLabelFormat),
@@ -35,7 +36,8 @@ export function buildPageData(monthKey: string, state: PageDataDeps): PageData {
     weekdayHeaders: getWeekdayHeaders(state.weekdayFormat, state.weekStart),
     theme,
     holidayMarkStyle: state.holidayMarkStyle,
-    imageBase64: state.useImages ? (state.images[monthKey]?.base64 ?? null) : null,
+    imageBase64: image?.base64 ?? null,
+    imageCaption: image?.caption,
     imagePercent: state.imagePercent,
     imagePosition: state.imagePosition,
     imageCropSettings: state.imageCropSettings[monthKey],

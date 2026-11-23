@@ -69,6 +69,7 @@ function createMockState(): CalendarState {
     setImage: () => {},
     removeImage: () => {},
     swapImages: () => {},
+    setImageCaption: () => {},
     setImageCropSettings: () => {},
     removeImageCropSettings: () => {},
     updateImageAspectRatio: () => {},

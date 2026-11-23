@@ -30,6 +30,8 @@ export interface ImageCropSettings {
 // === Calendar Style ===
 export interface CalendarStyle {
   monthFontSize: number;
+  captionTitleFontSize?: number;
+  captionBodyFontSize?: number;
   dayFontSize: number;
   weekdayFontSize: number;
   cellPadding: number;
@@ -79,6 +81,11 @@ export interface FontPreset {
 }
 
 // === Image ===
+export interface ImageCaption {
+  title: string;
+  body: string;
+}
+
 export interface MonthImage {
   id: string;
   monthKey: string;
@@ -86,6 +93,7 @@ export interface MonthImage {
   base64: string;
   mimeType: string;
   aspectRatio?: number; // naturalWidth / naturalHeight
+  caption?: ImageCaption;
 }
 
 // === Holiday ===
@@ -154,6 +162,8 @@ export interface HtmlGeneratorInput {
       | "dayAlignH"
       | "dayAlignV"
       | "monthFontSize"
+      | "captionTitleFontSize"
+      | "captionBodyFontSize"
       | "dayFontSize"
       | "weekdayFontSize"
       | "cellPadding"
@@ -169,6 +179,7 @@ export interface PageData {
   theme: ColorTheme;
   holidayMarkStyle: HolidayMarkStyle;
   imageBase64: string | null;
+  imageCaption?: ImageCaption;
   imagePercent: number;
   imagePosition: ImagePosition;
   imageCropSettings?: ImageCropSettings;
@@ -244,6 +255,7 @@ export interface CalendarState {
   setImage: (monthKey: string, image: MonthImage) => void;
   removeImage: (monthKey: string) => void;
   swapImages: (fromMonth: string, toMonth: string) => void;
+  setImageCaption: (monthKey: string, imageId: string, caption: ImageCaption) => void;
   setImageCropSettings: (monthKey: string, settings: ImageCropSettings) => void;
   removeImageCropSettings: (monthKey: string) => void;
   updateImageAspectRatio: (monthKey: string, aspectRatio: number) => void;

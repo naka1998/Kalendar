@@ -1,5 +1,25 @@
 import type { CalendarStyle, ContentAlign } from "@/stores/types";
-import { DEFAULT_CALENDAR_STYLE, DEFAULTS } from "./constants";
+import { CAPTION_FONT_SIZE, DEFAULT_CALENDAR_STYLE, DEFAULTS } from "./constants";
+
+function captionFontSize(value: number | undefined, fallback: number): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
+  return Math.round(Math.max(CAPTION_FONT_SIZE.MIN, Math.min(CAPTION_FONT_SIZE.MAX, value)));
+}
+
+export function getCaptionFontSizes(
+  style?: Pick<CalendarStyle, "captionTitleFontSize" | "captionBodyFontSize">,
+) {
+  return {
+    captionTitleFontSize: captionFontSize(
+      style?.captionTitleFontSize,
+      DEFAULT_CALENDAR_STYLE.captionTitleFontSize,
+    ),
+    captionBodyFontSize: captionFontSize(
+      style?.captionBodyFontSize,
+      DEFAULT_CALENDAR_STYLE.captionBodyFontSize,
+    ),
+  };
+}
 
 const PORTRAIT_PAGE = { orientation: "portrait", imagePosition: "top" } as const;
 

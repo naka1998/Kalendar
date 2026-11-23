@@ -122,6 +122,19 @@ export const useCalendarStore = create<CalendarState>((set) => ({
 
       return { images: newImages, imageCropSettings: newCrop };
     }),
+  setImageCaption: (monthKey, imageId, caption) =>
+    set((s) => {
+      const image = s.images[monthKey];
+      if (image?.id !== imageId) return s;
+
+      const title = caption.title.trim();
+      const body = caption.body.trim();
+      if (title === (image.caption?.title ?? "") && body === (image.caption?.body ?? "")) return s;
+      const nextImage = { ...image };
+      if (title || body) nextImage.caption = { title, body };
+      else delete nextImage.caption;
+      return { images: { ...s.images, [monthKey]: nextImage } };
+    }),
   setImageCropSettings: (monthKey, settings) =>
     set((s) => ({ imageCropSettings: { ...s.imageCropSettings, [monthKey]: settings } })),
   removeImageCropSettings: (monthKey) =>

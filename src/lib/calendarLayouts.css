@@ -13,6 +13,80 @@
   letter-spacing: -0.05em;
 }
 
+.calendar-page-layout {
+  position: relative;
+  anchor-scope: --calendar-photo, --calendar-grid, --calendar-heading, --calendar-heading-end;
+}
+
+.calendar-photo-area {
+  anchor-name: --calendar-photo;
+}
+
+[data-calendar-layout] {
+  anchor-name: --calendar-grid;
+}
+
+.calendar-title-text {
+  anchor-name: --calendar-heading;
+}
+
+[data-title-rule]:not([data-title-rule="none"]) .calendar-title-rule,
+[data-title-rule="none"]:not([data-calendar-layout="date-list"]) .calendar-weekdays,
+[data-title-rule="none"][data-calendar-layout="date-list"] .calendar-days {
+  anchor-name: --calendar-heading-end;
+}
+
+/* Keep the caption in the space around the existing calendar without resizing the grid. */
+.calendar-caption-slot {
+  position: absolute;
+  top: 8px;
+  right: anchor(--calendar-grid right);
+  bottom: anchor(--calendar-grid top);
+  left: anchor(--calendar-grid left);
+  display: flex;
+  align-items: start;
+  justify-content: end;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.calendar-caption-slot[data-photo-position="top"] {
+  top: calc(anchor(--calendar-photo bottom) + 8px);
+}
+
+.calendar-caption-slot[data-photo-position="bottom"] {
+  top: anchor(--calendar-grid bottom);
+  bottom: calc(anchor(--calendar-photo top) + 8px);
+  align-items: safe end;
+}
+
+:is([data-title-position="left"], [data-title-position="center"])[data-title-order="together"]
+  .calendar-caption-slot:not([data-photo-position="bottom"]) {
+  left: calc(anchor(--calendar-heading right) + 16px);
+  bottom: anchor(--calendar-heading-end top);
+}
+
+[data-title-position="right"][data-title-order="together"]
+  .calendar-caption-slot:not([data-photo-position="bottom"]) {
+  right: calc(anchor(--calendar-heading left) + 16px);
+  bottom: anchor(--calendar-heading-end top);
+}
+
+.calendar-image-caption {
+  max-inline-size: min(100%, 32em);
+  line-height: 1.4;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.calendar-image-caption-title {
+  font-weight: 600;
+}
+
+.calendar-image-caption-body {
+  white-space: pre-wrap;
+}
+
 .calendar-day-with-dot {
   position: relative;
   display: inline-flex;

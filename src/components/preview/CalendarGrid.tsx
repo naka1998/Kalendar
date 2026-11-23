@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import {
   getCalendarTitle,
+  getCaptionFontSizes,
   getDayCellPadding,
   getDayRules,
   getTitleSettings,
@@ -14,6 +15,8 @@ import type {
   DayCell,
   FontWeight,
   HolidayMarkStyle,
+  ImageCaption,
+  ImagePosition,
 } from "@/stores/types";
 
 export interface CalendarGridProps {
@@ -25,6 +28,8 @@ export interface CalendarGridProps {
   fontFamily: string;
   fontWeight: FontWeight;
   calendarStyle: CalendarStyle;
+  imageCaption?: ImageCaption;
+  imagePosition?: ImagePosition;
 }
 
 export function CalendarGrid({
@@ -36,9 +41,12 @@ export function CalendarGrid({
   fontFamily,
   fontWeight,
   calendarStyle,
+  imageCaption,
+  imagePosition,
 }: CalendarGridProps) {
   const { colors } = theme;
   const { monthFontSize, dayFontSize, weekdayFontSize, cellPadding, headerGap } = calendarStyle;
+  const { captionTitleFontSize, captionBodyFontSize } = getCaptionFontSizes(calendarStyle);
 
   const layout = resolveCalendarLayout(calendarStyle.layoutPreset);
   const { dayRuleH, dayRuleV, dayFrame } = getDayRules(calendarStyle);
@@ -58,6 +66,26 @@ export function CalendarGrid({
     "--calendar-list-short-rows": Math.ceil(dayCount / 3),
   } as CSSProperties;
 
+  const monthTitle = (
+    <div
+      data-testid="month-title"
+      className="calendar-title font-extrabold"
+      style={{
+        color: colors.monthLabel,
+        fontSize: `${monthFontSize}px`,
+        marginBottom: `${headerGap}px`,
+      }}
+    >
+      {titleOrder === "stacked" && title.year && (
+        <span className="calendar-title-year">{title.year}</span>
+      )}
+      <span className="calendar-title-text">{title.main}</span>
+      {titleOrder === "split" && title.year && (
+        <span className="calendar-title-year">{title.year}</span>
+      )}
+    </div>
+  );
+
   return (
     <div
       data-calendar-layout={layout}
@@ -72,24 +100,30 @@ export function CalendarGrid({
       data-day-align-v={dayAlignV}
       style={gridStyle}
     >
-      {/* Month label */}
-      <div
-        data-testid="month-title"
-        className="calendar-title font-extrabold"
-        style={{
-          color: colors.monthLabel,
-          fontSize: `${monthFontSize}px`,
-          marginBottom: `${headerGap}px`,
-        }}
-      >
-        {titleOrder === "stacked" && title.year && (
-          <span className="calendar-title-year">{title.year}</span>
-        )}
-        {title.main}
-        {titleOrder === "split" && title.year && (
-          <span className="calendar-title-year">{title.year}</span>
-        )}
-      </div>
+      {monthTitle}
+
+      {imageCaption && (
+        <div className="calendar-caption-slot" data-photo-position={imagePosition}>
+          <div className="calendar-image-caption" style={{ color: colors.text }}>
+            {imageCaption.title && (
+              <div
+                className="calendar-image-caption-title"
+                style={{ fontSize: captionTitleFontSize }}
+              >
+                {imageCaption.title}
+              </div>
+            )}
+            {imageCaption.body && (
+              <div
+                className="calendar-image-caption-body"
+                style={{ fontSize: captionBodyFontSize }}
+              >
+                {imageCaption.body}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Header rule */}
       <div

@@ -37,6 +37,8 @@ function buildInput(store: ReturnType<typeof useCalendarStore.getState>): HtmlGe
       dayAlignH: store.calendarStyle.dayAlignH,
       dayAlignV: store.calendarStyle.dayAlignV,
       monthFontSize: store.calendarStyle.monthFontSize,
+      captionTitleFontSize: store.calendarStyle.captionTitleFontSize,
+      captionBodyFontSize: store.calendarStyle.captionBodyFontSize,
       dayFontSize: store.calendarStyle.dayFontSize,
       weekdayFontSize: store.calendarStyle.weekdayFontSize,
       cellPadding: store.calendarStyle.cellPadding,

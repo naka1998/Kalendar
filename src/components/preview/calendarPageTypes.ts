@@ -5,6 +5,7 @@ import type {
   FitMode,
   FontWeight,
   HolidayMarkStyle,
+  ImageCaption,
   ImageCropSettings,
   ImagePosition,
   Orientation,
@@ -12,6 +13,7 @@ import type {
 
 export interface ImageProps {
   imageBase64: string | null;
+  imageCaption?: ImageCaption;
   imagePercent: number;
   imagePosition: ImagePosition;
   imageFitMode?: FitMode;
@@ -20,6 +22,8 @@ export interface ImageProps {
 }
 
 export interface ImageEditProps {
+  imageId?: string;
+  onCaptionSave?: (caption: ImageCaption) => void;
   isImageEditing?: boolean;
   editDraft?: ImageCropSettings | null;
   onImageEditStart?: () => void;

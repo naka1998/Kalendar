@@ -3,6 +3,7 @@ import { DEFAULT_CALENDAR_STYLE } from "@/lib/constants";
 import { escapeHtml } from "../htmlUtils";
 import {
   getCalendarTitle,
+  getCaptionFontSizes,
   resolveCalendarLayout,
   resolveDayAlignment,
   getTitleSettings,
@@ -12,7 +13,13 @@ import { renderDayCell } from "./cellRenderer";
 
 export interface GridStyleOverrides extends Pick<
   CalendarStyle,
-  "layoutPreset" | "titlePosition" | "titleOrder" | "titleRule" | "weekdayAlign"
+  | "layoutPreset"
+  | "titlePosition"
+  | "titleOrder"
+  | "titleRule"
+  | "weekdayAlign"
+  | "captionTitleFontSize"
+  | "captionBodyFontSize"
 > {
   dayRuleH?: boolean;
   dayRuleV?: boolean;
@@ -50,12 +57,22 @@ export function renderGridHtml(
   const year = title.year
     ? `<span class="calendar-title-year">${escapeHtml(title.year)}</span>`
     : "";
-  const titleText =
-    titleOrder === "stacked" ? year + escapeHtml(title.main) : escapeHtml(title.main) + year;
+  const mainTitle = `<span class="calendar-title-text">${escapeHtml(title.main)}</span>`;
+  const titleText = titleOrder === "stacked" ? year + mainTitle : mainTitle + year;
   const dayCount = page.grid.flat().filter((cell) => cell.isCurrentMonth && cell.date).length;
+  const caption = page.imageBase64 ? page.imageCaption : undefined;
   let gridHtml = `<div data-calendar-layout="${layout}"${alignmentAttrs} data-day-rule-h="${dayRuleH}" data-day-rule-v="${dayRuleV}" data-day-frame="${dayFrame}" data-title-position="${titlePosition}" data-title-order="${titleOrder}" data-title-rule="${titleRule}" data-weekday-align="${weekdayAlign}" style="width:${gridWidth}%;--calendar-grid-rule:${page.theme.colors.gridRule};--calendar-holiday-mark:${page.theme.colors.holidayMark};--calendar-list-rows:${Math.ceil(dayCount / 2)};--calendar-list-short-rows:${Math.ceil(dayCount / 3)}">`;
-  // Month label
   gridHtml += `<div class="calendar-title" style="color:${page.theme.colors.monthLabel};font-size:${monthFontSize}px;font-weight:800;margin-bottom:${headerGap}px">${titleText}</div>`;
+  if (caption) {
+    const { captionTitleFontSize, captionBodyFontSize } = getCaptionFontSizes(style);
+    const captionTitle = caption.title
+      ? `<div class="calendar-image-caption-title" style="font-size:${captionTitleFontSize}px">${escapeHtml(caption.title)}</div>`
+      : "";
+    const captionBody = caption.body
+      ? `<div class="calendar-image-caption-body" style="font-size:${captionBodyFontSize}px">${escapeHtml(caption.body)}</div>`
+      : "";
+    gridHtml += `<div class="calendar-caption-slot" data-photo-position="${escapeHtml(page.imagePosition ?? "top")}"><div class="calendar-image-caption" style="color:${page.theme.colors.text}">${captionTitle}${captionBody}</div></div>`;
+  }
   // Header rule
   gridHtml += `<div class="calendar-title-rule" style="border-bottom:1px solid ${page.theme.colors.headerRule};margin-bottom:${headerGap}px"></div>`;
   // Weekday headers

@@ -52,7 +52,7 @@ export function CalendarPage({
   onImageAspectRatioLoad,
 }: CalendarPageProps) {
   const { theme, fontFamily, fontWeight, orientation, holidayMarkStyle, calendarStyle } = style;
-  const { imageBase64, imagePercent, imagePosition } = image;
+  const { imageBase64, imageCaption, imagePercent, imagePosition } = image;
 
   const { colors } = theme;
   const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
@@ -82,6 +82,7 @@ export function CalendarPage({
       : ("column" as const);
 
   const showDivider = showImageArea && !!imageBase64 && !!dividerProps;
+  const captionUnderPhoto = imagePosition === "top" && !!imageCaption;
 
   // Content alignment
   const contentJustifyClass = justifyContentClass(calendarStyle.contentAlignV);
@@ -120,7 +121,7 @@ export function CalendarPage({
       )}
       <div
         data-testid="page-container"
-        className={`flex h-full ${isDividerDragging ? "select-none" : ""}`}
+        className={`calendar-page-layout flex h-full ${isDividerDragging ? "select-none" : ""}`}
         style={{
           flexDirection,
           paddingTop:
@@ -152,7 +153,11 @@ export function CalendarPage({
             <span
               data-testid="ratio-indicator"
               className={`pointer-events-none absolute z-10 rounded bg-black/50 px-1.5 py-0.5 text-[10px] tabular-nums text-white ${
-                horizontal ? "top-1 left-1/2 -translate-x-1/2" : "top-1/2 left-1 -translate-y-1/2"
+                horizontal
+                  ? "top-1 left-1/2 -translate-x-1/2"
+                  : captionUnderPhoto
+                    ? "bottom-full left-1"
+                    : "top-1/2 left-1 -translate-y-1/2"
               }`}
             >
               {displayPercent}:{100 - displayPercent}
@@ -161,7 +166,9 @@ export function CalendarPage({
               <button
                 data-testid="position-toggle"
                 onClick={handlePositionToggle}
-                className="absolute top-1/2 right-1 z-20 -translate-y-1/2 rounded-full bg-surface/80 p-1 text-on-surface-variant opacity-0 shadow-sm transition-opacity hover:bg-surface hover:text-on-surface group-hover/page:opacity-100"
+                className={`absolute right-1 z-20 rounded-full bg-surface/80 p-1 text-on-surface-variant opacity-0 shadow-sm transition-opacity hover:bg-surface hover:text-on-surface group-hover/page:opacity-100 ${
+                  captionUnderPhoto ? "bottom-full" : "top-1/2 -translate-y-1/2"
+                }`}
                 title="配置を変更"
               >
                 <svg
@@ -195,6 +202,8 @@ export function CalendarPage({
             fontFamily={fontFamily}
             fontWeight={fontWeight}
             calendarStyle={calendarStyle}
+            imageCaption={showImageArea && imageBase64 ? imageCaption : undefined}
+            imagePosition={imagePosition}
           />
         </div>
       </div>

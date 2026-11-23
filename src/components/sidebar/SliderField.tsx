@@ -41,6 +41,7 @@ export function SliderField({
       <span className={`w-16 shrink-0 text-xs ${labelColor}`}>{label}</span>
       <input
         type="range"
+        aria-label={label}
         min={min}
         max={max}
         value={value}
