@@ -6,6 +6,11 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   page,
   context,
 }) => {
+  // The PDF popup needs the same font isolation as the main preview page.
+  await context.route(
+    (url) => url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com",
+    (route) => route.abort(),
+  );
   await context.addInitScript(() => {
     window.print = () => {};
   });
