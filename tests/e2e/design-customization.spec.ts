@@ -11,12 +11,19 @@ test.describe("Design Customization", () => {
     await page.goto("/");
   });
 
-  test("all themes keep white paper and update the month title color", async ({ page }) => {
+  test("themes update colors while preserving the calendar layout and typography", async ({
+    page,
+  }) => {
     await openAppearance(page);
     const pageOuter = page.getByTestId("page-container").first().locator("..");
     const monthTitle = page.getByTestId("month-title").first();
+    const titleText = monthTitle.locator(".calendar-title-text");
+    const weekday = pageOuter.locator(".calendar-weekdays > div").first();
     const calendarDays = pageOuter.locator(".calendar-cell:not([data-empty]) .calendar-day-number");
     const originalDays = await calendarDays.allTextContents();
+    const originalLetterSpacing = await monthTitle.evaluate(
+      (title) => getComputedStyle(title).letterSpacing,
+    );
     const expectedColors = {
       Classic: "17, 24, 39",
       Monochrome: "55, 65, 81",
@@ -41,6 +48,15 @@ test.describe("Design Customization", () => {
       await expect(pageOuter).toHaveCSS("background-color", "rgb(255, 255, 255)");
       await expect(pageOuter).toHaveCSS("background-image", "none");
       await expect(monthTitle).toHaveCSS("color", `rgb(${title})`);
+      await expect(monthTitle).toHaveCSS("letter-spacing", originalLetterSpacing);
+      await expect(titleText).toHaveCSS("text-decoration-line", "none");
+      await expect(titleText).toHaveCSS(
+        "text-shadow",
+        theme === "Risograph" ? "rgb(230, 138, 112) 2px 2px 0px" : "none",
+      );
+      await expect(weekday).toHaveCSS("text-decoration-line", "none");
+      await expect(weekday).toHaveCSS("box-shadow", "none");
+      await expect(calendarDays.first()).toHaveCSS("font-variant-numeric", "normal");
       await expect(calendarDays).toHaveText(originalDays);
     }
   });
