@@ -31,15 +31,16 @@ test("lays out a photo caption and round-trips it through all output paths", asy
     "textContent",
     body,
   );
-  await expect(caption.locator(".calendar-image-caption-title")).toHaveCSS("font-size", "20px");
-  await expect(caption.locator(".calendar-image-caption-body")).toHaveCSS("font-size", "14px");
+  await expect(caption.locator(".calendar-image-caption-title")).toHaveCSS("font-size", "18px");
+  await expect(caption.locator(".calendar-image-caption-body")).toHaveCSS("font-size", "12px");
 
   const photoBox = (await image.boundingBox())!;
   const captionBox = (await caption.boundingBox())!;
   const monthBox = (await month.boundingBox())!;
-  expect(captionBox.y).toBeGreaterThanOrEqual(photoBox.y + photoBox.height);
+  const previewScale = photoBox.width / (await image.evaluate((el) => el.offsetWidth));
+  expect((captionBox.y - photoBox.y - photoBox.height) / previewScale).toBeCloseTo(8, 0);
   expect(captionBox.x).toBeGreaterThanOrEqual(monthBox.x + monthBox.width);
-  expect(captionBox.y).toBeLessThan(monthBox.y + monthBox.height);
+  expect(captionBox.y).toBeCloseTo(monthBox.y, 0);
 
   await expect(page.getByText(/自動保存済み/)).toBeVisible();
   await page.reload();
@@ -52,9 +53,10 @@ test("lays out a photo caption and round-trips it through all output paths", asy
     .getByRole("slider")
     .press("Home");
   const narrowMonth = (await month.boundingBox())!;
-  expect((await caption.boundingBox())!.y).toBeGreaterThanOrEqual(
-    narrowMonth.y + narrowMonth.height,
-  );
+  const narrowPhoto = (await image.boundingBox())!;
+  const narrowCaption = (await caption.boundingBox())!;
+  expect((narrowCaption.y - narrowPhoto.y - narrowPhoto.height) / previewScale).toBeCloseTo(8, 0);
+  expect(narrowMonth.y).toBeGreaterThanOrEqual(narrowCaption.y + narrowCaption.height);
 
   const output = page.getByRole("button", { name: "出力", exact: true });
   await output.click();
@@ -64,10 +66,19 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   await printPage.emulateMedia({ media: "print" });
   const printedCaption = printPage.locator(".calendar-image-caption");
   await expect(printedCaption.locator(".calendar-image-caption-title")).toHaveText(title);
-  const printedMonth = (await printPage.locator(".calendar-title").first().boundingBox())!;
-  expect((await printedCaption.boundingBox())!.y).toBeGreaterThanOrEqual(
-    printedMonth.y + printedMonth.height,
+  await expect(printedCaption.locator(".calendar-image-caption-title")).toHaveCSS(
+    "font-size",
+    "18px",
   );
+  await expect(printedCaption.locator(".calendar-image-caption-body")).toHaveCSS(
+    "font-size",
+    "12px",
+  );
+  const printedPhoto = (await printPage.locator(".page img").first().boundingBox())!;
+  const printedMonth = (await printPage.locator(".calendar-title").first().boundingBox())!;
+  const printedCaptionBox = (await printedCaption.boundingBox())!;
+  expect(printedCaptionBox.y - printedPhoto.y - printedPhoto.height).toBeCloseTo(8, 0);
+  expect(printedMonth.y).toBeGreaterThanOrEqual(printedCaptionBox.y + printedCaptionBox.height);
   await printPage.close();
 
   await output.click();

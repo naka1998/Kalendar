@@ -15,6 +15,7 @@
 
 :has(> [data-calendar-layout][data-image-position="top"]) {
   justify-content: start !important;
+  padding-block-start: 8px !important;
 }
 
 .calendar-caption-header {
@@ -25,9 +26,13 @@
 }
 
 [data-image-position="top"][data-title-position="left"] .calendar-caption-header {
-  flex-flow: row wrap;
-  align-items: end;
+  flex-flow: row-reverse wrap;
+  align-items: start;
   column-gap: 16px;
+}
+
+[data-image-position="top"][data-title-position="left"] .calendar-caption-header .calendar-title {
+  margin-inline-end: auto;
 }
 
 .calendar-caption-header .calendar-title {
@@ -44,13 +49,21 @@
   overflow-wrap: anywhere;
 }
 
+[data-image-position="top"] .calendar-image-caption {
+  order: -1;
+}
+
+[data-image-position="top"][data-title-position="left"] .calendar-image-caption {
+  align-self: start;
+}
+
 .calendar-image-caption-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .calendar-image-caption-body {
-  font-size: 14px;
+  font-size: 12px;
   white-space: pre-wrap;
 }
 
@@ -219,6 +232,31 @@
 
 [data-title-position="side"] .calendar-days {
   grid-area: 3 / 2;
+}
+
+[data-image-position="top"][data-title-position="side"][data-calendar-layout] {
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+}
+
+[data-image-position="top"][data-title-position="side"] .calendar-image-caption {
+  grid-area: 1 / 1 / 2 / -1;
+  padding-block: 0 8px;
+}
+
+[data-image-position="top"][data-title-position="side"] .calendar-title {
+  grid-area: 2 / 1 / 5 / 2;
+}
+
+[data-image-position="top"][data-title-position="side"] .calendar-title-rule {
+  grid-area: 2 / 2;
+}
+
+[data-image-position="top"][data-title-position="side"] .calendar-weekdays {
+  grid-area: 3 / 2;
+}
+
+[data-image-position="top"][data-title-position="side"] .calendar-days {
+  grid-area: 4 / 2;
 }
 
 [data-calendar-layout="cards"] .calendar-days {

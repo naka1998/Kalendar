@@ -1,20 +1,26 @@
 interface DividerHandleProps {
   direction: "horizontal" | "vertical";
   isDragging: boolean;
+  overlay?: boolean;
   dividerProps: {
     onPointerDown: (e: React.PointerEvent) => void;
   };
 }
 
-export function DividerHandle({ direction, isDragging, dividerProps }: DividerHandleProps) {
+export function DividerHandle({
+  direction,
+  isDragging,
+  overlay,
+  dividerProps,
+}: DividerHandleProps) {
   const isHorizontal = direction === "horizontal";
 
   return (
     <div
       data-testid="divider-handle"
-      className={`group relative z-10 flex shrink-0 items-center justify-center ${
-        isHorizontal ? "h-3 w-full cursor-row-resize" : "h-full w-3 cursor-col-resize"
-      }`}
+      className={`group z-10 flex shrink-0 items-center justify-center ${
+        overlay ? "absolute inset-x-0 -top-1.5" : "relative"
+      } ${isHorizontal ? "h-3 w-full cursor-row-resize" : "h-full w-3 cursor-col-resize"}`}
       style={{ touchAction: "none" }}
       {...dividerProps}
     >
