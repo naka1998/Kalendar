@@ -79,7 +79,7 @@ export function CalendarGrid({
       {titleOrder === "stacked" && title.year && (
         <span className="calendar-title-year">{title.year}</span>
       )}
-      {title.main}
+      <span className="calendar-title-text">{title.main}</span>
       {titleOrder === "split" && title.year && (
         <span className="calendar-title-year">{title.year}</span>
       )}
@@ -90,7 +90,6 @@ export function CalendarGrid({
     <div
       data-calendar-layout={layout}
       data-title-position={titlePosition}
-      data-image-position={imageCaption && imagePosition === "top" ? imagePosition : undefined}
       data-title-order={titleOrder}
       data-title-rule={titleRule}
       data-weekday-align={weekdayAlign}
@@ -101,9 +100,10 @@ export function CalendarGrid({
       data-day-align-v={dayAlignV}
       style={gridStyle}
     >
-      {imageCaption ? (
-        <div className="calendar-caption-header">
-          {monthTitle}
+      {monthTitle}
+
+      {imageCaption && (
+        <div className="calendar-caption-slot" data-photo-position={imagePosition}>
           <div className="calendar-image-caption" style={{ color: colors.text }}>
             {imageCaption.title && (
               <div
@@ -123,8 +123,6 @@ export function CalendarGrid({
             )}
           </div>
         </div>
-      ) : (
-        monthTitle
       )}
 
       {/* Header rule */}

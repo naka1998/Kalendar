@@ -121,7 +121,7 @@ export function CalendarPage({
       )}
       <div
         data-testid="page-container"
-        className={`flex h-full ${isDividerDragging ? "select-none" : ""}`}
+        className={`calendar-page-layout flex h-full ${isDividerDragging ? "select-none" : ""}`}
         style={{
           flexDirection,
           paddingTop:
@@ -148,7 +148,6 @@ export function CalendarPage({
             <DividerHandle
               direction={horizontal ? "vertical" : "horizontal"}
               isDragging={isDividerDragging}
-              overlay={captionUnderPhoto}
               dividerProps={dividerProps}
             />
             <span
@@ -157,7 +156,7 @@ export function CalendarPage({
                 horizontal
                   ? "top-1 left-1/2 -translate-x-1/2"
                   : captionUnderPhoto
-                    ? "bottom-2 left-1"
+                    ? "bottom-full left-1"
                     : "top-1/2 left-1 -translate-y-1/2"
               }`}
             >
@@ -168,7 +167,7 @@ export function CalendarPage({
                 data-testid="position-toggle"
                 onClick={handlePositionToggle}
                 className={`absolute right-1 z-20 rounded-full bg-surface/80 p-1 text-on-surface-variant opacity-0 shadow-sm transition-opacity hover:bg-surface hover:text-on-surface group-hover/page:opacity-100 ${
-                  captionUnderPhoto ? "bottom-2" : "top-1/2 -translate-y-1/2"
+                  captionUnderPhoto ? "bottom-full" : "top-1/2 -translate-y-1/2"
                 }`}
                 title="配置を変更"
               >

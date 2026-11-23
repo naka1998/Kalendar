@@ -15,6 +15,15 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   await image.locator('input[type="file"]').setInputFiles("tests/e2e/fixtures/test-wide-image.png");
   await expect(image.locator("img")).toBeVisible();
   await image.hover();
+  const month = page.getByTestId("month-title").first();
+  const dates = page.locator(".calendar-days").first();
+  const calendarPosition = async () => {
+    const photo = (await image.boundingBox())!;
+    const heading = (await month.boundingBox())!;
+    const days = (await dates.boundingBox())!;
+    return [heading, days].map(({ x, y }) => [x - photo.x, y - photo.y]);
+  };
+  const positionWithoutCaption = await calendarPosition();
   await image.getByRole("button", { name: "キャプション", exact: true }).click();
 
   const title = "写真 <1> & 春";
@@ -25,7 +34,6 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   await dialog.getByRole("button", { name: "保存", exact: true }).click();
 
   const caption = page.locator(".calendar-image-caption");
-  const month = page.getByTestId("month-title").first();
   await expect(caption.locator(".calendar-image-caption-title")).toHaveText(title);
   await expect(caption.locator(".calendar-image-caption-body")).toHaveJSProperty(
     "textContent",
@@ -36,11 +44,11 @@ test("lays out a photo caption and round-trips it through all output paths", asy
 
   const photoBox = (await image.boundingBox())!;
   const captionBox = (await caption.boundingBox())!;
-  const monthBox = (await month.boundingBox())!;
+  const monthTextBox = (await month.locator(".calendar-title-text").boundingBox())!;
   const previewScale = photoBox.width / (await image.evaluate((el) => el.clientWidth));
   expect((captionBox.y - photoBox.y - photoBox.height) / previewScale).toBeCloseTo(8, 0);
-  expect(captionBox.x).toBeGreaterThanOrEqual(monthBox.x + monthBox.width);
-  expect(captionBox.y).toBeCloseTo(monthBox.y, 0);
+  expect(captionBox.x).toBeGreaterThanOrEqual(monthTextBox.x + monthTextBox.width);
+  expect(await calendarPosition()).toEqual(positionWithoutCaption);
 
   await expect(page.getByText(/自動保存済み/)).toBeVisible();
   await page.reload();
@@ -67,11 +75,12 @@ test("lays out a photo caption and round-trips it through all output paths", asy
     .locator("..")
     .getByRole("slider")
     .press("Home");
-  const narrowMonth = (await month.boundingBox())!;
+  const narrowMonth = (await month.locator(".calendar-title-text").boundingBox())!;
   const narrowPhoto = (await image.boundingBox())!;
   const narrowCaption = (await caption.boundingBox())!;
+  const narrowCalendarPosition = await calendarPosition();
   expect((narrowCaption.y - narrowPhoto.y - narrowPhoto.height) / previewScale).toBeCloseTo(8, 0);
-  expect(narrowMonth.y).toBeGreaterThanOrEqual(narrowCaption.y + narrowCaption.height);
+  expect(narrowCaption.x).toBeGreaterThanOrEqual(narrowMonth.x + narrowMonth.width);
 
   const output = page.getByRole("button", { name: "出力", exact: true });
   await output.click();
@@ -90,10 +99,18 @@ test("lays out a photo caption and round-trips it through all output paths", asy
     "13px",
   );
   const printedPhoto = (await printPage.locator(".page img").first().boundingBox())!;
-  const printedMonth = (await printPage.locator(".calendar-title").first().boundingBox())!;
+  const printedMonth = printPage.locator(".calendar-title").first();
+  const printedDates = printPage.locator(".calendar-days").first();
   const printedCaptionBox = (await printedCaption.boundingBox())!;
   expect(printedCaptionBox.y - printedPhoto.y - printedPhoto.height).toBeCloseTo(8, 0);
-  expect(printedMonth.y).toBeGreaterThanOrEqual(printedCaptionBox.y + printedCaptionBox.height);
+  const printPositions = await Promise.all([
+    printedMonth.boundingBox(),
+    printedDates.boundingBox(),
+  ]);
+  await printPage.locator(".calendar-caption-slot").evaluate((slot) => slot.remove());
+  expect(await Promise.all([printedMonth.boundingBox(), printedDates.boundingBox()])).toEqual(
+    printPositions,
+  );
   await printPage.close();
 
   await output.click();
@@ -118,6 +135,7 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   await image.getByRole("button", { name: "キャプション", exact: true }).click();
   await dialog.getByRole("button", { name: "キャプションを削除", exact: true }).click();
   await expect(caption).toHaveCount(0);
+  expect(await calendarPosition()).toEqual(narrowCalendarPosition);
   await titleSize.press("ArrowLeft");
   await bodySize.press("ArrowLeft");
 

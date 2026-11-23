@@ -27,7 +27,7 @@ function renderImageHtml(
     const aH = (imageAlignH as ContentAlign) ?? "center";
     const aV = (imageAlignV as ContentAlign) ?? "center";
     const r = calcCropRender(crop, containerWMm, containerHMm, aspectRatio, fitMode, aH, aV);
-    return `<div style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${r.imgLeftPct.toFixed(4)}%;top:${r.imgTopPct.toFixed(4)}%;width:${r.imgWidthPct.toFixed(4)}%;height:${r.imgHeightPct.toFixed(4)}%" /></div>`;
+    return `<div class="calendar-photo-area" style="${sizeProperty}:${sizeValue};position:relative;overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="position:absolute;left:${r.imgLeftPct.toFixed(4)}%;top:${r.imgTopPct.toFixed(4)}%;width:${r.imgWidthPct.toFixed(4)}%;height:${r.imgHeightPct.toFixed(4)}%" /></div>`;
   }
 
   const op = objectPositionValue(imageAlignV, imageAlignH);
@@ -37,19 +37,19 @@ function renderImageHtml(
 
   if (fitMode === "fit-width") {
     // Width fills container, container flex handles vertical alignment
-    return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%" /></div>`;
+    return `<div class="calendar-photo-area" style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%" /></div>`;
   }
   if (fitMode === "fit-height") {
     // Height fills container, container flex handles horizontal alignment
-    return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="height:100%" /></div>`;
+    return `<div class="calendar-photo-area" style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="height:100%" /></div>`;
   }
   if (fitMode === "none") {
     // Element fills container, content at natural size, object-position controls alignment
-    return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:none;object-position:${op}" /></div>`;
+    return `<div class="calendar-photo-area" style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:none;object-position:${op}" /></div>`;
   }
 
   // cover/contain: element fills container, object-fit + object-position handle alignment
-  return `<div style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${op}" /></div>`;
+  return `<div class="calendar-photo-area" style="${sizeProperty}:${sizeValue};display:flex;${containerAlign};overflow:hidden"><img src="${escapeHtml(page.imageBase64!)}" style="width:100%;height:100%;object-fit:${fitMode};object-position:${op}" /></div>`;
 }
 
 function renderGridContainer(
@@ -138,9 +138,9 @@ export function renderPage(
       : "display:flex;flex-direction:column;height:100%";
 
     if (isReversed) {
-      contentHtml = `<div style="${containerStyle}">${gridBlock}${imageBlock}</div>`;
+      contentHtml = `<div class="calendar-page-layout" style="${containerStyle}">${gridBlock}${imageBlock}</div>`;
     } else {
-      contentHtml = `<div style="${containerStyle}">${imageBlock}${gridBlock}</div>`;
+      contentHtml = `<div class="calendar-page-layout" style="${containerStyle}">${imageBlock}${gridBlock}</div>`;
     }
   } else {
     const gridHtml = renderGridHtml(page, gridWidthPct, gridStyle);

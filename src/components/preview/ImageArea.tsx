@@ -120,7 +120,7 @@ export function ImageArea({
   return (
     <div
       data-testid="image-area"
-      className={`relative flex ${imageAlignItemsClass} ${imageJustifyClass} overflow-hidden`}
+      className={`calendar-photo-area relative flex ${imageAlignItemsClass} ${imageJustifyClass} overflow-hidden`}
       style={{ [sizeProperty]: `${placeholderImagePercent}%` }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
