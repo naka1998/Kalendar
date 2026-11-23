@@ -140,6 +140,7 @@ export function CalendarGrid({
             else if (cell.isSaturday) textColor = colors.saturday;
 
             const isCircle = cell.isHoliday && holidayMarkStyle === "circle";
+            const isDot = cell.isHoliday && holidayMarkStyle === "dot";
             const isUnderline = cell.isHoliday && holidayMarkStyle === "underline";
             const cellSize = Math.max(dayFontSize + 12, 28);
 
@@ -166,6 +167,14 @@ export function CalendarGrid({
                 >
                   {isUnderline ? (
                     <span className="calendar-holiday-underline">{cell.dayOfMonth}</span>
+                  ) : isDot ? (
+                    <span className="calendar-day-with-dot">
+                      {cell.dayOfMonth}
+                      <span
+                        className="calendar-holiday-dot"
+                        style={{ backgroundColor: colors.holidayMark }}
+                      />
+                    </span>
                   ) : (
                     cell.dayOfMonth
                   )}
@@ -174,12 +183,6 @@ export function CalendarGrid({
                   <span className="calendar-list-weekday" style={{ color: textColor }}>
                     {weekdayHeaders[ci]}
                   </span>
-                )}
-                {cell.isHoliday && holidayMarkStyle === "dot" && (
-                  <span
-                    className="calendar-holiday-dot"
-                    style={{ backgroundColor: colors.holidayMark }}
-                  />
                 )}
                 {cell.isHoliday && holidayMarkStyle === "name" && cell.holidayName && (
                   <span className="calendar-holiday-name" style={{ color: textColor }}>

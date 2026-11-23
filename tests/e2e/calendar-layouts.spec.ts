@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import type { CalendarState } from "../../src/stores/types";
 import { CALENDAR_LAYOUTS, getCalendarTitle, getPresetStyle } from "../../src/lib/calendarLayouts";
 import { DEFAULT_CALENDAR_STYLE } from "../../src/lib/constants";
@@ -311,30 +311,34 @@ mobileTest("selects a preset from the mobile settings sheet", async ({ page }) =
   await expect(gridOn(page)).toHaveAttribute("data-calendar-layout", choice.id);
 });
 
-test("keeps holiday dots centered and shows holiday names in the date list preset", async ({
+test("aligns holiday dots below the date digits and shows holiday names in the date list preset", async ({
   page,
 }) => {
   await openFixture(page, {
     endMonth: "2027-05",
     manualHolidays: [
       { date: "2027-01-01", name: "元日" },
+      { date: "2027-01-11", name: "成人の日" },
       { date: "2027-05-04", name: "みどりの日" },
     ],
   });
   const sizes = await openPanel(page, "サイズと配置");
-  const dot = gridOn(page).locator(".calendar-holiday-dot").first();
-  for (const alignment of ["start", "end"]) {
+  for (const alignment of ["start", "center", "end"]) {
     await sizes.getByRole("combobox", { name: "日付の左右揃え" }).selectOption(alignment);
-    await expect
-      .poll(() =>
-        dot.evaluate((element) => {
-          const marker = element.getBoundingClientRect();
-          const cell = element.parentElement!.getBoundingClientRect();
-          return Math.abs(marker.left + marker.width / 2 - cell.left - cell.width / 2);
-        }),
-      )
-      .toBeLessThan(1);
+    await expectDotsUnderDates(gridOn(page));
   }
+
+  const downloading = page.waitForEvent("download");
+  await page.getByRole("button", { name: "出力", exact: true }).click();
+  await page.getByText("単一HTMLファイル（画像埋め込み）", { exact: true }).click();
+  const chunks: Buffer[] = [];
+  for await (const chunk of await (await downloading).createReadStream()) chunks.push(chunk);
+  const print = await page.context().newPage();
+  await print.route(/^https:\/\/fonts\./, (route) => route.abort());
+  await print.emulateMedia({ media: "print" });
+  await print.setContent(Buffer.concat(chunks).toString("utf8"), { waitUntil: "domcontentloaded" });
+  await expectDotsUnderDates(gridOn(print));
+  await print.close();
 
   const presets = await openPanel(page, "プリセット");
   await presets.getByRole("button", { name: "縦リスト" }).click();
@@ -344,3 +348,25 @@ test("keeps holiday dots centered and shows holiday names in the date list prese
   const basic = await openPanel(page, "基本設定");
   await expect(basic.getByRole("combobox", { name: "祝日マーク" })).toHaveValue("name");
 });
+
+async function expectDotsUnderDates(grid: Locator) {
+  const dates = grid.locator(".calendar-day-with-dot");
+  await expect(dates.first()).toBeVisible();
+  await expect
+    .poll(() =>
+      dates.evaluateAll((labels) =>
+        labels.every((label) => {
+          const digits = document.createRange();
+          digits.selectNode(label.firstChild!);
+          const date = digits.getBoundingClientRect();
+          const dot = label.querySelector(".calendar-holiday-dot")!.getBoundingClientRect();
+          return (
+            Math.abs(dot.left + dot.width / 2 - date.left - date.width / 2) < 1 &&
+            dot.top >= date.bottom - 0.5
+          );
+        }),
+      ),
+    )
+    .toBe(true);
+  await expect(dates.first().locator(".calendar-holiday-dot")).toHaveCSS("width", "4px");
+}
