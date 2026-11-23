@@ -202,6 +202,19 @@ describe("calendarStore", () => {
       const state = useCalendarStore.getState();
       expect(state.images["2026-05"]?.base64).toBe("data:image/jpeg;base64,bbb");
     });
+
+    it("keeps the caption with the image and rejects edits to the replaced image", () => {
+      const { setImage, setImageCaption, swapImages } = useCalendarStore.getState();
+      const caption = { title: "春", body: "" };
+      setImage("2026-04", imgA);
+      setImageCaption("2026-04", imgA.id, caption);
+      swapImages("2026-04", "2026-05");
+      expect(useCalendarStore.getState().images["2026-05"]?.caption).toEqual(caption);
+
+      setImage("2026-05", imgB);
+      setImageCaption("2026-05", imgA.id, caption);
+      expect(useCalendarStore.getState().images["2026-05"]?.caption).toBeUndefined();
+    });
   });
 
   describe("image layout actions", () => {

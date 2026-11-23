@@ -8,6 +8,7 @@ import { useDividerDrag } from "@/hooks/useDividerDrag";
 import { useImageEditDraft } from "@/hooks/useImageEditDraft";
 import { useScale } from "./ScaledPage";
 import { CalendarPage } from "./CalendarPage";
+import type { ImageCaption } from "@/stores/types";
 
 export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const weekStart = useCalendarStore((s) => s.weekStart);
@@ -30,6 +31,8 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
   const removedHolidays = useCalendarStore((s) => s.removedHolidays);
   const images = useCalendarStore((s) => s.images);
   const removeImage = useCalendarStore((s) => s.removeImage);
+  const setImageCaption = useCalendarStore((s) => s.setImageCaption);
+  const imageId = images[monthKey]?.id;
   const showSafeMargin = useCalendarStore((s) => s.showSafeMargin);
   const imageCropSettings = useCalendarStore((s) => s.imageCropSettings);
   const imageFitMode = useCalendarStore((s) => s.imageFitMode);
@@ -114,6 +117,13 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
     removeImage(monthKey);
   }, [monthKey, removeImage]);
 
+  const handleCaptionSave = useCallback(
+    (caption: ImageCaption) => {
+      if (imageId) setImageCaption(monthKey, imageId, caption);
+    },
+    [monthKey, imageId, setImageCaption],
+  );
+
   const handleImageEditStart = useCallback(() => {
     startEdit(monthKey);
   }, [monthKey, startEdit]);
@@ -136,6 +146,7 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
       weekdayHeaders={pageData.weekdayHeaders}
       image={{
         imageBase64: pageData.imageBase64,
+        imageCaption: pageData.imageCaption,
         imagePercent: pageData.imagePercent,
         imagePosition: pageData.imagePosition,
         imageFitMode,
@@ -143,6 +154,8 @@ export function CalendarPageContainer({ monthKey }: { monthKey: string }) {
         imageAspectRatio: pageData.imageAspectRatio,
       }}
       imageEdit={{
+        imageId,
+        onCaptionSave: useImages ? handleCaptionSave : undefined,
         isImageEditing: isEditingThisMonth,
         editDraft: isEditingThisMonth ? draft : null,
         onImageEditStart: useImages ? handleImageEditStart : undefined,

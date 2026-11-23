@@ -13,6 +13,56 @@
   letter-spacing: -0.05em;
 }
 
+:has(> [data-calendar-layout][data-image-position="top"]) {
+  justify-content: start !important;
+}
+
+.calendar-caption-header {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding-bottom: 8px;
+}
+
+[data-image-position="top"][data-title-position="left"] .calendar-caption-header {
+  flex-flow: row wrap;
+  align-items: end;
+  column-gap: 16px;
+}
+
+.calendar-caption-header .calendar-title {
+  max-inline-size: 100%;
+}
+
+.calendar-image-caption {
+  align-self: end;
+  margin-inline-start: auto;
+  inline-size: max-content;
+  max-inline-size: min(100%, 32em);
+  line-height: 1.4;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.calendar-image-caption-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.calendar-image-caption-body {
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+[data-title-position="side"] .calendar-caption-header {
+  display: contents;
+}
+
+[data-title-position="side"] .calendar-image-caption {
+  grid-area: 4 / 1 / 5 / -1;
+  padding-top: 8px;
+}
+
 .calendar-day-with-dot {
   position: relative;
   display: inline-flex;

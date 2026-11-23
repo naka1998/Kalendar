@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import type { CalendarStyle, ColorTheme } from "@/stores/types";
 import type { ImageProps, ImageEditProps } from "./calendarPageTypes";
 import { ImageEditOverlay } from "./ImageEditOverlay";
+import { ImageCaptionEditor } from "./ImageCaptionEditor";
 import { calcCropRender, isFullImageCrop } from "@/lib/cropUtils";
 import {
   alignToPositionV,
@@ -39,6 +40,8 @@ export function ImageArea({
 }: ImageAreaProps) {
   const { imageBase64, imageFitMode = "cover", imageCropSettings, imageAspectRatio } = image;
   const {
+    imageId,
+    onCaptionSave,
     isImageEditing = false,
     editDraft,
     onImageEditStart,
@@ -211,7 +214,7 @@ export function ImageArea({
               className={`absolute inset-0 flex items-center justify-center transition-opacity ${
                 showImageButtons
                   ? "bg-black/30 opacity-100"
-                  : "bg-black/0 opacity-0 hover:bg-black/30 hover:opacity-100"
+                  : "bg-black/0 opacity-0 hover:bg-black/30 hover:opacity-100 focus-within:bg-black/30 focus-within:opacity-100"
               }`}
               onClick={(e) => {
                 if (e.target === e.currentTarget) {
@@ -219,7 +222,7 @@ export function ImageArea({
                 }
               }}
             >
-              <div className="flex gap-3 md:gap-2">
+              <div className="flex flex-wrap justify-center gap-2 px-1">
                 {onImageEditStart && imageAspectRatio && (
                   <button
                     data-testid="image-edit-button"
@@ -231,6 +234,13 @@ export function ImageArea({
                   >
                     トリミング
                   </button>
+                )}
+                {onCaptionSave && (
+                  <ImageCaptionEditor
+                    key={imageId}
+                    caption={image.imageCaption}
+                    onSave={onCaptionSave}
+                  />
                 )}
                 <button
                   onClick={() => {

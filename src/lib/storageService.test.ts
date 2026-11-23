@@ -89,6 +89,7 @@ function createMockState(overrides: Partial<CalendarState> = {}): CalendarState 
     setImage: () => {},
     removeImage: () => {},
     swapImages: () => {},
+    setImageCaption: () => {},
     setImageCropSettings: () => {},
     removeImageCropSettings: () => {},
     updateImageAspectRatio: () => {},

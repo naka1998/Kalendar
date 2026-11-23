@@ -42,6 +42,9 @@ export function parseImagesFromHtml(
     const mimeMatch = src.match(/^data:(image\/[^;]+);/);
     const mimeType = mimeMatch?.[1] ?? "image/jpeg";
     const monthKey = months[i];
+    const caption = page.querySelector(".calendar-image-caption");
+    const title = caption?.querySelector(".calendar-image-caption-title")?.textContent ?? "";
+    const body = caption?.querySelector(".calendar-image-caption-body")?.textContent ?? "";
 
     images[monthKey] = {
       id: `imported-${monthKey}`,
@@ -49,6 +52,7 @@ export function parseImagesFromHtml(
       fileName: imageFileNames[monthKey] ?? `image-${monthKey}.jpg`,
       base64: src,
       mimeType,
+      ...(title || body ? { caption: { title, body } } : {}),
     };
   });
 

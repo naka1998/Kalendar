@@ -52,7 +52,7 @@ export function CalendarPage({
   onImageAspectRatioLoad,
 }: CalendarPageProps) {
   const { theme, fontFamily, fontWeight, orientation, holidayMarkStyle, calendarStyle } = style;
-  const { imageBase64, imagePercent, imagePosition } = image;
+  const { imageBase64, imageCaption, imagePercent, imagePosition } = image;
 
   const { colors } = theme;
   const pageWidth = orientation === "portrait" ? A4.PORTRAIT_WIDTH_PX : A4.LANDSCAPE_WIDTH_PX;
@@ -195,6 +195,8 @@ export function CalendarPage({
             fontFamily={fontFamily}
             fontWeight={fontWeight}
             calendarStyle={calendarStyle}
+            imageCaption={showImageArea && imageBase64 ? imageCaption : undefined}
+            imagePosition={imagePosition}
           />
         </div>
       </div>
