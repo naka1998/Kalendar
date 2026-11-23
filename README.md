@@ -17,8 +17,12 @@
 | ![Classic のカレンダー](screenshots/design/theme-classic.png) | ![Monochrome のカレンダー](screenshots/design/theme-monochrome.png) |
 | **Slate**                                                     | **Sepia**                                                           |
 | ![Slate のカレンダー](screenshots/design/theme-slate.png)     | ![Sepia のカレンダー](screenshots/design/theme-sepia.png)           |
-| **Forest**                                                    | **Minimal**                                                         |
-| ![Forest のカレンダー](screenshots/design/theme-forest.png)   | ![Minimal のカレンダー](screenshots/design/theme-minimal.png)       |
+| **Forest**                                                    |                                                                     |
+| ![Forest のカレンダー](screenshots/design/theme-forest.png)   |                                                                     |
+
+Editorial、Botanical、Blueprint、Risograph、Clay、Retro Terminal、Pop Grid、Dusk を2027年1月の同じ月表示で比較できます。
+
+![2027年1月の月表示で新しい8テーマを並べたプレビュー](screenshots/design/monthly-theme-comparison.webp)
 
 ### フォント
 

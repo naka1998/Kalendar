@@ -1,4 +1,5 @@
 import type { CalendarState, CalendarStyle, PersistedCalendarSettings } from "@/stores/types";
+import { migrateThemeSettings } from "./themeUtils";
 
 interface ExportedSettings extends PersistedCalendarSettings {
   version: 1;
@@ -67,7 +68,7 @@ export function importSettings(json: string): ImportedSettings {
     monthLabelFormat: data.monthLabelFormat,
     pageLayout: data.pageLayout,
     holidayMarkStyle: data.holidayMarkStyle,
-    themeId: data.themeId,
+    ...migrateThemeSettings(data),
     fontId: data.fontId,
     fontWeight: data.fontWeight,
     imagePercent: data.imagePercent,
@@ -75,7 +76,6 @@ export function importSettings(json: string): ImportedSettings {
     imageFitMode: data.imageFitMode,
     manualHolidays: data.manualHolidays,
     removedHolidays: data.removedHolidays,
-    monthThemeOverrides: data.monthThemeOverrides,
     ...(data.calendarStyle ? { calendarStyle: migrateCalendarStyle(data.calendarStyle) } : {}),
     ...(data.imageCropSettings ? { imageCropSettings: data.imageCropSettings } : {}),
   };

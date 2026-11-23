@@ -15,6 +15,8 @@ export function ThemeGrid() {
         {THEMES.map((t) => (
           <button
             key={t.id}
+            type="button"
+            aria-pressed={themeId === t.id}
             onClick={() => setThemeId(t.id)}
             className={`flex flex-col items-center gap-1 rounded-lg p-2 transition-all ${
               themeId === t.id
@@ -22,14 +24,18 @@ export function ThemeGrid() {
                 : "hover:bg-surface-container-high"
             }`}
           >
-            {/* Color preview dots */}
-            <div className="flex gap-0.5">
-              <span className="h-3 w-3 rounded-full" style={{ background: t.colors.monthLabel }} />
+            <div
+              aria-hidden="true"
+              className="flex gap-0.5 rounded-full border border-outline/40 px-1.5 py-1"
+              style={{ backgroundColor: t.colors.background }}
+            >
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.text }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.sunday }} />
               <span className="h-3 w-3 rounded-full" style={{ background: t.colors.saturday }} />
             </div>
-            <span className="text-xs font-medium text-on-surface-variant">{t.name}</span>
+            <span className="text-center text-xs font-medium text-on-surface-variant">
+              {t.name}
+            </span>
           </button>
         ))}
       </div>

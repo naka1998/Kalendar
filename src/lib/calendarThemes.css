@@ -1,0 +1,65 @@
+[data-calendar-theme="editorial"] .calendar-title-text {
+  text-decoration: underline double;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+[data-calendar-theme="botanical"] {
+  background-image: radial-gradient(ellipse at right top, #c7d9bb, transparent 62%);
+}
+
+[data-calendar-theme="botanical"] .calendar-weekdays > div {
+  background: #f7f5e8;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+[data-calendar-theme="blueprint"] {
+  background-image:
+    linear-gradient(#79c7e41a 1px, transparent 1px),
+    linear-gradient(90deg, #79c7e41a 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+[data-calendar-theme="risograph"] {
+  background-image: radial-gradient(#ab5d3b28 0.6px, transparent 0.9px);
+  background-size: 4px 4px;
+}
+
+[data-calendar-theme="risograph"] .calendar-title-text {
+  text-shadow: 2px 2px #e68a70;
+}
+
+[data-calendar-theme="clay"] .calendar-weekdays > div {
+  background: #f9e9db;
+  border-radius: 7px 7px 3px 3px;
+  background-clip: padding-box;
+  box-shadow: inset 0 -3px #d3a38d;
+}
+
+[data-calendar-theme="retro-terminal"] {
+  background-image: repeating-linear-gradient(transparent 0 3px, #00000024 3px 4px);
+}
+
+[data-calendar-theme="retro-terminal"] .calendar-title {
+  letter-spacing: 0.05em;
+}
+
+[data-calendar-theme="pop-grid"] .calendar-weekdays > div {
+  background: #e5eaff;
+  box-shadow: inset 0 -3px #214ac4;
+}
+
+[data-calendar-theme="pop-grid"] .calendar-weekdays > :is(:first-child, :last-child) {
+  background: #fae455;
+}
+
+[data-calendar-theme="dusk"] {
+  background-image:
+    radial-gradient(ellipse at left top, #78455e, transparent 74%),
+    linear-gradient(145deg, #4b355f, #202d54);
+}
+
+[data-calendar-theme="dusk"] .calendar-weekdays > div {
+  background: #eee5ff20;
+}

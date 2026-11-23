@@ -46,7 +46,7 @@ describe("renderPage", () => {
 
   it("applies theme background color", () => {
     const html = renderPage(makePage(), "portrait", "Montserrat", 400);
-    expect(html).toContain(`background:${theme.colors.background}`);
+    expect(html).toContain(`background-color:${theme.colors.background}`);
   });
 
   it("applies font family and weight", () => {

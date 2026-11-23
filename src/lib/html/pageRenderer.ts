@@ -147,5 +147,5 @@ export function renderPage(
     contentHtml = `<div style="height:100%;padding:24px;">${gridHtml}</div>`;
   }
 
-  return `<div class="page" style="width:${width};height:${height};${marginTop}background:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${contentHtml}</div>`;
+  return `<div class="page" data-calendar-theme="${escapeHtml(page.theme.id)}" style="width:${width};height:${height};${marginTop}background-color:${colors.background};page-break-after:always;position:relative;overflow:hidden;font-family:'${escapeHtml(fontFamily)}',sans-serif;font-weight:${fontWeight}">${contentHtml}</div>`;
 }

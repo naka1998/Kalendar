@@ -1,4 +1,5 @@
 import layoutStyles from "../calendarLayouts.css?raw";
+import themeStyles from "../calendarThemes.css?raw";
 import type { HtmlGeneratorInput } from "@/stores/types";
 import { escapeHtml } from "../htmlUtils";
 import { renderPage } from "./pageRenderer";
@@ -28,6 +29,7 @@ export function generateSingleHtml(input: HtmlGeneratorInput, settingsJson?: str
 body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 .page:last-child { page-break-after: auto; }
 ${layoutStyles}
+${themeStyles}
 </style>
 </head>
 <body>
