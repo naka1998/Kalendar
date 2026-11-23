@@ -198,6 +198,43 @@ test("aligns right-justified headings, weekdays and holiday numbers by their ren
     .toBeLessThan(1);
 });
 
+test("keeps every week the same height when displaying holiday names", async ({ page }) => {
+  await openFixture(page, {
+    holidayMarkStyle: "name",
+    manualHolidays: [{ date: "2027-01-01", name: "元日" }],
+  });
+
+  const expectUniformCells = async (grid: Locator) => {
+    await expect(
+      grid.locator(".calendar-holiday-name").getByText("元日", { exact: true }),
+    ).toBeVisible();
+    await expect(grid.locator(".calendar-cell")).toHaveCount(42);
+    await expect
+      .poll(() =>
+        grid.locator(".calendar-cell").evaluateAll((cells) => {
+          const heights = cells.map((cell) => cell.getBoundingClientRect().height);
+          return Math.max(...heights) - Math.min(...heights);
+        }),
+      )
+      .toBeLessThan(0.5);
+  };
+
+  await expectUniformCells(gridOn(page));
+
+  const downloading = page.waitForEvent("download");
+  await page.getByRole("button", { name: "出力", exact: true }).click();
+  await page.getByText("単一HTMLファイル（画像埋め込み）", { exact: true }).click();
+  const chunks: Buffer[] = [];
+  for await (const chunk of await (await downloading).createReadStream()) chunks.push(chunk);
+
+  const print = await page.context().newPage();
+  await print.route(/^https:\/\/fonts\./, (route) => route.abort());
+  await print.emulateMedia({ media: "print" });
+  await print.setContent(Buffer.concat(chunks).toString("utf8"), { waitUntil: "domcontentloaded" });
+  await expectUniformCells(gridOn(print));
+  await print.close();
+});
+
 test("restores edited layout settings after reload and when reimporting printed HTML", async ({
   page,
 }) => {
