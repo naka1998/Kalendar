@@ -37,7 +37,7 @@ test("lays out a photo caption and round-trips it through all output paths", asy
   const photoBox = (await image.boundingBox())!;
   const captionBox = (await caption.boundingBox())!;
   const monthBox = (await month.boundingBox())!;
-  const previewScale = photoBox.width / (await image.evaluate((el) => el.offsetWidth));
+  const previewScale = photoBox.width / (await image.evaluate((el) => el.clientWidth));
   expect((captionBox.y - photoBox.y - photoBox.height) / previewScale).toBeCloseTo(8, 0);
   expect(captionBox.x).toBeGreaterThanOrEqual(monthBox.x + monthBox.width);
   expect(captionBox.y).toBeCloseTo(monthBox.y, 0);
