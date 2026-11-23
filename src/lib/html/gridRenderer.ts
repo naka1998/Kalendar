@@ -61,7 +61,7 @@ export function renderGridHtml(
   const titleText = titleOrder === "stacked" ? year + mainTitle : mainTitle + year;
   const dayCount = page.grid.flat().filter((cell) => cell.isCurrentMonth && cell.date).length;
   const caption = page.imageBase64 ? page.imageCaption : undefined;
-  let gridHtml = `<div data-calendar-layout="${layout}"${alignmentAttrs} data-day-rule-h="${dayRuleH}" data-day-rule-v="${dayRuleV}" data-day-frame="${dayFrame}" data-title-position="${titlePosition}" data-title-order="${titleOrder}" data-title-rule="${titleRule}" data-weekday-align="${weekdayAlign}" style="width:${gridWidth}%;--calendar-grid-rule:${page.theme.colors.gridRule};--calendar-holiday-mark:${page.theme.colors.holidayMark};--calendar-list-rows:${Math.ceil(dayCount / 2)};--calendar-list-short-rows:${Math.ceil(dayCount / 3)}">`;
+  let gridHtml = `<div data-calendar-layout="${layout}"${alignmentAttrs} data-day-rule-h="${dayRuleH}" data-day-rule-v="${dayRuleV}" data-day-frame="${dayFrame}" data-title-position="${titlePosition}" data-title-order="${titleOrder}" data-title-rule="${titleRule}" data-weekday-align="${weekdayAlign}" data-show-holiday-names="${page.holidayMarkStyle === "name"}" style="width:${gridWidth}%;--calendar-grid-rule:${page.theme.colors.gridRule};--calendar-holiday-mark:${page.theme.colors.holidayMark};--calendar-list-rows:${Math.ceil(dayCount / 2)};--calendar-list-short-rows:${Math.ceil(dayCount / 3)}">`;
   gridHtml += `<div class="calendar-title" style="color:${page.theme.colors.monthLabel};font-size:${monthFontSize}px;font-weight:800;margin-bottom:${headerGap}px">${titleText}</div>`;
   if (caption) {
     const { captionTitleFontSize, captionBodyFontSize } = getCaptionFontSizes(style);

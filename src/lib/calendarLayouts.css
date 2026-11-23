@@ -4,6 +4,10 @@
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
+[data-show-holiday-names="true"]:not([data-calendar-layout="date-list"]) .calendar-days {
+  grid-auto-rows: 1fr;
+}
+
 :where([data-calendar-layout]) .calendar-weekdays > div {
   text-align: center;
   letter-spacing: 0.2em;

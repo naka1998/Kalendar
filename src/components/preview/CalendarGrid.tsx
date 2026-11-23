@@ -89,6 +89,7 @@ export function CalendarGrid({
   return (
     <div
       data-calendar-layout={layout}
+      data-show-holiday-names={holidayMarkStyle === "name"}
       data-title-position={titlePosition}
       data-title-order={titleOrder}
       data-title-rule={titleRule}
