@@ -106,9 +106,11 @@ describe("HolidaySection", () => {
     expect(useCalendarStore.getState().removedHolidays).toEqual([]);
   });
 
-  it("changes holiday mark style on click", () => {
+  it("changes holiday mark style through the select", () => {
     render(<HolidaySection />);
-    fireEvent.click(screen.getByText("丸囲み"));
+    fireEvent.change(screen.getByRole("combobox", { name: "祝日マーク" }), {
+      target: { value: "circle" },
+    });
     expect(useCalendarStore.getState().holidayMarkStyle).toBe("circle");
   });
 });

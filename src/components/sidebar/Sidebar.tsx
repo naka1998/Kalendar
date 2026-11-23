@@ -24,12 +24,13 @@ export function Sidebar({ mobile }: { mobile?: boolean }) {
         </p>
       )}
 
-      <Accordion defaultValue={["basic"]} className="space-y-2">
+      <Accordion defaultValue={["presets"]} className="space-y-2">
         <AccordionItem value="presets" className="border-none">
           <AccordionTrigger className="rounded-lg px-3 py-2.5 text-lg font-bold text-on-surface hover:bg-surface-container-high hover:no-underline">
             プリセット
           </AccordionTrigger>
           <AccordionContent className="px-3 pt-2">
+            <p className="mb-2 text-xs text-on-surface-variant">変更すると他の設定も変わります</p>
             <PresetSection />
           </AccordionContent>
         </AccordionItem>

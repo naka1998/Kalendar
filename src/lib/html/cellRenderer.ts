@@ -10,10 +10,18 @@ export interface CellStyleOverrides {
   cellPadding?: number;
 }
 
-export function renderHolidayMark(style: HolidayMarkStyle, color: string): string {
+export function renderHolidayMark(
+  style: HolidayMarkStyle,
+  color: string,
+  holidayName?: string | null,
+): string {
   switch (style) {
     case "dot":
-      return `<span style="display:block;margin:2px auto 0;width:6px;height:6px;border-radius:50%;background:${color}"></span>`;
+      return `<span class="calendar-holiday-dot" style="background:${color}"></span>`;
+    case "name":
+      return holidayName
+        ? `<span class="calendar-holiday-name" style="color:${color}">${escapeHtml(holidayName)}</span>`
+        : "";
     case "circle":
     case "underline":
     case "color-only":
@@ -55,7 +63,11 @@ export function renderDayCell(
     : cell.dayOfMonth;
 
   const mark = cell.isHoliday
-    ? renderHolidayMark(page.holidayMarkStyle, page.theme.colors.holidayMark)
+    ? renderHolidayMark(
+        page.holidayMarkStyle,
+        page.holidayMarkStyle === "name" ? textColor : page.theme.colors.holidayMark,
+        cell.holidayName,
+      )
     : "";
 
   const weekday = style?.showWeekday

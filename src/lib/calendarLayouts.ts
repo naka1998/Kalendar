@@ -72,7 +72,7 @@ export const CALENDAR_LAYOUTS = [
     label: "左サイド見出し",
     page: PORTRAIT_PAGE,
     fontId: "zen-maru-gothic",
-    monthLabelFormat: "ja",
+    monthLabelFormat: "yyyy.mm",
     appearance: JAPANESE_PRESET_APPEARANCE,
   },
   {
@@ -89,7 +89,7 @@ export const CALENDAR_LAYOUTS = [
     page: { orientation: "landscape", imagePosition: "left" },
     fontId: "noto-sans-jp",
     monthLabelFormat: "ja",
-    appearance: JAPANESE_PRESET_APPEARANCE,
+    appearance: { ...JAPANESE_PRESET_APPEARANCE, holidayMarkStyle: "name" },
   },
 ] as const;
 
@@ -193,6 +193,7 @@ const LAYOUT_FONT_SIZES: Partial<
 > = {
   centered: { monthFontSize: 54, dayFontSize: 16 },
   stacked: { weekdayFontSize: 14, dayFontSize: 16 },
+  split: { dayFontSize: 20, weekdayFontSize: 14 },
   "side-title": { monthFontSize: 36 },
   cards: { monthFontSize: 54, dayFontSize: 18, weekdayFontSize: 13 },
   "date-list": { monthFontSize: 40, dayFontSize: 13 },

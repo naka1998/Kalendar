@@ -46,6 +46,7 @@ test("applies each preset's declared settings and carries over spacing", async (
   await openFixture(page, { calendarStyle: { ...DEFAULT_CALENDAR_STYLE, ...spacing } });
   const presets = await openPanel(page, "プリセット");
   const grid = gridOn(page);
+  await expect(presets.getByText("変更すると他の設定も変わります")).toBeVisible();
   await expect(presets.getByRole("button")).toHaveCount(CALENDAR_LAYOUTS.length);
 
   for (const preset of CALENDAR_LAYOUTS) {
@@ -206,6 +207,8 @@ test("restores edited layout settings after reload and when reimporting printed 
     useImages: true,
     monthLabelFormat: "ja",
     weekdayFormat: "ja",
+    holidayMarkStyle: "name",
+    manualHolidays: [{ date: "2027-01-01", name: "元日" }],
     calendarStyle: { ...DEFAULT_CALENDAR_STYLE, layoutPreset: "date-list" },
   });
   const container = page.getByTestId("page-container").first();
@@ -246,6 +249,9 @@ test("restores edited layout settings after reload and when reimporting printed 
   const printGrid = gridOn(print);
   const printedDates = printGrid.locator(".calendar-cell:not([data-empty])");
   await expect(printedDates).toHaveCount(31);
+  await expect(
+    printGrid.locator(".calendar-holiday-name").getByText("元日", { exact: true }),
+  ).toBeVisible();
   await expect(printGrid.locator(".calendar-title")).toHaveCSS("text-align", "center");
   await expect(printGrid.locator(".calendar-title-rule")).toBeHidden();
   await expect(printGrid.locator(".calendar-days")).toHaveCSS("border-right-width", "1px");
@@ -303,4 +309,38 @@ mobileTest("selects a preset from the mobile settings sheet", async ({ page }) =
   await button.tap();
   await expect(button).toHaveAttribute("aria-pressed", "true");
   await expect(gridOn(page)).toHaveAttribute("data-calendar-layout", choice.id);
+});
+
+test("keeps holiday dots centered and shows holiday names in the date list preset", async ({
+  page,
+}) => {
+  await openFixture(page, {
+    endMonth: "2027-05",
+    manualHolidays: [
+      { date: "2027-01-01", name: "元日" },
+      { date: "2027-05-04", name: "みどりの日" },
+    ],
+  });
+  const sizes = await openPanel(page, "サイズと配置");
+  const dot = gridOn(page).locator(".calendar-holiday-dot").first();
+  for (const alignment of ["start", "end"]) {
+    await sizes.getByRole("combobox", { name: "日付の左右揃え" }).selectOption(alignment);
+    await expect
+      .poll(() =>
+        dot.evaluate((element) => {
+          const marker = element.getBoundingClientRect();
+          const cell = element.parentElement!.getBoundingClientRect();
+          return Math.abs(marker.left + marker.width / 2 - cell.left - cell.width / 2);
+        }),
+      )
+      .toBeLessThan(1);
+  }
+
+  const presets = await openPanel(page, "プリセット");
+  await presets.getByRole("button", { name: "縦リスト" }).click();
+  const names = page.locator(".calendar-holiday-name");
+  await expect(names.getByText("元日", { exact: true })).toBeVisible();
+  await expect(names.getByText("みどりの日", { exact: true })).toBeVisible();
+  const basic = await openPanel(page, "基本設定");
+  await expect(basic.getByRole("combobox", { name: "祝日マーク" })).toHaveValue("name");
 });

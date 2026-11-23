@@ -8,6 +8,7 @@ import {
 } from "@/lib/calendarLayouts";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { FontWeightSelector } from "./FontSelector";
+import { PlacementSettings } from "./PlacementSettings";
 import { SliderField, getFontWarningLevel } from "./SliderField";
 
 const alignmentOptions = [
@@ -64,7 +65,9 @@ export function SizeAndPlacementSection() {
 
   return (
     <div className="space-y-3">
-      <section aria-label="月見出し" className="space-y-2">
+      <PlacementSettings />
+
+      <section aria-label="月見出し" className="space-y-2 border-t border-border pt-3">
         <h3 className="text-xs font-bold">月見出し</h3>
         <SettingSelect
           label="見出しの位置"

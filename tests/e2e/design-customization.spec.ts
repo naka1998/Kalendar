@@ -83,6 +83,7 @@ test.describe("Design Customization", () => {
   });
 
   test("image toggle can be clicked", async ({ page }) => {
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     const toggle = page.getByRole("button", { name: "画像を使用", exact: true });
     await expect(page.getByTestId("image-area").first()).toBeVisible();
     await toggle.click();
@@ -92,6 +93,7 @@ test.describe("Design Customization", () => {
   });
 
   test("re-enabling images shows image areas", async ({ page }) => {
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     const toggle = page.getByRole("button", { name: "画像を使用", exact: true });
 
     // Toggle off
@@ -104,16 +106,13 @@ test.describe("Design Customization", () => {
   });
 
   test("content alignment buttons work", async ({ page }) => {
-    // Content alignment is now in the floating image control box
-    const controlBox = page.getByTestId("image-control-box");
-    await expect(controlBox).toBeVisible();
-
-    // "中央" in the カレンダー配置 section of the floating box
-    const centerButton = controlBox.getByRole("button", { name: "中央" }).last();
+    await page.getByRole("button", { name: "サイズと配置", exact: true }).click();
+    const placement = page.getByRole("group", { name: "カレンダー配置" });
+    const centerButton = placement.getByRole("button", { name: "中央", exact: true }).first();
     await centerButton.click();
     await expect(centerButton).toBeVisible();
 
-    const bottomButton = controlBox.getByRole("button", { name: "下揃え" }).last();
+    const bottomButton = placement.getByRole("button", { name: "下揃え", exact: true });
     await bottomButton.click();
     await expect(bottomButton).toBeVisible();
   });

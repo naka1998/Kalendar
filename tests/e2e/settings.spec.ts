@@ -11,8 +11,11 @@ test.describe("Settings", () => {
 
   test("can expand basic settings and see controls", async ({ page }) => {
     const basicSettings = page.getByRole("button", { name: "基本設定", exact: true });
-    await expect(basicSettings).toHaveAttribute("aria-expanded", "true");
-    await basicSettings.click();
+    await expect(page.getByRole("button", { name: "プリセット" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    await expect(basicSettings).toHaveAttribute("aria-expanded", "false");
     await expect(page.getByText("開始月")).toBeHidden();
     await basicSettings.click();
     await expect(page.getByText("開始月")).toBeVisible();
@@ -20,15 +23,14 @@ test.describe("Settings", () => {
   });
 
   test("can toggle paper orientation", async ({ page }) => {
-    // Basic Settings is open by default
-    await page.getByText("開始月").waitFor();
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     const landscapeButton = page.getByRole("button", { name: "横", exact: true });
     await landscapeButton.click();
     await expect(landscapeButton).toBeVisible();
   });
 
   test("can toggle week start", async ({ page }) => {
-    await page.getByText("週の開始").waitFor();
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     const monButton = page.getByRole("button", { name: "月曜" });
     await monButton.click();
     await expect(monButton).toBeVisible();

@@ -30,7 +30,9 @@ describe("Sidebar", () => {
     const original = useCalendarStore.getState();
     render(<Sidebar />);
     try {
-      fireEvent.click(screen.getByRole("button", { name: "プリセット" }));
+      expect(screen.getByRole("button", { name: "プリセット" }).getAttribute("aria-expanded")).toBe(
+        "true",
+      );
       for (const preset of CALENDAR_LAYOUTS) {
         fireEvent.click(screen.getByRole("button", { name: preset.label }));
         expect(useCalendarStore.getState()).toMatchObject({

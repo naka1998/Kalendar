@@ -70,8 +70,13 @@ function makePage(overrides?: Partial<PageData>): PageData {
 describe("renderHolidayMark", () => {
   it("renders a dot span for dot style", () => {
     const html = renderHolidayMark("dot", "#DC2626");
-    expect(html).toContain("border-radius:50%");
+    expect(html).toContain('class="calendar-holiday-dot"');
     expect(html).toContain("background:#DC2626");
+  });
+
+  it("escapes the holiday name in exported HTML", () => {
+    const html = renderHolidayMark("name", "#DC2626", "元日 <特別>");
+    expect(html).toContain("元日 &lt;特別&gt;");
   });
 
   it("returns empty string for circle style", () => {
@@ -121,7 +126,7 @@ describe("renderDayCell", () => {
   it("renders dot mark for holiday with dot style", () => {
     const page = makePage();
     const html = renderDayCell(page, 0, 3, 1);
-    expect(html).toContain("border-radius:50%");
+    expect(html).toContain('class="calendar-holiday-dot"');
     expect(html).toContain(`background:${theme.colors.holidayMark}`);
   });
 

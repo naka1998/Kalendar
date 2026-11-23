@@ -63,10 +63,13 @@ test.describe("Visual Regression - Desktop", () => {
   });
 
   test("sidebar expanded state", async ({ page }) => {
-    // Basic section is open by default — capture the sidebar as-is
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     await page.waitForTimeout(300);
 
     const sidebar = page.locator("aside").first();
+    await sidebar.evaluate((element) => {
+      element.scrollTop = 0;
+    });
     await expect(sidebar).toHaveScreenshot("desktop-sidebar-basic.png", {
       maxDiffPixelRatio: 0.01,
     });
@@ -77,13 +80,16 @@ test.describe("Visual Regression - Desktop", () => {
     await page.waitForTimeout(300);
 
     const sidebar = page.locator("aside").first();
+    await sidebar.evaluate((element) => {
+      element.scrollTop = 0;
+    });
     await expect(sidebar).toHaveScreenshot("desktop-sidebar-design.png", {
       maxDiffPixelRatio: 0.01,
     });
   });
 
   test("image disabled layout", async ({ page }) => {
-    // Disable images — toggle is now in 基本設定 (open by default)
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     const toggleContainer = page.getByText("画像を使用").locator("..");
     const toggle = toggleContainer.locator("button");
     await toggle.click();
@@ -96,7 +102,7 @@ test.describe("Visual Regression - Desktop", () => {
   });
 
   test("landscape orientation", async ({ page }) => {
-    // Basic section is open by default — just click the landscape button
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     const landscapeButton = page.getByRole("button", { name: "横", exact: true });
     await landscapeButton.click();
     await page.waitForTimeout(500);

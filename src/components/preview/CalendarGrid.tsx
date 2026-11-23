@@ -27,24 +27,6 @@ export interface CalendarGridProps {
   calendarStyle: CalendarStyle;
 }
 
-function HolidayMark({ style, color }: { style: HolidayMarkStyle; color: string }) {
-  switch (style) {
-    case "dot":
-      return (
-        <span
-          className="mt-0.5 block h-1.5 w-1.5 rounded-full"
-          style={{ backgroundColor: color }}
-        />
-      );
-    case "circle":
-      return null;
-    case "underline":
-      return null;
-    case "color-only":
-      return null;
-  }
-}
-
 export function CalendarGrid({
   grid,
   weekdayHeaders,
@@ -194,7 +176,15 @@ export function CalendarGrid({
                   </span>
                 )}
                 {cell.isHoliday && holidayMarkStyle === "dot" && (
-                  <HolidayMark style="dot" color={colors.holidayMark} />
+                  <span
+                    className="calendar-holiday-dot"
+                    style={{ backgroundColor: colors.holidayMark }}
+                  />
+                )}
+                {cell.isHoliday && holidayMarkStyle === "name" && cell.holidayName && (
+                  <span className="calendar-holiday-name" style={{ color: textColor }}>
+                    {cell.holidayName}
+                  </span>
                 )}
               </div>
             );
