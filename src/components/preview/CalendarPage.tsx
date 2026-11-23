@@ -4,8 +4,9 @@ import { DividerHandle } from "./DividerHandle";
 import { ImageArea } from "./ImageArea";
 import { SafeMarginOverlay } from "./SafeMarginOverlay";
 import { calcLayoutPercent, isHorizontalLayout } from "@/lib/layoutUtils";
-import { A4 } from "@/lib/constants";
+import { A4, CALENDAR_PAGE_BACKGROUND } from "@/lib/constants";
 import { justifyContentClass, alignItemsClass } from "@/lib/alignmentUtils";
+import "@/lib/calendarThemes.css";
 import { useCallback } from "react";
 export type { ImageProps, ImageEditProps, CalendarStyleProps } from "./calendarPageTypes";
 import type { ImageProps, ImageEditProps, CalendarStyleProps } from "./calendarPageTypes";
@@ -102,11 +103,12 @@ export function CalendarPage({
 
   return (
     <div
+      data-calendar-theme={theme.id}
       className="group/page relative overflow-hidden rounded-sm"
       style={{
         width: `${pageWidth}px`,
         height: `${pageHeight}px`,
-        background: colors.background,
+        backgroundColor: CALENDAR_PAGE_BACKGROUND,
         boxShadow: "var(--shadow-a4)",
       }}
     >

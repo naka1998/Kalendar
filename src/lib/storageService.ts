@@ -1,4 +1,5 @@
 import { STORAGE_KEYS } from "./constants";
+import { migrateThemeSettings } from "./themeUtils";
 import type {
   CalendarState,
   CalendarStyle,
@@ -184,7 +185,7 @@ export async function loadFromStorage(): Promise<SavedState | null> {
     }
   }
 
-  return data.state;
+  return { ...data.state, ...migrateThemeSettings(data.state) };
 }
 
 export async function clearStorage(): Promise<SaveResult> {

@@ -11,33 +11,52 @@ test.describe("Design Customization", () => {
     await page.goto("/");
   });
 
-  test("theme grid shows available themes", async ({ page }) => {
-    await openAppearance(page);
-    // Theme grid should have multiple theme options
-    const themeButtons = page.locator(".grid-cols-3 button");
-    const count = await themeButtons.count();
-    expect(count).toBeGreaterThan(1);
-  });
-
-  test("all themes keep a white page and change the month title color", async ({ page }) => {
+  test("themes update colors while preserving the calendar layout and typography", async ({
+    page,
+  }) => {
     await openAppearance(page);
     const pageOuter = page.getByTestId("page-container").first().locator("..");
     const monthTitle = page.getByTestId("month-title").first();
+    const titleText = monthTitle.locator(".calendar-title-text");
+    const weekday = pageOuter.locator(".calendar-weekdays > div").first();
+    const calendarDays = pageOuter.locator(".calendar-cell:not([data-empty]) .calendar-day-number");
+    const originalDays = await calendarDays.allTextContents();
+    const originalLetterSpacing = await monthTitle.evaluate(
+      (title) => getComputedStyle(title).letterSpacing,
+    );
     const expectedColors = {
-      Classic: "rgb(17, 24, 39)",
-      Monochrome: "rgb(55, 65, 81)",
-      Slate: "rgb(30, 58, 95)",
-      Sepia: "rgb(120, 53, 15)",
-      Forest: "rgb(20, 83, 45)",
-      Minimal: "rgb(38, 38, 38)",
+      Classic: "17, 24, 39",
+      Monochrome: "55, 65, 81",
+      Slate: "30, 58, 95",
+      Sepia: "120, 53, 15",
+      Forest: "20, 83, 45",
+      Editorial: "32, 45, 68",
+      Blueprint: "18, 78, 112",
+      Risograph: "36, 57, 112",
+      Clay: "102, 56, 44",
+      "Pop Grid": "33, 74, 196",
     };
 
-    for (const [theme, color] of Object.entries(expectedColors)) {
+    await expect(
+      page.getByRole("button", { name: /^(Minimal|Botanical|Retro Terminal|Dusk)$/ }),
+    ).toHaveCount(0);
+    for (const [theme, title] of Object.entries(expectedColors)) {
       const button = page.getByRole("button", { name: theme, exact: true });
       await button.click();
-      await expect(button).toHaveClass(/ring-2/);
+      await expect(button).toHaveAttribute("aria-pressed", "true");
       await expect(pageOuter).toHaveCSS("background-color", "rgb(255, 255, 255)");
-      await expect(monthTitle).toHaveCSS("color", color);
+      await expect(pageOuter).toHaveCSS("background-image", "none");
+      await expect(monthTitle).toHaveCSS("color", `rgb(${title})`);
+      await expect(monthTitle).toHaveCSS("letter-spacing", originalLetterSpacing);
+      await expect(titleText).toHaveCSS("text-decoration-line", "none");
+      await expect(titleText).toHaveCSS(
+        "text-shadow",
+        theme === "Risograph" ? "rgb(230, 138, 112) 2px 2px 0px" : "none",
+      );
+      await expect(weekday).toHaveCSS("text-decoration-line", "none");
+      await expect(weekday).toHaveCSS("box-shadow", "none");
+      await expect(calendarDays.first()).toHaveCSS("font-variant-numeric", "normal");
+      await expect(calendarDays).toHaveText(originalDays);
     }
   });
 

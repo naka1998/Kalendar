@@ -141,6 +141,19 @@ describe("saveToStorage", () => {
 });
 
 describe("loadFromStorage", () => {
+  it("restores old Minimal settings as Monochrome", async () => {
+    await saveToStorage(
+      createMockState({
+        themeId: "minimal",
+        monthThemeOverrides: { "2027-01": "minimal", "2027-02": "blueprint" },
+      }),
+    );
+    expect(await loadFromStorage()).toMatchObject({
+      themeId: "monochrome",
+      monthThemeOverrides: { "2027-01": "monochrome", "2027-02": "blueprint" },
+    });
+  });
+
   it("returns null when no data saved", async () => {
     expect(await loadFromStorage()).toBeNull();
   });

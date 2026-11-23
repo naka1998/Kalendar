@@ -1,3 +1,5 @@
+export const CALENDAR_PAGE_BACKGROUND = "#FFFFFF";
+
 export const A4 = {
   WIDTH_MM: 210,
   HEIGHT_MM: 297,

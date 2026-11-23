@@ -6,9 +6,11 @@
 
 ## カレンダーデザイン見本
 
-設定の「見た目」でテーマやフォントを切り替えたプレビューです。2026年5月の画像なしカレンダーで、日付欄の周辺を切り出しています。
+設定の「見た目」でテーマやフォントを切り替えたプレビューです。画像なしカレンダーの日付欄の周辺を切り出しています。
 
 ### カラーテーマ
+
+印刷時の見え方を安定させるため、用紙の背景はプレビュー・HTML出力・PDF印刷で白（`#FFFFFF`）に統一しています。テーマは文字、罫線、祝日マークなどの配色を切り替えます。フォント、罫線の有無、祝日マークの形はそれぞれの設定で選べます。Risograph は月タイトルに朱色の影が入ります。
 
 フォントは Montserrat（標準）で統一しています。
 
@@ -17,8 +19,12 @@
 | ![Classic のカレンダー](screenshots/design/theme-classic.png) | ![Monochrome のカレンダー](screenshots/design/theme-monochrome.png) |
 | **Slate**                                                     | **Sepia**                                                           |
 | ![Slate のカレンダー](screenshots/design/theme-slate.png)     | ![Sepia のカレンダー](screenshots/design/theme-sepia.png)           |
-| **Forest**                                                    | **Minimal**                                                         |
-| ![Forest のカレンダー](screenshots/design/theme-forest.png)   | ![Minimal のカレンダー](screenshots/design/theme-minimal.png)       |
+| **Forest**                                                    |                                                                     |
+| ![Forest のカレンダー](screenshots/design/theme-forest.png)   |                                                                     |
+
+Editorial、Blueprint、Risograph、Clay、Pop Grid を2027年1月の同じ月表示で比較できます。
+
+![2027年1月の月表示で新しい5テーマを並べたプレビュー](screenshots/design/monthly-theme-comparison.webp)
 
 ### フォント
 
@@ -91,7 +97,7 @@ Classic と Montserrat の組み合わせで、日付の数字の太さを比較
 
 ### デザイン
 
-- **白背景のカラーテーマ6種**: Classic, Monochrome, Slate, Sepia, Forest, Minimal
+- **白背景のカラーテーマ10種**: 上のカレンダーデザイン見本で比較できます
 - **Google Fonts 11種**: 「かっこいい」「しっかり」「かわいい」「おしゃれ」のカテゴリ別に、見本を見て選択
 - **文字サイズ・余白カスタマイズ**: 月タイトル、日付、曜日のフォントサイズ、セル余白、ヘッダー間隔、上余白（初期値20px）をスライダーで調整
 
