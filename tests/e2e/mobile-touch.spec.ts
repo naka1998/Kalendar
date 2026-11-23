@@ -35,11 +35,12 @@ test.describe("Mobile touch interactions", () => {
     await page.waitForTimeout(500);
 
     // Buttons should be visible
-    const editButton = page.getByTestId("image-edit-button").first();
+    const imageArea = page.getByTestId("image-area").first();
+    const editButton = imageArea.getByTestId("image-edit-button");
     await expect(editButton).toBeVisible();
     await expect(editButton).toContainText("トリミング");
-    await expect(page.getByText("変更").first()).toBeVisible();
-    await expect(page.getByText("削除").first()).toBeVisible();
+    await expect(imageArea.getByText("変更", { exact: true })).toBeVisible();
+    await expect(imageArea.getByText("削除", { exact: true })).toBeVisible();
   });
 
   test("trimming button enters edit mode on mobile viewport", async ({ page }) => {
