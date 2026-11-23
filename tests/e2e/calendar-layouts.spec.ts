@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import type { CalendarState } from "../../src/stores/types";
 import { CALENDAR_LAYOUTS, getCalendarTitle, getPresetStyle } from "../../src/lib/calendarLayouts";
 import { DEFAULT_CALENDAR_STYLE } from "../../src/lib/constants";
@@ -46,6 +46,7 @@ test("applies each preset's declared settings and carries over spacing", async (
   await openFixture(page, { calendarStyle: { ...DEFAULT_CALENDAR_STYLE, ...spacing } });
   const presets = await openPanel(page, "プリセット");
   const grid = gridOn(page);
+  await expect(presets.getByText("変更すると他の設定も変わります")).toBeVisible();
   await expect(presets.getByRole("button")).toHaveCount(CALENDAR_LAYOUTS.length);
 
   for (const preset of CALENDAR_LAYOUTS) {
@@ -206,6 +207,8 @@ test("restores edited layout settings after reload and when reimporting printed 
     useImages: true,
     monthLabelFormat: "ja",
     weekdayFormat: "ja",
+    holidayMarkStyle: "name",
+    manualHolidays: [{ date: "2027-01-01", name: "元日" }],
     calendarStyle: { ...DEFAULT_CALENDAR_STYLE, layoutPreset: "date-list" },
   });
   const container = page.getByTestId("page-container").first();
@@ -246,6 +249,9 @@ test("restores edited layout settings after reload and when reimporting printed 
   const printGrid = gridOn(print);
   const printedDates = printGrid.locator(".calendar-cell:not([data-empty])");
   await expect(printedDates).toHaveCount(31);
+  await expect(
+    printGrid.locator(".calendar-holiday-name").getByText("元日", { exact: true }),
+  ).toBeVisible();
   await expect(printGrid.locator(".calendar-title")).toHaveCSS("text-align", "center");
   await expect(printGrid.locator(".calendar-title-rule")).toBeHidden();
   await expect(printGrid.locator(".calendar-days")).toHaveCSS("border-right-width", "1px");
@@ -304,3 +310,63 @@ mobileTest("selects a preset from the mobile settings sheet", async ({ page }) =
   await expect(button).toHaveAttribute("aria-pressed", "true");
   await expect(gridOn(page)).toHaveAttribute("data-calendar-layout", choice.id);
 });
+
+test("aligns holiday dots below the date digits and shows holiday names in the date list preset", async ({
+  page,
+}) => {
+  await openFixture(page, {
+    endMonth: "2027-05",
+    manualHolidays: [
+      { date: "2027-01-01", name: "元日" },
+      { date: "2027-01-11", name: "成人の日" },
+      { date: "2027-05-04", name: "みどりの日" },
+    ],
+  });
+  const sizes = await openPanel(page, "サイズと配置");
+  for (const alignment of ["start", "center", "end"]) {
+    await sizes.getByRole("combobox", { name: "日付の左右揃え" }).selectOption(alignment);
+    await expectDotsUnderDates(gridOn(page));
+  }
+
+  const downloading = page.waitForEvent("download");
+  await page.getByRole("button", { name: "出力", exact: true }).click();
+  await page.getByText("単一HTMLファイル（画像埋め込み）", { exact: true }).click();
+  const chunks: Buffer[] = [];
+  for await (const chunk of await (await downloading).createReadStream()) chunks.push(chunk);
+  const print = await page.context().newPage();
+  await print.route(/^https:\/\/fonts\./, (route) => route.abort());
+  await print.emulateMedia({ media: "print" });
+  await print.setContent(Buffer.concat(chunks).toString("utf8"), { waitUntil: "domcontentloaded" });
+  await expectDotsUnderDates(gridOn(print));
+  await print.close();
+
+  const presets = await openPanel(page, "プリセット");
+  await presets.getByRole("button", { name: "縦リスト" }).click();
+  const names = page.locator(".calendar-holiday-name");
+  await expect(names.getByText("元日", { exact: true })).toBeVisible();
+  await expect(names.getByText("みどりの日", { exact: true })).toBeVisible();
+  const basic = await openPanel(page, "基本設定");
+  await expect(basic.getByRole("combobox", { name: "祝日マーク" })).toHaveValue("name");
+});
+
+async function expectDotsUnderDates(grid: Locator) {
+  const dates = grid.locator(".calendar-day-with-dot");
+  await expect(dates.first()).toBeVisible();
+  await expect
+    .poll(() =>
+      dates.evaluateAll((labels) =>
+        labels.every((label) => {
+          const digits = document.createRange();
+          digits.selectNode(label.firstChild!);
+          const date = digits.getBoundingClientRect();
+          const dot = label.querySelector(".calendar-holiday-dot")!.getBoundingClientRect();
+          return (
+            Math.abs(dot.left + dot.width / 2 - date.left - date.width / 2) < 1 &&
+            dot.top >= date.bottom - 0.5
+          );
+        }),
+      ),
+    )
+    .toBe(true);
+  await expect(dates.first().locator(".calendar-holiday-dot")).toHaveCSS("width", "4px");
+}

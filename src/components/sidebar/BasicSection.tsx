@@ -7,13 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type {
-  HolidayMarkStyle,
-  MonthLabelFormat,
-  Orientation,
-  WeekStart,
-  WeekdayFormat,
-} from "@/stores/types";
+import type { MonthLabelFormat, Orientation, WeekStart, WeekdayFormat } from "@/stores/types";
+import { HolidayMarkSelect } from "./HolidayMarkSelect";
 
 function MonthSelect({
   label,
@@ -193,17 +188,7 @@ export function BasicSection() {
       </div>
 
       {/* Holiday mark style */}
-      <SegmentedControl<HolidayMarkStyle>
-        label="祝日マーク"
-        options={[
-          { value: "dot", label: "ドット" },
-          { value: "circle", label: "丸囲み" },
-          { value: "underline", label: "下線" },
-          { value: "color-only", label: "色のみ" },
-        ]}
-        value={store.holidayMarkStyle}
-        onChange={store.setHolidayMarkStyle}
-      />
+      <HolidayMarkSelect />
 
       {/* Image toggle */}
       <div className="flex items-center justify-between">

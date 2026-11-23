@@ -45,7 +45,7 @@ test.describe("Download Flow", () => {
 
   test("auto-save indicator appears after setting change", async ({ page }) => {
     // Wait for basic settings to be visible
-    await page.getByText("開始月").waitFor();
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     // Change orientation to trigger auto-save
     const landscapeButton = page.getByRole("button", { name: "横", exact: true });
     await landscapeButton.click();

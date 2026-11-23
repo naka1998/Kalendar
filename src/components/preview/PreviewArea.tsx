@@ -3,7 +3,6 @@ import { useCalendarStore } from "@/stores/calendarStore";
 import { generateMonthRange, formatMonthLabel } from "@/lib/dateUtils";
 import { CalendarPageContainer } from "./CalendarPageContainer";
 import { ScaledPage } from "./ScaledPage";
-import { ImageControlBox } from "./ImageControlBox";
 import type { PreviewZoom } from "@/stores/types";
 
 const ZOOM_OPTIONS: { value: PreviewZoom; label: string }[] = [
@@ -155,7 +154,6 @@ export function PreviewArea() {
 
       {/* Scrollable preview */}
       <div className="relative flex-1 overflow-hidden">
-        <ImageControlBox />
         <div
           ref={scrollContainerRef}
           className={`h-full overflow-y-auto ${previewZoom === "large" ? "p-2" : "p-4 md:p-8"}`}

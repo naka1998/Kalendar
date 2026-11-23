@@ -13,31 +13,20 @@ test.describe("Holiday Management", () => {
     await expect(status.first()).toBeVisible();
   });
 
-  test("holiday mark style options are visible", async ({ page }) => {
-    // Holiday mark style is now in 基本設定 (open by default)
-    await expect(page.getByRole("button", { name: "ドット" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "丸囲み" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "下線" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "色のみ" })).toBeVisible();
-  });
-
-  test("can switch holiday mark style", async ({ page }) => {
-    // Holiday mark style is now in 基本設定 (open by default)
-    // Click "丸囲み" and verify it gets the selected style
-    const circleButton = page.getByRole("button", { name: "丸囲み" });
-    await circleButton.click();
-
-    // Selected button should have the active background class
-    await expect(circleButton).toHaveClass(/bg-surface/);
-    // The previously default "ドット" should lose the active class
-    const dotButton = page.getByRole("button", { name: "ドット" });
-    await expect(dotButton).not.toHaveClass(/bg-surface\b/);
-
-    // Switch to "下線" and verify selection moves
-    const underlineButton = page.getByRole("button", { name: "下線" });
-    await underlineButton.click();
-    await expect(underlineButton).toHaveClass(/bg-surface/);
-    await expect(circleButton).not.toHaveClass(/bg-surface\b/);
+  test("lists holiday mark styles in a select", async ({ page }) => {
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
+    const mark = page.getByRole("combobox", { name: "祝日マーク" });
+    await expect(mark.locator("option")).toHaveText([
+      "ドット",
+      "丸囲み",
+      "下線",
+      "色のみ",
+      "祝日名",
+    ]);
+    await mark.selectOption("circle");
+    await expect(mark).toHaveValue("circle");
+    await mark.selectOption("underline");
+    await expect(mark).toHaveValue("underline");
   });
 
   test("add holiday form is visible", async ({ page }) => {

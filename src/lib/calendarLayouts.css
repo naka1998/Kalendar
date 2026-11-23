@@ -13,6 +13,42 @@
   letter-spacing: -0.05em;
 }
 
+.calendar-day-with-dot {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calendar-holiday-dot {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+[data-calendar-layout]:not([data-calendar-layout="date-list"])
+  .calendar-day-number:has(.calendar-holiday-dot) {
+  margin-bottom: 4px;
+}
+
+[data-calendar-layout]:not([data-calendar-layout="date-list"]) .calendar-holiday-dot {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.calendar-holiday-name {
+  max-width: 100%;
+  min-width: 0;
+  font-size: 10px;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .calendar-holiday-underline {
   text-decoration: underline;
   text-decoration-color: var(--calendar-holiday-mark);
@@ -171,8 +207,7 @@
 
 [data-calendar-layout="date-list"] .calendar-cell {
   display: grid;
-  grid-template-columns: 2.6em minmax(0, 7em) auto;
-  justify-content: start;
+  grid-template-columns: 2.6em fit-content(7em) minmax(0, 1fr);
   align-items: center;
   gap: 0.25em;
   line-height: 1;

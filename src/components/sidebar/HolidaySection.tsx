@@ -3,42 +3,7 @@ import { useCalendarStore } from "@/stores/calendarStore";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import type { HolidayMarkStyle } from "@/stores/types";
-
-function SegmentedControl({
-  label,
-  options,
-  value,
-  onChange,
-}: {
-  label: string;
-  options: { value: HolidayMarkStyle; label: string }[];
-  value: HolidayMarkStyle;
-  onChange: (v: HolidayMarkStyle) => void;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">
-        {label}
-      </Label>
-      <div className="flex rounded-lg bg-surface-container-high p-1">
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            onClick={() => onChange(opt.value)}
-            className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all ${
-              value === opt.value
-                ? "bg-surface text-on-surface shadow-sm"
-                : "text-on-surface-variant hover:text-on-surface"
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
+import { HolidayMarkSelect } from "./HolidayMarkSelect";
 
 export function HolidaySection() {
   const store = useCalendarStore();
@@ -73,17 +38,7 @@ export function HolidaySection() {
         <span className={`text-xs font-medium ${statusColor}`}>{statusText}</span>
       </div>
 
-      <SegmentedControl
-        label="祝日マーク"
-        options={[
-          { value: "dot", label: "ドット" },
-          { value: "circle", label: "丸囲み" },
-          { value: "underline", label: "下線" },
-          { value: "color-only", label: "色のみ" },
-        ]}
-        value={store.holidayMarkStyle}
-        onChange={store.setHolidayMarkStyle}
-      />
+      <HolidayMarkSelect />
 
       <div className="space-y-1.5">
         <Label className="text-xs font-bold uppercase tracking-[0.3em] text-on-surface-variant">

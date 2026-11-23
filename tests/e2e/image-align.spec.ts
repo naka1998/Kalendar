@@ -13,8 +13,7 @@ test.describe("Image alignment", () => {
     const imageInput = page.locator('input[type=file][accept="image/jpeg,image/png"]').first();
     await imageInput.setInputFiles(TEST_WIDE_IMAGE);
     await page.waitForTimeout(3000);
-    // The floating image control box should be visible on desktop by default
-    await page.waitForTimeout(1000);
+    await page.getByRole("button", { name: "サイズと配置", exact: true }).click();
   });
 
   test("image align top sets object-position to top", async ({ page }) => {
@@ -45,33 +44,10 @@ test.describe("Image alignment", () => {
 });
 
 async function clickAlignButton(page: import("@playwright/test").Page, label: string) {
-  // Find the button inside the 画像配置 section in the floating control box
-  await page.evaluate((targetLabel) => {
-    // Find 画像配置 label in the floating control box, then the buttons within its parent
-    const labels = Array.from(document.querySelectorAll("label"));
-    const sectionLabel = labels.find((l) => l.textContent?.includes("画像配置"));
-    if (!sectionLabel) return;
-    const section = sectionLabel.closest(".space-y-1\\.5") ?? sectionLabel.parentElement;
-    if (!section) return;
-    const btn = Array.from(section.querySelectorAll("button")).find(
-      (b) => b.textContent?.trim() === targetLabel,
-    );
-    if (!btn) return;
-    const rect = btn.getBoundingClientRect();
-    const opts: MouseEventInit = {
-      bubbles: true,
-      cancelable: true,
-      clientX: rect.left + rect.width / 2,
-      clientY: rect.top + rect.height / 2,
-      button: 0,
-    };
-    btn.dispatchEvent(new PointerEvent("pointerdown", opts));
-    btn.dispatchEvent(new MouseEvent("mousedown", opts));
-    btn.dispatchEvent(new PointerEvent("pointerup", opts));
-    btn.dispatchEvent(new MouseEvent("mouseup", opts));
-    btn.dispatchEvent(new MouseEvent("click", opts));
-  }, label);
-  await page.waitForTimeout(1000);
+  await page
+    .getByRole("group", { name: "画像配置", exact: true })
+    .getByRole("button", { name: label, exact: true })
+    .click();
 }
 
 async function getObjectPosition(page: import("@playwright/test").Page): Promise<string> {

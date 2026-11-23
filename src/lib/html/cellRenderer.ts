@@ -10,10 +10,18 @@ export interface CellStyleOverrides {
   cellPadding?: number;
 }
 
-export function renderHolidayMark(style: HolidayMarkStyle, color: string): string {
+export function renderHolidayMark(
+  style: HolidayMarkStyle,
+  color: string,
+  holidayName?: string | null,
+): string {
   switch (style) {
     case "dot":
-      return `<span style="display:block;margin:2px auto 0;width:6px;height:6px;border-radius:50%;background:${color}"></span>`;
+      return `<span class="calendar-holiday-dot" style="background:${color}"></span>`;
+    case "name":
+      return holidayName
+        ? `<span class="calendar-holiday-name" style="color:${color}">${escapeHtml(holidayName)}</span>`
+        : "";
     case "circle":
     case "underline":
     case "color-only":
@@ -50,16 +58,22 @@ export function renderDayCell(
   let spanStyle = `color:${textColor};display:flex;align-items:center;${isList ? `font-size:${Math.min(dayFontSize, 14)}px;` : `width:${cellSize}px;height:${cellSize}px;font-size:${dayFontSize}px;`}`;
   if (isCircle)
     spanStyle += `border-radius:50%;border:1.5px solid ${page.theme.colors.holidayMark};`;
+  const mark = cell.isHoliday
+    ? renderHolidayMark(
+        page.holidayMarkStyle,
+        page.holidayMarkStyle === "name" ? textColor : page.theme.colors.holidayMark,
+        cell.holidayName,
+      )
+    : "";
+
   const dayLabel = isUnderline
     ? `<span class="calendar-holiday-underline">${cell.dayOfMonth}</span>`
-    : cell.dayOfMonth;
-
-  const mark = cell.isHoliday
-    ? renderHolidayMark(page.holidayMarkStyle, page.theme.colors.holidayMark)
-    : "";
+    : page.holidayMarkStyle === "dot" && mark
+      ? `<span class="calendar-day-with-dot">${cell.dayOfMonth}${mark}</span>`
+      : cell.dayOfMonth;
 
   const weekday = style?.showWeekday
     ? `<span class="calendar-list-weekday" style="color:${textColor}">${escapeHtml(page.weekdayHeaders[ci])}</span>`
     : "";
-  return `<div class="calendar-cell"${ruled} style="padding:${getDayCellPadding(isList ? 0 : cellPadding, style?.dayAlignV)}"><span class="calendar-day-number"${isCircle ? " data-circled" : ""} style="${spanStyle}">${dayLabel}</span>${weekday}${mark}</div>`;
+  return `<div class="calendar-cell"${ruled} style="padding:${getDayCellPadding(isList ? 0 : cellPadding, style?.dayAlignV)}"><span class="calendar-day-number"${isCircle ? " data-circled" : ""} style="${spanStyle}">${dayLabel}</span>${weekday}${page.holidayMarkStyle === "dot" ? "" : mark}</div>`;
 }

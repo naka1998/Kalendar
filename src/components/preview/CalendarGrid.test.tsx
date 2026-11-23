@@ -61,7 +61,7 @@ describe("CalendarGrid", () => {
     });
     renderGrid({ grid, monthLabel: "2026.01" });
     // Should have a dot marker (rendered as a small circle span)
-    const dots = document.querySelectorAll('[class*="rounded-full"]');
+    const dots = document.querySelectorAll(".calendar-holiday-dot");
     expect(dots.length).toBeGreaterThan(0);
   });
 
@@ -95,7 +95,7 @@ describe("CalendarGrid", () => {
     expect(el.style.borderRadius).toBe("");
     expect(el.style.borderBottom).toBe("");
     // No dot marker should exist
-    const dots = document.querySelectorAll('[class*="rounded-full"]');
+    const dots = document.querySelectorAll(".calendar-holiday-dot");
     expect(dots.length).toBe(0);
   });
 });

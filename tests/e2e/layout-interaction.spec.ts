@@ -198,6 +198,7 @@ test.describe("Layout interaction", () => {
 
   test("landscape calendar is reasonably sized with standard zoom", async ({ page }) => {
     // Switch to landscape
+    await page.getByRole("button", { name: "基本設定", exact: true }).click();
     await page.getByRole("button", { name: "横", exact: true }).click();
     await page.waitForTimeout(300);
 

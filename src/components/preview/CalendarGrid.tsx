@@ -27,24 +27,6 @@ export interface CalendarGridProps {
   calendarStyle: CalendarStyle;
 }
 
-function HolidayMark({ style, color }: { style: HolidayMarkStyle; color: string }) {
-  switch (style) {
-    case "dot":
-      return (
-        <span
-          className="mt-0.5 block h-1.5 w-1.5 rounded-full"
-          style={{ backgroundColor: color }}
-        />
-      );
-    case "circle":
-      return null;
-    case "underline":
-      return null;
-    case "color-only":
-      return null;
-  }
-}
-
 export function CalendarGrid({
   grid,
   weekdayHeaders,
@@ -158,6 +140,7 @@ export function CalendarGrid({
             else if (cell.isSaturday) textColor = colors.saturday;
 
             const isCircle = cell.isHoliday && holidayMarkStyle === "circle";
+            const isDot = cell.isHoliday && holidayMarkStyle === "dot";
             const isUnderline = cell.isHoliday && holidayMarkStyle === "underline";
             const cellSize = Math.max(dayFontSize + 12, 28);
 
@@ -184,6 +167,14 @@ export function CalendarGrid({
                 >
                   {isUnderline ? (
                     <span className="calendar-holiday-underline">{cell.dayOfMonth}</span>
+                  ) : isDot ? (
+                    <span className="calendar-day-with-dot">
+                      {cell.dayOfMonth}
+                      <span
+                        className="calendar-holiday-dot"
+                        style={{ backgroundColor: colors.holidayMark }}
+                      />
+                    </span>
                   ) : (
                     cell.dayOfMonth
                   )}
@@ -193,8 +184,10 @@ export function CalendarGrid({
                     {weekdayHeaders[ci]}
                   </span>
                 )}
-                {cell.isHoliday && holidayMarkStyle === "dot" && (
-                  <HolidayMark style="dot" color={colors.holidayMark} />
+                {cell.isHoliday && holidayMarkStyle === "name" && cell.holidayName && (
+                  <span className="calendar-holiday-name" style={{ color: textColor }}>
+                    {cell.holidayName}
+                  </span>
                 )}
               </div>
             );

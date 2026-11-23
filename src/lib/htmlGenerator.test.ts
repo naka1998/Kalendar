@@ -111,8 +111,7 @@ describe("generateSingleHtml", () => {
     const html = generateSingleHtml(
       createTestInput({ grid, monthLabel: "2026.01", holidayMarkStyle: "dot" }),
     );
-    expect(html).toContain("border-radius:50%");
-    expect(html).toContain("width:6px;height:6px");
+    expect(html).toContain('class="calendar-holiday-dot"');
   });
 
   it("renders image area with custom percent", () => {
